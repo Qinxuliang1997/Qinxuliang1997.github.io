@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+  <title>
+    
+    Hexo
+  </title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<script src="/js/pace.min.js"></script>
+
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+<body>
+  <main class="content">
+    <section class="jumbotron">
+  <div class="video">
+    
+    <div class="video-frame">
+      <img src="/images/ocean/overlay-hero.png" alt="Decorative image frame">
+    </div>
+    
+    <div class="video-media">
+      <video playsinline="" autoplay="" loop="" muted="" data-autoplay="" poster="/images/ocean/ocean.png"
+        x5-video-player-type="h5">
+        <source src="/images/ocean/ocean.mp4" type="video/mp4">
+        <source src="/images/ocean/ocean.ogv" type="video/ogg">
+        <source src="/images/ocean/ocean.webm" type="video/webm">
+        <p>Your user agent does not support the HTML5 Video element.</p>
+      </video>
+      <div class="video-overlay"></div>
+    </div>
+    <div class="video-inner text-center text-white">
+      <h1><a href="/">Hexo</a></h1>
+      <p></p>
+      <div><img src="/images/hexo-inverted.svg" class="brand" alt="Hexo"></div>
+    </div>
+    <div class="video-learn-more">
+      <a class="anchor" href="#landingpage"><i class="fe fe-mouse"></i></a>
+    </div>
+  </div>
+</section>
+<div id="landingpage">
+  <section class="outer">
+  <article class="articles">
+    
+    <h1 class="page-type-title"></h1>
+    
+    
+    <article id="post-机器学习必备数学基础" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+      
+
+<h2 itemprop="name">
+  <a class="article-title" href="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%BF%85%E5%A4%87%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">机器学习必备数学基础</a>
+</h2>
+
+
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%BF%85%E5%A4%87%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" class="article-date">
+  <time datetime="2021-12-28T08:09:40.000Z" itemprop="datePublished">2021-12-28</time>
+</a>
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+        
+      
+      
+      <h2 id="1-概率论"><a href="#1-概率论" class="headerlink" title="1 概率论"></a>1 概率论</h2><p>在模式识别领域的⼀个关键概念是不确定性的概念。它可以由测量的误差引起，也可以由数据集的有限⼤⼩引起。</p>
+<ul>
+<li>乘法规则和加法规则：</li>
+</ul>
+<script type="math/tex; mode=display">
+Sum\ rual:\ p\left( X \right) = \sum_{Y}^{}{p\left( X,Y \right)}</script><script type="math/tex; mode=display">
+\ Product\ rual:\ p\left( X,Y \right) = p\left( Y\mid X \right)p\left( X \right)</script><p>其中，$p\left( X,Y \right)$ 是联合概率，$p\left( Y\mid X \right)$是条件概率。</p>
+<ul>
+<li>贝叶斯定理：</li>
+</ul>
+<script type="math/tex; mode=display">
+p\left( Y\mid X \right) = \frac{p\left( X\mid Y \right)p\left( Y \right)}{p\left( X \right)} = \frac{p\left( X\mid Y \right)p\left( Y \right)}{\sum_{Y}^{}{p\left( X\mid Y \right)p\left( Y \right)}}</script><p>先验概率与后验概率：$p\left( Y \right)$为先验概率，$p\left( Y\mid X \right)$称为后验概率，这是观察了$X$的结果后对$Y$的估计。</p>
+<ul>
+<li>X和Y 相互独⽴：</li>
+</ul>
+<script type="math/tex; mode=display">
+p\left( X,Y \right) = p\left( X \right)p\left( Y \right)</script><p><img src="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%BF%85%E5%A4%87%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/blog\source\_posts\机器学习必备数学基础.assets\f4a8b22b23f757104cab2764d693c45d.png" alt></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%BF%85%E5%A4%87%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" data-id="ckxrkbk4n0002jku5cwd2b2ay" class="article-share-link">
+        Share
+      </a>
+      
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%A8%A1%E5%BC%8F%E8%AF%86%E5%88%AB%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag">模式识别与机器学习</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+    
+    <article id="post-机器学习数学基础" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+      
+
+<h2 itemprop="name">
+  <a class="article-title" href="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">机器学习数学基础</a>
+</h2>
+
+
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" class="article-date">
+  <time datetime="2021-12-28T06:58:57.000Z" itemprop="datePublished">2021-12-28</time>
+</a>
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+        
+      
+      
+      <p>模式识别领域关注的是利⽤计算机算法自动发现数据中的规律，以及使⽤这些规律采取将数据分类等⾏动。而为了实现这一个目的，首先需要一些基础的理论知识，本文参考自《模式识别与机器论文》第一章，介绍模式识别的三类基础知识：概率论、决策论与信息论。</p>
+<h2 id="1-概率论"><a href="#1-概率论" class="headerlink" title="1 概率论"></a>1 概率论</h2><p>在模式识别领域的⼀个关键概念是不确定性的概念。它可以由测量的误差引起，也可以由数据集的有限⼤⼩引起。</p>
+<ul>
+<li>乘法规则和加法规则：</li>
+</ul>
+<script type="math/tex; mode=display">
+Sum\ rual:\ p\left( X \right) = \sum_{Y}^{}{p\left( X,Y \right)}</script><script type="math/tex; mode=display">
+\ Product\ rual:\ p\left( X,Y \right) = p\left( Y\mid X \right)p\left( X \right)</script><p>其中，$p\left( X,Y \right)$ 是联合概率，$p\left( Y\mid X \right)$是条件概率。</p>
+<ul>
+<li>贝叶斯定理：</li>
+</ul>
+<script type="math/tex; mode=display">
+p\left( Y\mid X \right) = \frac{p\left( X\mid Y \right)p\left( Y \right)}{p\left( X \right)} = \frac{p\left( X\mid Y \right)p\left( Y \right)}{\sum_{Y}^{}{p\left( X\mid Y \right)p\left( Y \right)}}</script><p>先验概率与后验概率：$p\left( Y \right)$为先验概率，$p\left( Y\mid X \right)$称为后验概率，这是观察了$X$的结果后对$Y$的估计。</p>
+<ul>
+<li>X和Y 相互独⽴：</li>
+</ul>
+<script type="math/tex; mode=display">
+p\left( X,Y \right) = p\left( X \right)p\left( Y \right)</script>
+<h3 id="1-1-概率密度"><a href="#1-1-概率密度" class="headerlink" title="1.1 概率密度"></a>1.1 概率密度</h3><ul>
+<li>概率密度函数：</li>
+</ul>
+<script type="math/tex; mode=display">
+p\left( x \in \left( a,b \right) \right) = \int_{a}^{b}{p\left( x \right)\mathrm{d}}x</script><p>满足$p\left( x \right) &gt; 1$,$\ \int_{- \infty}^{+ \infty}{p\left( x \right)\mathrm{d}}x = 1$</p>
+<ul>
+<li>随机变量的非线性变化$x = f\left( y \right)$：</li>
+</ul>
+<script type="math/tex; mode=display">
+p_{y}\left( y \right) = p_{x}\left( x \right)\left| \frac{\mathrm{d}x}{\mathrm{d}y} \right| = p_{x}\left( g\left( y \right) \right)\left| g^{'}\left( y \right) \right|</script><ul>
+<li>累计分布函数：</li>
+</ul>
+<script type="math/tex; mode=display">
+P\left( z \right) = \int_{- \infty}^{z}{p\left( x \right)\mathrm{d}}x</script><ul>
+<li><p>联合概率密度：$x$为一个向量</p>
+</li>
+<li><p>运算规则：加和规则、乘积规则、贝叶斯规则</p>
+</li>
+</ul>
+<h3 id="1-2-期望与协方差"><a href="#1-2-期望与协方差" class="headerlink" title="1.2 期望与协方差"></a>1.2 期望与协方差</h3><ul>
+<li>期望：加权平均：</li>
+</ul>
+<script type="math/tex; mode=display">
+E\left\lbrack f \right\rbrack = \sum_{x}^{}{p\left( x \right)f\left( x \right)}</script><script type="math/tex; mode=display">
+E\left\lbrack f \right\rbrack = \int_{}^{}{p\left( x \right)f\left( x \right)\mathrm{d}}x</script><ul>
+<li>估计：</li>
+</ul>
+<script type="math/tex; mode=display">
+E\left\lbrack f \right\rbrack \simeq \frac{1}{N}\sum_{n = 1}^{N}{f\left( x_{n} \right)}</script><ul>
+<li>条件期望：</li>
+</ul>
+<script type="math/tex; mode=display">
+E_{x}\left\lbrack f\mid y \right\rbrack = \sum_{x}^{}{p\left( x\mid y \right)f\left( x \right)}</script><ul>
+<li>方差度量了$f\left( x \right)$在均值附近变化的大小：</li>
+</ul>
+<script type="math/tex; mode=display">
+\text{var}\left\lbrack f \right\rbrack = E\left\lbrack \left( f\left( x \right) - E\left\lbrack f\left( x \right) \right\rbrack \right)^{2} \right\rbrack = E\left\lbrack f\left( x \right)^{2} \right\rbrack - E\left\lbrack f\left( x \right) \right\rbrack^{2}</script><ul>
+<li>协方差度量两个随机变量的关联性：</li>
+</ul>
+<script type="math/tex; mode=display">
+c\text{ov}\left\lbrack x,y \right\rbrack = E_{x,y}\left\lbrack \{ x - E\left\lbrack x \right\rbrack\}\{ y - E\left\lbrack y \right\rbrack\} \right\rbrack = E_{x,y}\left\lbrack \text{xy} \right\rbrack - E\left\lbrack x \right\rbrack E\left\lbrack y \right\rbrack</script><ul>
+<li><p>协方差矩阵：</p>
+<p>已知了数据$X$，每一行为一个样本，每一列为一个随机变量$c_i$，协方差矩阵：</p>
+</li>
+</ul>
+<script type="math/tex; mode=display">
+\text{covMatrix} = \frac{1}{m - 1}\begin{bmatrix}
+\text{cov}\left( c_{1},c_{1} \right) & \text{cov}\left( c_{1},c_{2} \right) & \cdots & \text{cov}\left( c_{1},c_{n} \right) \\
+\text{cov}\left( c_{2},c_{1} \right) & \text{cov}\left( c_{2},c_{2} \right) & \cdots & \text{cov}\left( c_{2},c_{n} \right) \\
+ \vdots & \vdots & \vdots & \vdots \\
+\text{cov}\left( c_{n},c_{1} \right) & \text{cov}\left( c_{n},c_{2} \right) & \cdots & \text{cov}\left( c_{n},c_{n} \right) \\
+\end{bmatrix} = \frac{1}{m - 1}X^{T}X</script><p><strong><em>补充</em></strong> ：方差的估计中，为什么除以$n - 1$:</p>
+<p>首先，对于全体样本，方差的计算中除以$n$；但是在用一组样本对总体进行估计时，由于均值本身就是通过估计得到的，因此自由度$- 1$，所以为了得到无偏估计，方差计算中除以$n - 1$。</p>
+<h3 id="1-3-贝叶斯概率"><a href="#1-3-贝叶斯概率" class="headerlink" title="1.3 贝叶斯概率"></a>1.3 贝叶斯概率</h3><script type="math/tex; mode=display">
+p(\mathbf{w} \mid \mathcal{D}) = \frac{p(\mathcal{D} \mid \mathbf{w})p(\mathbf{w})}{p(\mathcal{D})}</script><p>在观察到数据之前，我们有⼀些关于参数$w$的假设，这以先验概率$p\left( w \right)$的形式给出。观测数据$D$的效果可以通过条件概率$p(\mathcal{D} \mid \mathbf{w})$表达，其中$p(\mathcal{D} \mid \mathbf{w})$叫做似然函数，表达了在不同的参数向量$w$下，观测数据可能出现的大小。似然函数的负对数被叫做误差函数，</p>
+<p>1、频率学派vs贝叶斯学派：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>频率学派</th>
+<th>贝叶斯学派</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>参数估计</td>
+<td>参数虽然未知，但是存在客观的固定值</td>
+<td>参数本身是随机变量，先假定一个先验分布后通过后验修正</td>
+</tr>
+<tr>
+<td>代表方法</td>
+<td>最大似然：$w$的值是使似然函数$p(D</td>
+<td>w)$最⼤值的$w$</td>
+<td>最大后验：$w$的值是使似然函数$p(w</td>
+<td>D)$最⼤值的$w$</td>
+</tr>
+<tr>
+<td>优缺点</td>
+<td>缺点：方差估计比真实值小</td>
+<td>优：包含先验概率；  缺：但是先验概率的选择通常是为了计算的⽅便，造成结果不准</td>
+</tr>
+<tr>
+<td>例子（曲线拟合）</td>
+<td>目标函数为平方和</td>
+<td>目标函数为正则化的平方和</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="1-4-高斯分布"><a href="#1-4-高斯分布" class="headerlink" title="1.4 高斯分布"></a>1.4 高斯分布</h3><script type="math/tex; mode=display">
+\mathcal{N}\left( x \mid \mu,\sigma^{2} \right) = \frac{1}{\left( 2\pi\sigma^{2} \right)^{\frac{1}{2}}}\exp\left\{ - \frac{1}{2\sigma^{2}}(x - \mu)^{2} \right\}</script><p>其中，$\beta = \frac{1}{\sigma^{2}}$称为精度。向量的高斯分布：</p>
+<script type="math/tex; mode=display">
+\mathcal{N}(\mathbf{x} \mid \mathbf{\mu},\mathbf{\Sigma}) = \frac{1}{(2\pi)^{\frac{D}{2}}}\frac{1}{|\mathbf{\Sigma}|^{\frac{1}{2}}}\exp\left\{ - \frac{1}{2}(\mathbf{x} - \mathbf{\mu})^{T}\mathbf{\Sigma}^{- 1}(\mathbf{x} - \mathbf{\mu}) \right\}</script><p>维数为$D$，$\sum_{}^{}{}$为协方差矩阵。</p>
+<h3 id="1-5-重新考察曲线拟合问题"><a href="#1-5-重新考察曲线拟合问题" class="headerlink" title="1.5 重新考察曲线拟合问题"></a>1.5 重新考察曲线拟合问题</h3><p><img src="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/Users\dell\Desktop\PRML\绪论\media\8f3a87ec85962993f1eb791ea8de47d0.png" alt></p>
+<p>假定给定x，t满足高斯分布：</p>
+<script type="math/tex; mode=display">
+p(t \mid x,\mathbf{w},\beta) = \mathcal{N}\left( t \mid y(x,\mathbf{w}\mathbf{),}\beta^{- 1} \right)</script><p><strong>最大先验：</strong></p>
+<script type="math/tex; mode=display">
+p(\mathbf{t} \mid \mathbf{x},\mathbf{w},\beta) = \prod_{n = 1}^{N}\mspace{2mu}\mathcal{N}\left( t_{n} \mid y\left( x_{n},\mathbf{w} \right),\beta^{- 1} \right)</script><p>取对数，分别求解$w,\beta$，得到在⾼斯噪声的假设下，平⽅和误差函数是最⼤化似然函数的⼀个⾃然结果；确定⾼斯条件分布的精度参数$\beta$后即可得到概率分布的预测分布：</p>
+<script type="math/tex; mode=display">
+p\left( t \mid x,\mathbf{w}_{\text{ML}},\beta_{\text{ML}} \right) = \mathcal{N}\left( t \mid y\left( x,\mathbf{w}_{\text{ML}} \right),\beta_{\text{ML}}^{- 1} \right)</script><p><strong>最大后验：</strong></p>
+<p>引⼊在多项式系数$w$上的先验分布：</p>
+<script type="math/tex; mode=display">
+p(\mathbf{w} \mid \alpha) = \mathcal{N}\left( \mathbf{w} \mid \mathbf{0},\alpha^{- 1}\mathbf{I} \right) = \left( \frac{\alpha}{2\pi} \right)^{\frac{M + 1}{2}}\exp\left\{ - \frac{\alpha}{2}\mathbf{w}^{T}\mathbf{w} \right\}</script><p>$\beta$是分布的精度，$M\  + \ 1$是对于$M$阶多项式的向量$w$的元素的总数。</p>
+<p>采用贝叶斯定理，$w$的后验概率正⽐于先验分布和似然函数的乘积：</p>
+<script type="math/tex; mode=display">
+p(\mathbf{w} \mid \mathbf{x},\mathbf{t},\alpha,\beta) \propto p(\mathbf{t} \mid \mathbf{x},\mathbf{w},\beta)p(\mathbf{w} \mid \alpha)</script><p>最终计算得到，最大后验等价于：</p>
+<script type="math/tex; mode=display">
+\frac{\beta}{2}\sum_{n = 1}^{N}\mspace{2mu}\left\{ y\left( x_{n},\mathbf{w} \right) - t_{n} \right\}^{2} + \frac{\alpha}{2}\mathbf{w}^{T}\mathbf{w}</script><p>即：最⼤化后验概率等价于最⼩化正则化的平⽅和误差函数</p>
+<h3 id="1-6-贝叶斯曲线拟合"><a href="#1-6-贝叶斯曲线拟合" class="headerlink" title="1.6 贝叶斯曲线拟合"></a>1.6 贝叶斯曲线拟合</h3><p>⼀个纯粹的贝叶斯⽅法中，我们应该⾃始⾄终地应⽤概率的加和规则和乘积规则。</p>
+<h2 id="2-维数灾难"><a href="#2-维数灾难" class="headerlink" title="2 维数灾难"></a>2 维数灾难</h2><p>我们用输入数据将空间切分为无数个单元格，预测类别的时候，我们⾸先判断它属于哪个单元格，然后我们寻找训练集中落在同⼀个单元格中的训练数据点，测试点的类别就是测试点所在的单元格中数量最多的训练数据点的类别。但是为了保证单元格不空，我们所需要指数级的训练数据。</p>
+<p>在多项式拟合中，对于D个输入变量，三阶多项式形式为：</p>
+<script type="math/tex; mode=display">
+y\left( \mathbf{x},\mathbf{w} \right) = w_{0} + \sum_{i = 1}^{D}\mspace{2mu} w_{i}x_{i} + \sum_{i = 1}^{D}\mspace{2mu}\sum_{j = 1}^{D}{w_{\text{ij}}x_{i}x_{j}} + \sum_{i = 1}^{D}\mspace{2mu}\sum_{j = 1}^{D}\mspace{2mu}\sum_{k = 1}^{}\mspace{2mu} w_{\text{ijk}}x_{i}x_{j}x_{k}</script><p>参数的数量随着$D^{3}$的速度增加，因此实际使用中不方便。</p>
+<p>此外，高纬空间中的球体的大部分体积都汇聚在表面附近的薄球壳上。⾼维空间产⽣的这种困难有时被称为维度灾难（curse of dimensionality）。</p>
+<p>在模式识别中，这种问题并不能阻止我们寻找适用于高纬空间的有效技术。原因有两⽅⾯。第⼀，真实的数据经常被限制在有着较低的有效维度的空间区域中，特别地，在⽬标值会发⽣重要变化的⽅向上也会有这种限制。第⼆，真实数据通常⽐较光滑（⾄少局部上⽐较光滑），因此⼤多数情况下，对于输⼊变量的微⼩改变，⽬标值的改变也很⼩，因此对于新的输⼊变量，我们可以通过局部的类似于插值的技术来进⾏预测。</p>
+<h2 id="3-决策论"><a href="#3-决策论" class="headerlink" title="3 决策论"></a>3 决策论</h2><p>推断（inference）：从训练数据集中确定$p\left( x,t \right)$。</p>
+<p>决策（decision）：对t采取预测或者采取一定的动作。</p>
+<h3 id="3-1-最⼩化错误分类率"><a href="#3-1-最⼩化错误分类率" class="headerlink" title="3.1 最⼩化错误分类率"></a>3.1 最⼩化错误分类率</h3><p>为了尽可能的减少分类错误率，我们使用一个规则将输入空间切分成不同的区域$R<em>{k}$，这种区域被称为决策区域，每个区域$R</em>{k}$中的点被分到$C_{k}$类中。我们的目的是为了减少错误分类率，假设有两类：</p>
+<script type="math/tex; mode=display">
+\begin{matrix}
+p(\mathrm{\text{\ mistake\ }}) = p\left( \mathbf{x} \in \mathcal{R}_{1},\mathcal{C}_{2} \right) + p\left( \mathbf{x} \in \mathcal{R}_{2},\mathcal{C}_{1} \right) 
+ = \int_{\mathcal{R}_{1}}^{}\mspace{2mu} p\left( \mathbf{x},\mathcal{C}_{2} \right)d\mathbf{x} + \int_{\mathcal{R}_{2}}^{}\mspace{2mu} p\left( \mathbf{x},\mathcal{C}_{1} \right)d\mathbf{x} \\
+\end{matrix}</script><p>为了使得上式最小，需要最小化两个积分，因此，对于给定的x值，如果$\mathbf{p}\left( \mathbf{x}\mathbf{;}\mathbf{C}\mathbf{1} \right)\mathbf{&gt;}\mathbf{p}\left( \mathbf{x}\mathbf{;}\mathbf{C}\mathbf{2} \right)$<strong>，那么就把x分类到</strong>$\mathbf{C}_{\mathbf{1}}$<strong>中</strong>。根据乘积规则$p\left( \mathbf{x};Ck \right) = p\left( Ck|\ \mathbf{x} \right)p\left( \mathbf{x} \right)$，也就等价于分到后验概率最大的类别中。</p>
+<p><img src="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/Users\dell\Desktop\PRML\绪论\media\3ac6454deb8c66630af2f3458f4884d6.png" alt></p>
+<p>对于更一般的情况同理，最终也是得到，每个x应该被分到有着最大后验概率的类别中。</p>
+<h3 id="3-2-最⼩化期望损失"><a href="#3-2-最⼩化期望损失" class="headerlink" title="3.2 最⼩化期望损失"></a>3.2 最⼩化期望损失</h3><p>对于一些问题，我们的目标不单纯是最小化错误分类的数量，而是要考虑每种错误分类的情况下，可能造成的损失。例如把没有患癌症的病人分为有癌症，肯定比把患癌症的病人分为没有癌症的损失来的大，此时我们的目标是最小化期望损失。</p>
+<p>假设对于新的x的值，真实的类别为$C<em>{k}$，我们把x分类为$C</em>{j}$（其中j可能与k相等，也可能不相等）。这样做的结果是，我们会造成某种程度的损失，记作$L_{\text{kj}}$，它可以看成损失矩阵（loss matrix）的第$k,\ j$个元素。损失函数为</p>
+<script type="math/tex; mode=display">
+\mathbb{E}\lbrack L\rbrack = \sum_{k}^{}\mspace{2mu}\sum_{j}^{}\mspace{2mu}\int_{\mathcal{R}_{j}}^{}\mspace{2mu} L_{\text{kj}}p\left( \mathbf{x},\mathcal{C}_{k} \right)d\mathbf{x}</script><h3 id="3-3-拒绝选项"><a href="#3-3-拒绝选项" class="headerlink" title="3.3 拒绝选项"></a>3.3 拒绝选项</h3><p>当$p(Ck\ |\ \mathbf{x})$的值近似时，难以做出正确的选择，此时可以设置一个阈值$\theta$，拒绝后验概率$p(Ck\ |\ \mathbf{x})$的最大值小于等于$\theta$的那些输入x。</p>
+<p>令$x = 1$会使所有的样本都被拒绝，⽽如果有k个类别，那么令$x\  &lt; \ 1/K$将会确保没有样本被拒绝。</p>
+<p><img src="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/Users\dell\Desktop\PRML\绪论\media\2ab945061757f22bc0324af94414c7ad.png" alt></p>
+<h3 id="3-4-决策和推断"><a href="#3-4-决策和推断" class="headerlink" title="3.4 决策和推断"></a>3.4 决策和推断</h3><p>我们已经把分类问题划分成了两个阶段：推断（inference）阶段和决策（decision）阶段。在推断阶段，我们使⽤训练数据学习$p\left( C_{k} \middle| x \right)$的模型。在接下来的决策阶段，我们使⽤这些后验概率来进⾏最优的分类。另⼀种可能的⽅法是，同时解决两个问题，即简单地学习⼀个函数，将输⼊x直接映射为决策。这样的函数被称为判别函数（discriminant function）。</p>
+<p>三种不同的⽅法来解决决策问题:</p>
+<ul>
+<li>生成式模型：</li>
+</ul>
+<p>⾸先对于每个类别$C<em>{k}$，独⽴地确定类条件密度$p\left( x \middle| C</em>{k} \right)$。这是⼀个推断问题，然后，推断先验类概率$p\left( C_{k} \right)$，之后，使⽤贝叶斯定理：</p>
+<script type="math/tex; mode=display">
+p\left( \mathcal{C}_{k} \mid \mathbf{x} \right) = \frac{p\left( \mathbf{x} \mid \mathcal{C}_{k} \right)p\left( \mathcal{C}_{k} \right)}{p(\mathbf{x})}</script><p>求出后验概率。或者先求出联合概率密度$p\left( \mathcal{C}_{k},\mathbf{x} \right)$，在进行归一化最后得到后验概率，得到后验概率后采用决策论进行判别。通过取样，可以人为生成输入空间的数据。</p>
+<ul>
+<li>判别式模型：</li>
+</ul>
+<p>⾸先解决确定后验类密度$p\left( C_{k} \middle| x \right)$这⼀推断问题，接下来使⽤决策论来对新的输⼊x进⾏分类。直接对后验概率建模。</p>
+<ul>
+<li>判别函数</li>
+</ul>
+<p>这个函数把每个输⼊x直接映射为类别标签，例如对于二分类问题，f直接输出等于0或1，此时概率不起作用。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>决策问题的方法</th>
+<th>描述</th>
+<th>优缺点</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>生成式模型</td>
+<td>先定先验$p(x</td>
+<td>C_k)$再确定后验$p(C_k</td>
+<td>x)$，最后判别</td>
+<td>需要求解的东西最多；  能够通过公式求出数据的边缘概率密度$p(x)$，用于检测模型中具有低概率的新数据点</td>
+<td>朴素贝叶斯，隐马尔可夫模型</td>
+</tr>
+<tr>
+<td>判别模型</td>
+<td>直接定后验$p(C_x</td>
+<td>x)$，最后判别</td>
+<td></td>
+<td>LR，SVM，FNN</td>
+</tr>
+<tr>
+<td>判别函数</td>
+<td>直接计算$f(x)$得到结果</td>
+<td>得到不后验概率；不能进行最小化风险，拒绝选择，补偿先验概率，以及模型组合</td>
+<td>线性判别函数</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="3-5-回归问题的损失函数"><a href="#3-5-回归问题的损失函数" class="headerlink" title="3.5 回归问题的损失函数"></a>3.5 回归问题的损失函数</h3><p>前面用分类问题讨论了决策论，后面看一下回归问题的损失函数。对于每个x，有一个估计y(x)，对应的损失为L，期望损失：</p>
+<script type="math/tex; mode=display">
+\mathbb{E}\lbrack L\rbrack = \iint L(t,y(\mathbf{x}))p(\mathbf{x},t)d\mathbf{x}dt</script><p>回归问题常损失一般为平方损失：$L(t,y(\mathbf{x})) = { y(\mathbf{x}) - t}^{2}$，对于任意的y(x)，采用变分法解方程，最终得到的$\mathbf{y}(\mathbf{x}) = \mathbb{E}_{t}\lbrack\mathbf{t} \mid \mathbf{x}\rbrack$，即最⼩化了期望平⽅损失的回归函数y(x)由条件概率分布$p\left( t \middle| x \right)$的均值给出。或者我们也可以直接展开上式，最终得到：</p>
+<script type="math/tex; mode=display">
+\mathbb{E}\lbrack L\rbrack = \int\{ y(\mathbf{x}) - \mathbb{E}\lbrack t \mid \mathbf{x}\rbrack\}^{2}p(\mathbf{x})d\mathbf{x} + \int\text{var}\lbrack t \mid \mathbf{x}\rbrack p(\mathbf{x})d\mathbf{x}</script><p>也是有三种方法解决回归问题：</p>
+<ul>
+<li><p>⾸先解决确定联合概率密度p(x, t)的推断问题，之后计算条件概率密度p(t | x)，最后求均值</p>
+</li>
+<li><p>直接确定条件概率密度p(t |x)，然后求均值</p>
+</li>
+<li><p>直接从训练数据中寻找⼀个回归函数y(x)</p>
+</li>
+</ul>
+<p>和分类时相同。</p>
+<h2 id="4-信息论"><a href="#4-信息论" class="headerlink" title="4 信息论"></a>4 信息论</h2><ul>
+<li><p>信息量：</p>
+<p>对于一个随机变量，信息量的意思是学习x的值时候的惊讶程度，也就是x越小信息量越大（不确定性越强）；信息量的表达式：</p>
+</li>
+</ul>
+<script type="math/tex; mode=display">
+h(x) = - \log_{2}p(x)</script><p>   2为底的时候，单位是bit，e为底的时候单位是nat。</p>
+<ul>
+<li>熵：衡量随机变量的不确定性大下的，在0.5的时候熵最大，等于0或1时候最小。</li>
+</ul>
+<script type="math/tex; mode=display">
+H\lbrack x\rbrack = - \sum_{x}^{}\mspace{2mu} p(x)\log_{2}p(x)</script><ul>
+<li>KL散度（相对熵）：描述两个变量之间的区别大小的，当两个分布相同时，散度为0。</li>
+</ul>
+<script type="math/tex; mode=display">
+\begin{matrix}
+\text{KL}(p \parallel q)\& = - \int p(\mathbf{x})\ln q(\mathbf{x})d\mathbf{x} - \left( - \int p(\mathbf{x})\ln p(\mathbf{x})d\mathbf{x} \right) \\
+\& = - \int p(\mathbf{x})\ln\left\{ \frac{q(\mathbf{x})}{p(\mathbf{x})} \right\} d\mathbf{x} \\
+\end{matrix}</script><ul>
+<li>互信息：由于知道了y值造成的x的不确定性的减少：</li>
+</ul>
+<script type="math/tex; mode=display">
+= - \iint_{}^{}{p\left( \mathbf{x},\mathbf{y} \right)l\operatorname{n}{\left( \frac{p\left( \mathbf{x} \right)p\left( \mathbf{y} \right)}{p\left( \mathbf{x},\mathbf{y} \right)} \right)d}}\mathbf{x}d\mathbf{y}</script><script type="math/tex; mode=display">
+= H\left\lbrack \mathbf{x} \right\rbrack - H\left\lbrack \mathbf{x}\mid\mathbf{y} \right\rbrack = H\left\lbrack \mathbf{y} \right\rbrack - H\left\lbrack \mathbf{y}\mid\mathbf{x} \right\rbrack</script>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" data-id="ckxrkbk4r0004jku5bucx05q4" class="article-share-link">
+        Share
+      </a>
+      
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%A8%A1%E5%BC%8F%E8%AF%86%E5%88%AB%E4%B8%8E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag">模式识别与机器学习</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+    
+    <article id="post-手写CNN" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+      
+
+<h2 itemprop="name">
+  <a class="article-title" href="/2021/12/28/%E6%89%8B%E5%86%99CNN/">Numpy实现卷积和最大池化</a>
+</h2>
+
+
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2021/12/28/%E6%89%8B%E5%86%99CNN/" class="article-date">
+  <time datetime="2021-12-28T03:49:08.000Z" itemprop="datePublished">2021-12-28</time>
+</a>
+      
+    </div>
+    
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+        
+      
+      
+      <h2 id="1、-手写卷积"><a href="#1、-手写卷积" class="headerlink" title="1、 手写卷积"></a>1、 手写卷积</h2><p>已知输入，核，padding和stride，得到的输出大小为：</p>
+<script type="math/tex; mode=display">
+h_{out} = \frac{h_{input} + 2 * padding - kernel}{stride} + 1</script><script type="math/tex; mode=display">
+w_{out} = \frac{w_{input} + 2 * padding - kernel}{stride} + 1</script><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">conv_one</span>(<span class="params">x, ksize, padding=<span class="number">0</span>, stride=<span class="number">1</span></span>):</span></span><br><span class="line"></span><br><span class="line">  h,w = x.shape</span><br><span class="line"></span><br><span class="line">  kernel = np.random.random(ksize)</span><br><span class="line"></span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> padding != <span class="number">0</span>:</span><br><span class="line"></span><br><span class="line">​    pad_x = np.zeros((h+<span class="number">2</span>*padding,w+<span class="number">2</span>*padding))</span><br><span class="line"></span><br><span class="line">​    pad_x[padding:-padding,padding:-padding] = x</span><br><span class="line"></span><br><span class="line">  <span class="keyword">else</span>:</span><br><span class="line"></span><br><span class="line">​    pad_x = x</span><br><span class="line"></span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">  out_h = (h + <span class="number">2</span> * padding - ksize[<span class="number">1</span>]) // stride + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">  out_w = (w + <span class="number">2</span> * padding - ksize[<span class="number">0</span>]) // stride + <span class="number">1</span></span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">  out = np.zeros((out_h,out_w))</span><br><span class="line"></span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(out_h):</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(out_w):</span><br><span class="line"></span><br><span class="line">​      roi_x = pad_x[i*stride:i*stride+ksize[<span class="number">1</span>], j*stride:j*stride+ksize[<span class="number">0</span>]]</span><br><span class="line"></span><br><span class="line">​      out[i,j] = np.<span class="built_in">sum</span>(roi_x * kernel)</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> out</span><br></pre></td></tr></table></figure>
+<h2 id="2、手写maxpooling"><a href="#2、手写maxpooling" class="headerlink" title="2、手写maxpooling"></a>2、手写maxpooling</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">max_pooling</span>(<span class="params">x,kernel,padding=<span class="number">0</span>,stride=<span class="number">1</span></span>):</span></span><br><span class="line"></span><br><span class="line">  h,w = x.shape</span><br><span class="line"></span><br><span class="line">  a,b = kernel.shape</span><br><span class="line"></span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> padding:</span><br><span class="line"></span><br><span class="line">​    padding_x = np.zeros((h+<span class="number">2</span>*padding,w+<span class="number">2</span>*padding))</span><br><span class="line"></span><br><span class="line">​    padding_x[padding:-padding,padding:-padding] = x</span><br><span class="line"></span><br><span class="line">  <span class="keyword">else</span>:</span><br><span class="line"></span><br><span class="line">​    padding_x = x</span><br><span class="line"></span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">  out_h = (h + <span class="number">2</span> * padding - a) // stride + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">  out_w = (w + <span class="number">2</span> * padding - b) // stride + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">  out_x = np.zeros((out_h,out_w))</span><br><span class="line"></span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(out_h):</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(out_w):</span><br><span class="line"></span><br><span class="line">​      tmp = np.<span class="built_in">max</span>(x[i*stride:i*stride+a,j*stride:j*stride+b])</span><br><span class="line"></span><br><span class="line">​      out_x[i,j] = tmp</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> out_x</span><br></pre></td></tr></table></figure>
+<h2 id="3-例子"><a href="#3-例子" class="headerlink" title="3 例子"></a>3 例子</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">img = np.arange(<span class="number">64</span>).reshape(<span class="number">8</span>,<span class="number">8</span>)</span><br><span class="line">kernel = np.random.random((<span class="number">3</span>,<span class="number">4</span>))</span><br><span class="line">out = conv_one(img,ksize=kernel_size,padding=<span class="number">1</span>,stride=<span class="number">1</span>)</span><br><span class="line">out = max_pooling(out,kernel,padding=<span class="number">1</span>,stride=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/12/28/%E6%89%8B%E5%86%99CNN/" data-id="ckxrkbk4k0001jku5elhjfc4z" class="article-share-link">
+        Share
+      </a>
+      
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-CNN/" rel="tag">深度学习_CNN</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+
+  
+
+</article>
+    
+  </article>
+  
+
+  
+</section>
+</div>
+    <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+  <li><i class="fe fe-bar-chart"></i> <span id="busuanzi_value_site_pv"></span></li>
+  
+  <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>Hexo &copy; 2021</li>
+      
+        <li>ZHWANGART</li>
+      
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>theme  <a target="_blank" rel="noopener" href="https://github.com/zhwangart/hexo-theme-ocean">Ocean</a></li>
+    </ul>
+  </div>
+</footer>
+  </main>
+  <aside class="sidebar">
+    <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/hexo.svg" alt="Hexo"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">Home</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">Archives</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/gallery">Gallery</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">About</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="Search">
+        <i class="fe fe-search"></i>
+        Search
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="fe fe-feed"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+  </aside>
+  
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/copybtn.js"></script>
+
+
+
+
+
+
+<script src="/js/ocean.js"></script>
+
+</body>
+
+</html>
