@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+  <title>
+    Self-attention详解 |
+    
+    Hexo
+  </title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<script src="/js/pace.min.js"></script>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"></head>
+
+<body>
+  <main class="content">
+    <section class="outer">
+  <article id="post-Self-attention详解" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+      
+
+<h1 class="article-title" itemprop="name">
+  Self-attention详解
+</h1>
+
+
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2021/12/29/Self-attention%E8%AF%A6%E8%A7%A3/" class="article-date">
+  <time datetime="2021-12-29T14:30:02.000Z" itemprop="datePublished">2021-12-29</time>
+</a>
+      
+    </div>
+    
+
+    
+    
+<div class="tocbot"></div>
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+      
+      <h2 id="Self-attention用于提取序列特征"><a href="#Self-attention用于提取序列特征" class="headerlink" title="Self-attention用于提取序列特征"></a>Self-attention用于提取序列特征</h2><span id="more"></span>
+<p>Self-attention机制是一种计算单个序列各个元素之间关联性的方法，例如给定一个输入序列：”Hello，I love you！”,通过self-attention机制可以计算单词之间的关系，例如”Hello”和”I”之间的关系更为接近，与”you”则没有什么关系。最终可以得到一个这样的得分矩阵，通过这个矩阵我们可以猜测，在出现了文本预测的时候，当输入的是”Hello”的时候，后面接着的是”I”的概率最大。</p>
+<img src="/2021/12/29/Self-attention%E8%AF%A6%E8%A7%A3/4797131a4930c56efe793655ee1196c4.png" class title="简单句子的attention matrix">
+<p><img src="/2021/12/29/Self-attention%E8%AF%A6%E8%A7%A3/blog\source\_posts\Self-attention详解\4797131a4930c56efe793655ee1196c4.png" alt></p>
+<p>那么如何得到这样一个矩阵呢？以及得到了这样一个矩阵之后，如何利用这个矩阵对输入数据进行进一步处理呢？我们还以上面这句话为例介绍。</p>
+<p>首先在文本处理中，第一步肯定是Embedding，也就是将文本转换为向量。转换的方法很多，包括传统的one-hot encoding，word2vec方法，到现在的BERT，GPT等。比如说我们将”Hello”转换为向量$x^{1}$，”I”转换为向量$x^{2}$，”love”转换为向量$x^{3}$，”you”转换为向量$x^{4}$。那么如何得到如图1这样的矩阵呢？</p>
+<p>这边借用一下李宏毅老师的课件分析一下。对于一排输入向量$\left\lbrack x^{1},x^{2},x^{3},x^{4} \right\rbrack$，首先对它们做一下线性变化得到向量$\left\lbrack a^{1},a^{2},a^{3},a^{4}\, \right\rbrack$。得到这样一排向量之后，分别对每一个向量$a^{i}$乘以$w^{q},w^{k},w^{v}$，得到向量$q,k,v$，即大家常说的query，key和value，具体如图2所示。至于如何理解这仨个量，直观理解参考：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/427629601/answer/1558216827"><span class="underline">如何理解Q、K、V？</span></a></p>
+<img src="/2021/12/29/Self-attention%E8%AF%A6%E8%A7%A3/80a1b848973caba1a2abf65d365a71d8.png" class title="如何得到q，k，v">
+<p><img src="/2021/12/29/Self-attention%E8%AF%A6%E8%A7%A3/blog\source\_posts\Self-attention详解\80a1b848973caba1a2abf65d365a71d8.png" alt></p>
+<p>得到了每个向量对应的$q^{i},k^{i},v^{i}$后，就可以开始计算attention的数值了，这里采用的是Scaled Dot-Product的方法，具体操作如下：</p>
+<img src="/2021/12/29/Self-attention%E8%AF%A6%E8%A7%A3/9df849d7ade3306038ad87845782d27d.png" class title="由q和k计算attention">
+<p><img src="/2021/12/29/Self-attention%E8%AF%A6%E8%A7%A3/blog\source\_posts\Self-attention详解\9df849d7ade3306038ad87845782d27d.png" alt></p>
+<p>比如说为了计算$x^{1}$和其他三个向量之间的关联性，用$q^{1}$乘以包括$k^{1}$在内的所有$k^{i}$值，然后再除以$\sqrt{d}$，得到了四个$\alpha_{1,i}$值，这四个值做完softmax之后，就是图1中的第一列（行）的值，过程如图3所示。对所有的向量都做同样的过程，最终就可以得到图1所示的得分矩阵啦。</p>
+<p>那么我们就知道了，$q,k$是为了计算得分矩阵的，那么剩下来的$v$,是干什么的呢？其实向量$v$就是保存原始向量$x$信息的，既然有了向量之间的关联性，那么我们用这个作为权重，对向量$v$进行加权，就可以得到每个向量对应的输出啦。如图4所示，输入向量$x^{1}$最终得到的输出是向量$q^{1}$。可以想到，$q^{1}$是和$v^{1}$最像的，因为在加权平均里$v^{1}$的权重$\alpha$最大；但是同时，它和$v^{1}$不同之处在于，它融合了整个序列的其他信息，这样输出的结果表达能力更好。</p>
+<img src="/2021/12/29/Self-attention%E8%AF%A6%E8%A7%A3/af943ad7d3ff9cedd8bfaf76e50ce798.png" class title="根据attention数值计算输出">
+<p><img src="/2021/12/29/Self-attention%E8%AF%A6%E8%A7%A3/blog\source\_posts\Self-attention详解\af943ad7d3ff9cedd8bfaf76e50ce798.png" alt></p>
+<p>自然的，有如下一些疑问？</p>
+<ul>
+<li>为什么不能$q,k,v$都等于向量$x$，而是要分别乘以不同的向量来得到这么多向量？</li>
+</ul>
+<p>使用不同的q，k，v可以保证在不同的空间进行投影，增强了模型的表达能力，提高了泛化性能。</p>
+<ul>
+<li>经过self-attention得到的输出在形状上和输入相同，为什么就可以得到更好结果？</li>
+</ul>
+<p>输出与输入相比，更多的增加了元素之间的关联特性，这些特性在文本处理中十分有益。</p>
+<ul>
+<li><script type="math/tex">w_{q},w_{k},w_{v}</script>是如何得到的？</li>
+</ul>
+<p>在实际的代码过程中，这一步是通过nn.linear模块得到的，<script type="math/tex">w_{q},w_{k},w_{v}</script>则是模块的参数，随着训练的过程而学习到。</p>
+<ul>
+<li>为何$q*k$后要除以$\sqrt{k}$，不除行不行？</li>
+</ul>
+<p>因为使用softmax进行分类，较大的值梯度较小，且softmax有放大作用会把大部分概率给最大的元素，其他的元素梯度消失；因为原q和k都是满足0均值，1为方差的正态分布的，但是，在向量相乘之后均值仍然为0,方差变为了k，所以除以$\sqrt{k}$。</p>
+<p>介绍了以上的基础，下面介绍multi-head self-attention。多头注意力机制只是在单头的基础上，直接把输入中的向量在embedding维度上切分为N份，计算多个N和q，k，v，最后把计算结果取一个均值得到的，这么做的目的：</p>
+<ul>
+<li>并行计算；</li>
+<li>把句子投影到不同的子空间中，增加模型表达能力。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/12/29/Self-attention%E8%AF%A6%E8%A7%A3/" data-id="ckxrniqh60001tcu51yas5pkl" class="article-share-link">
+        Share
+      </a>
+      
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag">深度学习</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+<nav class="article-nav">
+  
+  
+  <a href="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" class="article-nav-link">
+    <strong class="article-nav-caption">Older</strong>
+    <div class="article-nav-title">机器学习三大数学基础——概率论、决策论和信息论</div>
+  </a>
+  
+</nav>
+
+  
+
+  
+  
+  
+  
+
+</article>
+</section>
+
+
+  
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@2.7.8/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+    <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+  <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+  <li><i class="fe fe-bookmark"></i> <span id="busuanzi_value_page_pv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>Hexo &copy; 2021</li>
+      
+        <li>ZHWANGART</li>
+      
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>theme  <a target="_blank" rel="noopener" href="https://github.com/zhwangart/hexo-theme-ocean">Ocean</a></li>
+    </ul>
+  </div>
+</footer>
+  </main>
+  <aside class="sidebar">
+    <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/hexo.svg" alt="Hexo"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">Home</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">Archives</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/gallery">Gallery</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">About</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="Search">
+        <i class="fe fe-search"></i>
+        Search
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="fe fe-feed"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+  </aside>
+  
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/copybtn.js"></script>
+
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+  });
+</script>
+
+
+
+<script src="/js/ocean.js"></script>
+
+</body>
+
+</html>

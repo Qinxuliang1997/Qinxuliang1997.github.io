@@ -71,7 +71,9 @@
       
       
       
-      <h2 id="1、-手写卷积"><a href="#1、-手写卷积" class="headerlink" title="1、 手写卷积"></a>1、 手写卷积</h2><p>已知输入，核，padding和stride，得到的输出大小为：</p>
+      <p>算法岗位面试中，常问到手写卷积和maxpooling，本文用Numpy库分别实现这两部分功能。</p>
+<span id="more"></span>
+<h2 id="1、-手写卷积"><a href="#1、-手写卷积" class="headerlink" title="1、 手写卷积"></a>1、 手写卷积</h2><p>已知输入，核，padding和stride，得到的输出大小为：</p>
 <script type="math/tex; mode=display">
 h_{out} = \frac{h_{input} + 2 * padding - kernel}{stride} + 1</script><script type="math/tex; mode=display">
 w_{out} = \frac{w_{input} + 2 * padding - kernel}{stride} + 1</script><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">conv_one</span>(<span class="params">x, ksize, padding=<span class="number">0</span>, stride=<span class="number">1</span></span>):</span></span><br><span class="line"></span><br><span class="line">  h,w = x.shape</span><br><span class="line"></span><br><span class="line">  kernel = np.random.random(ksize)</span><br><span class="line"></span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> padding != <span class="number">0</span>:</span><br><span class="line"></span><br><span class="line">​    pad_x = np.zeros((h+<span class="number">2</span>*padding,w+<span class="number">2</span>*padding))</span><br><span class="line"></span><br><span class="line">​    pad_x[padding:-padding,padding:-padding] = x</span><br><span class="line"></span><br><span class="line">  <span class="keyword">else</span>:</span><br><span class="line"></span><br><span class="line">​    pad_x = x</span><br><span class="line"></span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">  out_h = (h + <span class="number">2</span> * padding - ksize[<span class="number">1</span>]) // stride + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">  out_w = (w + <span class="number">2</span> * padding - ksize[<span class="number">0</span>]) // stride + <span class="number">1</span></span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">  out = np.zeros((out_h,out_w))</span><br><span class="line"></span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(out_h):</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(out_w):</span><br><span class="line"></span><br><span class="line">​      roi_x = pad_x[i*stride:i*stride+ksize[<span class="number">1</span>], j*stride:j*stride+ksize[<span class="number">0</span>]]</span><br><span class="line"></span><br><span class="line">​      out[i,j] = np.<span class="built_in">sum</span>(roi_x * kernel)</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> out</span><br></pre></td></tr></table></figure>
@@ -81,11 +83,11 @@ w_{out} = \frac{w_{input} + 2 * padding - kernel}{stride} + 1</script><figure cl
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/12/28/%E6%89%8B%E5%86%99CNN/" data-id="ckxrmlc9k000160u52a38duoi" class="article-share-link">
+      <a data-url="http://example.com/2021/12/28/%E6%89%8B%E5%86%99CNN/" data-id="ckxrniqha0002tcu54q4p36lc" class="article-share-link">
         Share
       </a>
       
-<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0-CNN/" rel="tag">深度学习_CNN</a></li></ul>
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag">深度学习</a></li></ul>
 
     </footer>
 
@@ -99,7 +101,7 @@ w_{out} = \frac{w_{input} + 2 * padding - kernel}{stride} + 1</script><figure cl
     <strong class="article-nav-caption">Newer</strong>
     <div class="article-nav-title">
       
-      机器学习数学基础
+      机器学习三大数学基础——概率论、决策论和信息论
       
     </div>
   </a>
