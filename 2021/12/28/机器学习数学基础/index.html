@@ -217,9 +217,9 @@ p(mistake) = p\left( \mathbf{x} \in \mathcal{R}_{1},\mathcal{C}_{2} \right) + p\
 <img src="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/3ac6454deb8c66630af2f3458f4884d6.png" class title="This is an test image">
 <p>对于更一般的情况同理，最终也是得到，每个x应该被分到有着最大后验概率的类别中。</p>
 <h3 id="3-2-最小化期望损失"><a href="#3-2-最小化期望损失" class="headerlink" title="3.2 最小化期望损失"></a>3.2 最小化期望损失</h3><p>对于一些问题，我们的目标不单纯是最小化错误分类的数量，而是要考虑每种错误分类的情况下，可能造成的损失。例如把没有患癌症的病人分为有癌症，肯定比把患癌症的病人分为没有癌症的损失来的大，此时我们的目标是最小化期望损失。</p>
-<p>假设对于新的x的值，真实的类别为$C<em>k$，我们把x分类为$C_j$（其中j可能与k相等，也可能不相等）。这样做的结果是，我们会造成某种程度的损失，记作$L</em>{kj}$，它可以看成损失矩阵（loss matrix）的第$k,j$个元素。损失函数为</p>
+<p>假设对于新的x的值，真实的类别为<script type="math/tex">C_k</script>，我们把x分类为<script type="math/tex">C_j</script>（其中j可能与k相等，也可能不相等）。这样做的结果是，我们会造成某种程度的损失，记作<script type="math/tex">L_{kj}</script>，它可以看成损失矩阵（loss matrix）的第$k,j$个元素。损失函数为</p>
 <script type="math/tex; mode=display">
-\mathbb{E}\lbrack L\rbrack = \sum_{k}^{}\mspace{2mu}\sum_{j}^{}\mspace{2mu}\int_{\mathcal{R}_{j}}^{}\mspace{2mu} L_{\text{kj}}p\left( \mathbf{x},\mathcal{C}_{k} \right)d\mathbf{x}</script><h3 id="3-3-拒绝选项"><a href="#3-3-拒绝选项" class="headerlink" title="3.3 拒绝选项"></a>3.3 拒绝选项</h3><p>当$p(Ck\ |\ \mathbf{x})$的值近似时，难以做出正确的选择，此时可以设置一个阈值$\theta$，拒绝后验概率$p(Ck\ |\ \mathbf{x})$的最大值小于等于$\theta$的那些输入x。</p>
+\mathbb{E}\lbrack L\rbrack = \sum_{k}^{}\mspace{2mu}\sum_{j}^{}\mspace{2mu}\int_{\mathcal{R}_{j}}^{}\mspace{2mu} L_{\text{kj}}p\left( \mathbf{x},\mathcal{C}_{k} \right)d\mathbf{x}</script><h3 id="3-3-拒绝选项"><a href="#3-3-拒绝选项" class="headerlink" title="3.3 拒绝选项"></a>3.3 拒绝选项</h3><p>当$p(C_k | \mathbf{x})$的值近似时，难以做出正确的选择，此时可以设置一个阈值$\theta$，拒绝后验概率$p(C_k\ |\ \mathbf{x})$的最大值小于等于$\theta$的那些输入x。</p>
 <p>令$x = 1$会使所有的样本都被拒绝，⽽如果有k个类别，那么令$x\  &lt; \ 1/K$将会确保没有样本被拒绝。</p>
 <img src="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/2ab945061757f22bc0324af94414c7ad.png" class title="This is an test image">
 <h3 id="3-4-决策和推断"><a href="#3-4-决策和推断" class="headerlink" title="3.4 决策和推断"></a>3.4 决策和推断</h3><p>我们已经把分类问题划分成了两个阶段：推断（inference）阶段和决策（decision）阶段。在推断阶段，我们使⽤训练数据学习$p\left( C_{k} \middle| x \right)$的模型。在接下来的决策阶段，我们使⽤这些后验概率来进⾏最优的分类。另⼀种可能的⽅法是，同时解决两个问题，即简单地学习⼀个函数，将输⼊x直接映射为决策。这样的函数被称为判别函数（discriminant function）。</p>
@@ -311,7 +311,7 @@ H\lbrack x\rbrack = - \sum_{x}^{}\mspace{2mu} p(x)\log_{2}p(x)</script><ul>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" data-id="ckxrmb0ii00021su5c0ngbt3i" class="article-share-link">
+      <a data-url="http://example.com/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" data-id="ckxrmlc9o000260u59rxt498b" class="article-share-link">
         Share
       </a>
       
