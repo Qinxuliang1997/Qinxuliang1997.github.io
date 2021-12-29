@@ -163,10 +163,8 @@ p(\mathbf{w} \mid \mathcal{D}) = \frac{p(\mathcal{D} \mid \mathbf{w})p(\mathbf{w
 </tr>
 <tr>
 <td>代表方法</td>
-<td>最大似然：$w$的值是使似然函数$p(D</td>
-<td>w)$最⼤值的$w$</td>
-<td>最大后验：$w$的值是使似然函数$p(w</td>
-<td>D)$最⼤值的$w$</td>
+<td>最大似然：$w$的值是使似然函数$p(D!w)$最⼤值的$w$</td>
+<td>最大后验：$w$的值是使似然函数$p(w!D)$最⼤值的$w$</td>
 </tr>
 <tr>
 <td>优缺点</td>
@@ -185,7 +183,7 @@ p(\mathbf{w} \mid \mathcal{D}) = \frac{p(\mathcal{D} \mid \mathbf{w})p(\mathbf{w
 \mathcal{N}\left( x \mid \mu,\sigma^{2} \right) = \frac{1}{\left( 2\pi\sigma^{2} \right)^{\frac{1}{2}}}\exp\left\{ - \frac{1}{2\sigma^{2}}(x - \mu)^{2} \right\}</script><p>其中，$\beta = \frac{1}{\sigma^{2}}$称为精度。向量的高斯分布：</p>
 <script type="math/tex; mode=display">
 \mathcal{N}(\mathbf{x} \mid \mathbf{\mu},\mathbf{\Sigma}) = \frac{1}{(2\pi)^{\frac{D}{2}}}\frac{1}{|\mathbf{\Sigma}|^{\frac{1}{2}}}\exp\left\{ - \frac{1}{2}(\mathbf{x} - \mathbf{\mu})^{T}\mathbf{\Sigma}^{- 1}(\mathbf{x} - \mathbf{\mu}) \right\}</script><p>维数为$D$，$\sum_{}^{}{}$为协方差矩阵。</p>
-<h3 id="1-5-重新考察曲线拟合问题"><a href="#1-5-重新考察曲线拟合问题" class="headerlink" title="1.5 重新考察曲线拟合问题"></a>1.5 重新考察曲线拟合问题</h3><p><img src="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/Users\dell\Desktop\PRML\绪论\media\8f3a87ec85962993f1eb791ea8de47d0.png" alt></p>
+<h3 id="1-5-重新考察曲线拟合问题"><a href="#1-5-重新考察曲线拟合问题" class="headerlink" title="1.5 重新考察曲线拟合问题"></a>1.5 重新考察曲线拟合问题</h3><img src="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/8f3a87ec85962993f1eb791ea8de47d0.png" class title="This is an test image">
 <p>假定给定x，t满足高斯分布：</p>
 <script type="math/tex; mode=display">
 p(t \mid x,\mathbf{w},\beta) = \mathcal{N}\left( t \mid y(x,\mathbf{w}\mathbf{),}\beta^{- 1} \right)</script><p><strong>最大先验：</strong></p>
@@ -210,28 +208,28 @@ y\left( \mathbf{x},\mathbf{w} \right) = w_{0} + \sum_{i = 1}^{D}\mspace{2mu} w_{
 <p>在模式识别中，这种问题并不能阻止我们寻找适用于高纬空间的有效技术。原因有两⽅⾯。第⼀，真实的数据经常被限制在有着较低的有效维度的空间区域中，特别地，在⽬标值会发⽣重要变化的⽅向上也会有这种限制。第⼆，真实数据通常⽐较光滑（⾄少局部上⽐较光滑），因此⼤多数情况下，对于输⼊变量的微⼩改变，⽬标值的改变也很⼩，因此对于新的输⼊变量，我们可以通过局部的类似于插值的技术来进⾏预测。</p>
 <h2 id="3-决策论"><a href="#3-决策论" class="headerlink" title="3 决策论"></a>3 决策论</h2><p>推断（inference）：从训练数据集中确定$p\left( x,t \right)$。</p>
 <p>决策（decision）：对t采取预测或者采取一定的动作。</p>
-<h3 id="3-1-最⼩化错误分类率"><a href="#3-1-最⼩化错误分类率" class="headerlink" title="3.1 最⼩化错误分类率"></a>3.1 最⼩化错误分类率</h3><p>为了尽可能的减少分类错误率，我们使用一个规则将输入空间切分成不同的区域$R<em>{k}$，这种区域被称为决策区域，每个区域$R</em>{k}$中的点被分到$C_{k}$类中。我们的目的是为了减少错误分类率，假设有两类：</p>
+<h3 id="3-1-最⼩化错误分类率"><a href="#3-1-最⼩化错误分类率" class="headerlink" title="3.1 最⼩化错误分类率"></a>3.1 最⼩化错误分类率</h3><p>为了尽可能的减少分类错误率，我们使用一个规则将输入空间切分成不同的区域$R_k$，这种区域被称为决策区域，每个区域$R_k$中的点被分到$C_k$类中。我们的目的是为了减少错误分类率，假设有两类：</p>
 <script type="math/tex; mode=display">
 \begin{matrix}
-p(\mathrm{\text{\ mistake\ }}) = p\left( \mathbf{x} \in \mathcal{R}_{1},\mathcal{C}_{2} \right) + p\left( \mathbf{x} \in \mathcal{R}_{2},\mathcal{C}_{1} \right) 
+p(mistake) = p\left( \mathbf{x} \in \mathcal{R}_{1},\mathcal{C}_{2} \right) + p\left( \mathbf{x} \in \mathcal{R}_{2},\mathcal{C}_{1} \right) 
  = \int_{\mathcal{R}_{1}}^{}\mspace{2mu} p\left( \mathbf{x},\mathcal{C}_{2} \right)d\mathbf{x} + \int_{\mathcal{R}_{2}}^{}\mspace{2mu} p\left( \mathbf{x},\mathcal{C}_{1} \right)d\mathbf{x} \\
 \end{matrix}</script><p>为了使得上式最小，需要最小化两个积分，因此，对于给定的x值，如果$\mathbf{p}\left( \mathbf{x}\mathbf{;}\mathbf{C}\mathbf{1} \right)\mathbf{&gt;}\mathbf{p}\left( \mathbf{x}\mathbf{;}\mathbf{C}\mathbf{2} \right)$<strong>，那么就把x分类到</strong>$\mathbf{C}_{\mathbf{1}}$<strong>中</strong>。根据乘积规则$p\left( \mathbf{x};Ck \right) = p\left( Ck|\ \mathbf{x} \right)p\left( \mathbf{x} \right)$，也就等价于分到后验概率最大的类别中。</p>
-<p><img src="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/Users\dell\Desktop\PRML\绪论\media\3ac6454deb8c66630af2f3458f4884d6.png" alt></p>
+<img src="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/3ac6454deb8c66630af2f3458f4884d6.png" class title="This is an test image">
 <p>对于更一般的情况同理，最终也是得到，每个x应该被分到有着最大后验概率的类别中。</p>
-<h3 id="3-2-最⼩化期望损失"><a href="#3-2-最⼩化期望损失" class="headerlink" title="3.2 最⼩化期望损失"></a>3.2 最⼩化期望损失</h3><p>对于一些问题，我们的目标不单纯是最小化错误分类的数量，而是要考虑每种错误分类的情况下，可能造成的损失。例如把没有患癌症的病人分为有癌症，肯定比把患癌症的病人分为没有癌症的损失来的大，此时我们的目标是最小化期望损失。</p>
-<p>假设对于新的x的值，真实的类别为$C<em>{k}$，我们把x分类为$C</em>{j}$（其中j可能与k相等，也可能不相等）。这样做的结果是，我们会造成某种程度的损失，记作$L_{\text{kj}}$，它可以看成损失矩阵（loss matrix）的第$k,\ j$个元素。损失函数为</p>
+<h3 id="3-2-最小化期望损失"><a href="#3-2-最小化期望损失" class="headerlink" title="3.2 最小化期望损失"></a>3.2 最小化期望损失</h3><p>对于一些问题，我们的目标不单纯是最小化错误分类的数量，而是要考虑每种错误分类的情况下，可能造成的损失。例如把没有患癌症的病人分为有癌症，肯定比把患癌症的病人分为没有癌症的损失来的大，此时我们的目标是最小化期望损失。</p>
+<p>假设对于新的x的值，真实的类别为$C<em>k$，我们把x分类为$C_j$（其中j可能与k相等，也可能不相等）。这样做的结果是，我们会造成某种程度的损失，记作$L</em>{kj}$，它可以看成损失矩阵（loss matrix）的第$k,j$个元素。损失函数为</p>
 <script type="math/tex; mode=display">
 \mathbb{E}\lbrack L\rbrack = \sum_{k}^{}\mspace{2mu}\sum_{j}^{}\mspace{2mu}\int_{\mathcal{R}_{j}}^{}\mspace{2mu} L_{\text{kj}}p\left( \mathbf{x},\mathcal{C}_{k} \right)d\mathbf{x}</script><h3 id="3-3-拒绝选项"><a href="#3-3-拒绝选项" class="headerlink" title="3.3 拒绝选项"></a>3.3 拒绝选项</h3><p>当$p(Ck\ |\ \mathbf{x})$的值近似时，难以做出正确的选择，此时可以设置一个阈值$\theta$，拒绝后验概率$p(Ck\ |\ \mathbf{x})$的最大值小于等于$\theta$的那些输入x。</p>
 <p>令$x = 1$会使所有的样本都被拒绝，⽽如果有k个类别，那么令$x\  &lt; \ 1/K$将会确保没有样本被拒绝。</p>
-<p><img src="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/Users\dell\Desktop\PRML\绪论\media\2ab945061757f22bc0324af94414c7ad.png" alt></p>
+<img src="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/2ab945061757f22bc0324af94414c7ad.png" class title="This is an test image">
 <h3 id="3-4-决策和推断"><a href="#3-4-决策和推断" class="headerlink" title="3.4 决策和推断"></a>3.4 决策和推断</h3><p>我们已经把分类问题划分成了两个阶段：推断（inference）阶段和决策（decision）阶段。在推断阶段，我们使⽤训练数据学习$p\left( C_{k} \middle| x \right)$的模型。在接下来的决策阶段，我们使⽤这些后验概率来进⾏最优的分类。另⼀种可能的⽅法是，同时解决两个问题，即简单地学习⼀个函数，将输⼊x直接映射为决策。这样的函数被称为判别函数（discriminant function）。</p>
 <p>三种不同的⽅法来解决决策问题:</p>
 <ul>
 <li>生成式模型：</li>
 </ul>
-<p>⾸先对于每个类别$C<em>{k}$，独⽴地确定类条件密度$p\left( x \middle| C</em>{k} \right)$。这是⼀个推断问题，然后，推断先验类概率$p\left( C_{k} \right)$，之后，使⽤贝叶斯定理：</p>
+<p>⾸先对于每个类别$C_{k}$，独⽴地确定类条件密度$p(x| C_k)$。这是⼀个推断问题，然后，推断先验类概率$p | C_k )$，之后，使⽤贝叶斯定理：</p>
 <script type="math/tex; mode=display">
-p\left( \mathcal{C}_{k} \mid \mathbf{x} \right) = \frac{p\left( \mathbf{x} \mid \mathcal{C}_{k} \right)p\left( \mathcal{C}_{k} \right)}{p(\mathbf{x})}</script><p>求出后验概率。或者先求出联合概率密度$p\left( \mathcal{C}_{k},\mathbf{x} \right)$，在进行归一化最后得到后验概率，得到后验概率后采用决策论进行判别。通过取样，可以人为生成输入空间的数据。</p>
+p\left( \mathcal{C}_{k} \mid \mathbf{x} \right) = \frac{p\left( \mathbf{x} \mid \mathcal{C}_{k} \right)p\left( \mathcal{C}_{k} \right)}{p(\mathbf{x})}</script><p>求出后验概率。或者先求出联合概率密度$p\left( \mathcal{C}_{k},\mathbf{x} \right)$，在进行归一化最后得到后验概率，得到后验概率后采用决策论进行判别。通过取样，可以人为生成输入空间的数据。    </p>
 <ul>
 <li>判别式模型：</li>
 </ul>
@@ -253,16 +251,13 @@ p\left( \mathcal{C}_{k} \mid \mathbf{x} \right) = \frac{p\left( \mathbf{x} \mid 
 <tbody>
 <tr>
 <td>生成式模型</td>
-<td>先定先验$p(x</td>
-<td>C_k)$再确定后验$p(C_k</td>
-<td>x)$，最后判别</td>
+<td>先定先验$p(x!C_k)$再确定后验$p(C_k!x)$，最后判别</td>
 <td>需要求解的东西最多；  能够通过公式求出数据的边缘概率密度$p(x)$，用于检测模型中具有低概率的新数据点</td>
 <td>朴素贝叶斯，隐马尔可夫模型</td>
 </tr>
 <tr>
 <td>判别模型</td>
-<td>直接定后验$p(C_x</td>
-<td>x)$，最后判别</td>
+<td>直接定后验$p(C_x!x)$，最后判别</td>
 <td></td>
 <td>LR，SVM，FNN</td>
 </tr>
@@ -316,7 +311,7 @@ H\lbrack x\rbrack = - \sum_{x}^{}\mspace{2mu} p(x)\log_{2}p(x)</script><ul>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" data-id="ckxrlrgby00025gu522db2rel" class="article-share-link">
+      <a data-url="http://example.com/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" data-id="ckxrmb0ii00021su5c0ngbt3i" class="article-share-link">
         Share
       </a>
       
