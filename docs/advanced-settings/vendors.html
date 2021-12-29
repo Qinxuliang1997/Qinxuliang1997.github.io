@@ -1,0 +1,53 @@
+<hr>
+<p>title: Vendors</p>
+<h2 id="description-NexT-User-Docs-–-Advanced-Settings-Vendors"><a href="#description-NexT-User-Docs-–-Advanced-Settings-Vendors" class="headerlink" title="description: NexT User Docs – Advanced Settings - Vendors"></a>description: NexT User Docs – Advanced Settings - Vendors</h2><h3 id="CDN-Settings"><a href="#CDN-Settings" class="headerlink" title="CDN Settings"></a>CDN Settings</h3><p>You can specify a proper CDN provider in the <code>vendors</code> section in {% label primary@theme config file %}, which can make the static assets of plugins load faster.</p>
+<p>```yml next/_config.yml<br>vendors:</p>
+<h1 id="The-CDN-provider-of-NexT-internal-scripts"><a href="#The-CDN-provider-of-NexT-internal-scripts" class="headerlink" title="The CDN provider of NexT internal scripts."></a>The CDN provider of NexT internal scripts.</h1><h1 id="Available-values-local-jsdelivr-unpkg-cdnjs"><a href="#Available-values-local-jsdelivr-unpkg-cdnjs" class="headerlink" title="Available values: local | jsdelivr | unpkg | cdnjs"></a>Available values: local | jsdelivr | unpkg | cdnjs</h1><h1 id="Warning-If-you-are-using-the-latest-master-branch-of-NexT-please-set-internal-local"><a href="#Warning-If-you-are-using-the-latest-master-branch-of-NexT-please-set-internal-local" class="headerlink" title="Warning: If you are using the latest master branch of NexT, please set internal: local"></a>Warning: If you are using the latest master branch of NexT, please set <code>internal: local</code></h1><p>  internal: local</p>
+<h1 id="The-default-CDN-provider-of-third-party-plugins"><a href="#The-default-CDN-provider-of-third-party-plugins" class="headerlink" title="The default CDN provider of third-party plugins."></a>The default CDN provider of third-party plugins.</h1><h1 id="Available-values-local-jsdelivr-unpkg-cdnjs-1"><a href="#Available-values-local-jsdelivr-unpkg-cdnjs-1" class="headerlink" title="Available values: local | jsdelivr | unpkg | cdnjs"></a>Available values: local | jsdelivr | unpkg | cdnjs</h1><h1 id="Dependencies-for-plugins-local-https-github-com-next-theme-plugins"><a href="#Dependencies-for-plugins-local-https-github-com-next-theme-plugins" class="headerlink" title="Dependencies for plugins: local: https://github.com/next-theme/plugins"></a>Dependencies for <code>plugins: local</code>: <a href="https://github.com/next-theme/plugins">https://github.com/next-theme/plugins</a></h1><p>  plugins: jsdelivr</p>
+<pre><code>
+#### Core Plugins
+
+`internal: local` is used to set how to load the core plugins, e.g. `source/js/utils.js`. These plugins are loaded from your site by default, they are required by the basic functions of NexT. Set `internal` to `jsdelivr`, `unpkg` or `cdnjs` to load them from the corresponding CDN.
+
+{% note info %}
+If your site is deployed to any free hosting service (Github, Gitlab, etc.), CDN links are recommended for core plugins. CDN usually has faster speeds and no traffic restrictions.
+{% endnote %}
+
+{% note danger %}
+If you are using the latest master branch of NexT, please set `internal: local`.
+{% endnote %}
+
+#### Third-party Plugins
+
+`plugins: jsdelivr` is used to set how to load the third-party plugins, e.g. `anime.js`. Third-party plugins are loaded from [jsDelivr](https://www.jsdelivr.com/) CDN by default, because jsDelivr has the valid ICP license issued by the Chinese government, it can be accessed in China pretty well.
+
+And we also provide other optional CDNs, including the famous [UNPKG](https://unpkg.com) and [CDNJS](https://cdnjs.com). These CDN providers are chosen to deliver our third-party plugins because they are fast and reliable. Set `plugins` to `unpkg` or `cdnjs` to load them from different CDN provider.
+
+{% note warning %}
+Particularly, if you are a Chinese blogger or most of your visits come from China, please note that **the CDNJS is blocked in some parts of China**, don&#39;t use it as your CDN provider.
+{% endnote %}
+
+{% note info %}
+If your would like to load all third-party plugins from your site, please set `plugins` to `local` and install the `@next-theme/plugins` package: https://github.com/next-theme/plugins
+If your website is deployed in the local area network, then this will have a faster loading speed than CDN services.
+{% endnote %}
+
+#### Custom CDN URLs
+
+Sometimes you may need to use other CDNs not included in the available values of `vendors.plugins` option. In the `vendors` section, you can configure the CDN URL of each library individually.
+
+The config is in format of `libname: CDN URL`. The `libname` is the same as in the `_vendors.yml` file. The `CDN URL` will override the default one.
+
+For example, if you want to set the CDN URL for `anime`, go to {% label primary@theme config file %} and add a key named `anime` in the `vendors` section, and set its value to the CDN URL of anime.js:
+
+```yml next/_config.yml
+vendors:
+  # ...
+  # Some contents...
+  # ...
+  anime: //cdn.jsdelivr.net/gh/juliangarnier/anime@latest/lib/anime.min.js
+</code></pre><p>It’s recommended to use the same version of the library as in <code>_vendors.yml</code> to avoid potential problems. And if you need other versions you need to test them first.</p>
+<p>Remember to use the HTTPS protocol of CDN links when you enable HTTPS on your site.</p>
+<p>{% note info %}<br>jsDelivr does not only provide mirrors for the files from npm packages, but also fetch from the GitHub releases! We could use the following link to reference the js files, just as other CDNs.</p>
+<pre><code>//cdn.jsdelivr.net/gh/user/repo@version/file
+</code></pre><p>And it could automatically minify the JS and CSS files, even if you don’t have the minified version. Just use the <code>filename.min.js</code> or the <code>filename.min.css</code> to replace the file above. For more information: <a href="https://www.jsdelivr.com/features">https://www.jsdelivr.com/features</a><br>{% endnote %}</p>

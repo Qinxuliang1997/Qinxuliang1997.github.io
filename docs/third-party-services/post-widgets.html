@@ -1,0 +1,32 @@
+<hr>
+<p>title: Post Widgets</p>
+<h2 id="description-NexT-User-Docs-–-Third-party-Service-Integration-–-Post-Widgets"><a href="#description-NexT-User-Docs-–-Third-party-Service-Integration-–-Post-Widgets" class="headerlink" title="description: NexT User Docs – Third-party Service Integration – Post Widgets"></a>description: NexT User Docs – Third-party Service Integration – Post Widgets</h2><h3 id="Widgetpack-Rating"><a href="#Widgetpack-Rating" class="headerlink" title="Widgetpack Rating"></a>Widgetpack Rating</h3><p>Rating service with login through any social networks like Facebook, Twitter, Google+, LinkedIn, Instagram and others.</p>
+<p>{% tabs rating %}<br><!-- tab Get ID → --><br>Login to <a href="https://widgetpack.com/admin#signin">widgetpack</a> and add new site, you will get your site ID:</p>
+<pre><code class="lang-js">wpac_init.push({widget: &#39;Rating&#39;, id: ID});
+</code></pre>
+<!-- endtab -->
+<!-- tab NexT Config -->
+<p>You can enable it by setting value <code>rating.enable</code> to <code>true</code>, and copy <code>ID</code> value of <code>id</code> in {% label primary@theme config file %}. You can also configure the rating color by editing the value of <code>rating.color</code>.</p>
+<p>```yml next/_config.yml<br>rating:<br>  enable: false<br>  id:     ID #<app_id><br>  color:  “#fc6423”</p>
+<pre><code>&lt;!-- endtab --&gt;
+{% endtabs %}
+
+### AddThis
+
+{% tabs addthis %}
+&lt;!-- tab Sign Up → --&gt;
+Sign up in [AddThis](https://www.addthis.com). You can use Google / Facebook / Twitter to login.
+&lt;!-- endtab --&gt;
+
+&lt;!-- tab AddThis ID → --&gt;
+Get AddThis ID in this menu: `Profile Settings` → `General` → `ID`. See example on the picture below:
+![AddThis ID](/images/add-this-id.png)
+&lt;!-- endtab --&gt;
+
+&lt;!-- tab NexT Config --&gt;
+Edit the value of `add_this_id` in the {% label primary@theme config file %} as following:
+
+```yml next/_config.yml
+add_this_id: your_add_this_id
+</code></pre><!-- endtab -->
+<p>{% endtabs %}</p>

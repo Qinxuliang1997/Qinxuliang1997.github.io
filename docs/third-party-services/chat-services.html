@@ -1,0 +1,59 @@
+<hr>
+<p>title: Chat Services</p>
+<h2 id="description-NexT-User-Docs-–-Third-party-Service-Integration-–-Chat-Services"><a href="#description-NexT-User-Docs-–-Third-party-Service-Integration-–-Chat-Services" class="headerlink" title="description: NexT User Docs – Third-party Service Integration – Chat Services"></a>description: NexT User Docs – Third-party Service Integration – Chat Services</h2><h3 id="Chatra"><a href="#Chatra" class="headerlink" title="Chatra"></a>Chatra</h3><p><a href="https://chatra.com">Chatra</a> is a live chat messenger app for your website.</p>
+<p>{% tabs Chatra %}<br><!-- tab Enable Chatra → --><br>Visit <a href="https://app.chatra.io/settings/general">Dashboard</a> to get your ChatraID.</p>
+<p>```yml next/_config.yml</p>
+<h1 id="Chatra-Support"><a href="#Chatra-Support" class="headerlink" title="Chatra Support"></a>Chatra Support</h1><h1 id="See-https-chatra-com"><a href="#See-https-chatra-com" class="headerlink" title="See: https://chatra.com"></a>See: <a href="https://chatra.com">https://chatra.com</a></h1><h1 id="Dashboard-https-app-chatra-io-settings-general"><a href="#Dashboard-https-app-chatra-io-settings-general" class="headerlink" title="Dashboard: https://app.chatra.io/settings/general"></a>Dashboard: <a href="https://app.chatra.io/settings/general">https://app.chatra.io/settings/general</a></h1><p>chatra:<br>  enable: true<br>  async: true<br>  id: <ChatraID></p>
+<pre><code>
+&lt;!-- endtab --&gt;
+
+&lt;!-- tab Activate sidebar button --&gt;
+After Chatra enabled, you can set `chat.enable` to `true` in {% label primary@theme config file %}.
+
+```yml next/_config.yml
+# A button to open designated chat widget in sidebar.
+# Firstly, you need enable the chat service you want to activate its sidebar button.
+chat:
+  enable: true
+  icon: fa fa-comment
+  text: Chat
+</code></pre><!-- endtab -->
+<p>{% endtabs %}</p>
+<h3 id="Tidio"><a href="#Tidio" class="headerlink" title="Tidio"></a>Tidio</h3><p><a href="https://www.tidio.com/">Tidio</a> is a live chat messenger app for your website.</p>
+<p>{% tabs Tidio %}<br><!-- tab Enable Tidio → --><br>Visit <a href="https://www.tidio.com/panel/dashboard">Dashboard</a> to get your Public Key.</p>
+<p>```yml next/_config.yml</p>
+<h1 id="Tidio-Support"><a href="#Tidio-Support" class="headerlink" title="Tidio Support"></a>Tidio Support</h1><h1 id="See-https-www-tidio-com"><a href="#See-https-www-tidio-com" class="headerlink" title="See: https://www.tidio.com"></a>See: <a href="https://www.tidio.com">https://www.tidio.com</a></h1><h1 id="Dashboard-https-www-tidio-com-panel-dashboard"><a href="#Dashboard-https-www-tidio-com-panel-dashboard" class="headerlink" title="Dashboard: https://www.tidio.com/panel/dashboard"></a>Dashboard: <a href="https://www.tidio.com/panel/dashboard">https://www.tidio.com/panel/dashboard</a></h1><p>tidio:<br>  enable: true<br>  key: <Publick Key></p>
+<pre><code>
+&lt;!-- endtab --&gt;
+
+&lt;!-- tab Activate sidebar button --&gt;
+After Tidio enabled, you can set `chat.enable` to `true` in {% label primary@theme config file %}.
+
+```yml next/_config.yml
+# A button to open designated chat widget in sidebar.
+# Firstly, you need enable the chat service you want to activate its sidebar button.
+chat:
+  enable: true
+  icon: fa fa-comment
+  text: Chat
+</code></pre><!-- endtab -->
+<p>{% endtabs %}</p>
+<h3 id="Gitter"><a href="#Gitter" class="headerlink" title="Gitter"></a>Gitter</h3><p><a href="https://gitter.im">Gitter</a> is a chat and networking platform that helps to manage, grow and connect communities through messaging, content and discovery.</p>
+<p>{% tabs Gitter %}<br><!-- tab Enable Gitter → --><br>You need to create a community, then create a webapp room under that community.</p>
+<p>```yml next/_config.yml</p>
+<h1 id="Gitter-Support"><a href="#Gitter-Support" class="headerlink" title="Gitter Support"></a>Gitter Support</h1><h1 id="For-more-information-https-gitter-im"><a href="#For-more-information-https-gitter-im" class="headerlink" title="For more information: https://gitter.im"></a>For more information: <a href="https://gitter.im">https://gitter.im</a></h1><p>gitter:<br>  enable: true<br>  room: <Community>/<Room Name></p>
+<pre><code>
+&lt;!-- endtab --&gt;
+
+&lt;!-- tab Activate sidebar button --&gt;
+After Gitter enabled, you can set `chat.enable` to `true` in {% label primary@theme config file %}.
+
+```yml next/_config.yml
+# A button to open designated chat widget in sidebar.
+# Firstly, you need enable the chat service you want to activate its sidebar button.
+chat:
+  enable: true
+  icon: fa fa-comment
+  text: Chat
+</code></pre><!-- endtab -->
+<p>{% endtabs %}</p>

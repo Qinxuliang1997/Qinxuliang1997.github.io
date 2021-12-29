@@ -1,0 +1,79 @@
+<hr>
+<p>title: SEO</p>
+<h2 id="description-NexT-User-Docs-–-Theme-Settings-–-SEO"><a href="#description-NexT-User-Docs-–-Theme-Settings-–-SEO" class="headerlink" title="description: NexT User Docs – Theme Settings – SEO"></a>description: NexT User Docs – Theme Settings – SEO</h2><h3 id="SEO-Setting"><a href="#SEO-Setting" class="headerlink" title="SEO Setting"></a>SEO Setting</h3><p>Next provides useful options for better Search Engine Optimization (SEO).</p>
+<p>{% note info %}<br>By default a canonical link tag is created in Hexo after you have set up your URL <code>url: http://example.com</code> in {% label info@site config file %}. More detailed information can be found in <a href="https://support.google.com/webmasters/answer/139066">Consolidate duplicate URLs</a>.<br>{% endnote %}</p>
+<p>Set the value of <code>index_with_subtitle</code> in {% label primary@theme config file %} to <code>true</code> to add <code>subtitle</code> information to index page.</p>
+<p>```yml next/_config.yml<br>index_with_subtitle: true</p>
+<pre><code>
+You can set `subtitle` in {% label info@site config file %}.
+
+### Webmaster Tools
+
+#### Google Webmaster Tools
+
+Set the verification string of [Google Webmaster Tools](https://developers.google.com/search) which is used in submitting sitemap.
+
+{% tabs google-webmaster-tools %}
+&lt;!-- tab Get Verification Code → --&gt;
+Login to Google Webmaster Tools and go to verification methods and choose `HTML Tag`, you will get some code:
+
+```html
+&lt;meta name=&quot;google-site-verification&quot; content=&quot;XXXXXXXXXXXXXXXXXXXXXXX&quot;&gt;
+</code></pre><!-- endtab -->
+<!-- tab NexT Config -->
+<p>Copy <code>XXXXXXXXXXXXXXXXXXXXXXX</code> value of <code>content</code> key.<br>Edit {% label primary@theme config file %} and add or change the value of <code>google_site_verification</code>:</p>
+<p>```yml next/_config.yml<br>google_site_verification: XXXXXXXXXXXXXXXXXXXXXXX</p>
+<pre><code>&lt;!-- endtab --&gt;
+{% endtabs %}
+
+#### Bing Webmaster Tools
+
+Set the verification string of [Bing Webmaster Tools](https://www.bing.com/webmasters) which is used in submitting sitemap.
+
+{% tabs bing-webmaster-tools %}
+&lt;!-- tab Get Verification Code → --&gt;
+Login to Bing Webmaster Tools and go to verification methods and choose `HTML Tag`, you will get some code:
+
+```html
+&lt;meta name=&quot;msvalidate.01&quot; content=&quot;XXXXXXXXXXXXXXXXXXXXXXX&quot;&gt;
+</code></pre><!-- endtab -->
+<!-- tab NexT Config -->
+<p>Copy <code>XXXXXXXXXXXXXXXXXXXXXXX</code> value of <code>content</code> key.<br>Edit {% label primary@theme config file %} and add or change the value of <code>bing_site_verification</code>:</p>
+<p>```yml next/_config.yml<br>bing_site_verification: XXXXXXXXXXXXXXXXXXXXXXX</p>
+<pre><code>&lt;!-- endtab --&gt;
+{% endtabs %}
+
+#### Yandex Webmaster Tools
+
+Set the verification string of [Yandex Webmaster Tools](https://webmaster.yandex.ru/) which is used in submitting sitemap.
+
+{% tabs yandex-webmaster-tools %}
+&lt;!-- tab Get Verification Code → --&gt;
+Login to Yandex Webmaster Tools and go to verification methods and choose `Meta Tag`, you will get some code:
+
+```html
+&lt;meta name=&quot;yandex-verification&quot; content=&quot;XXXXXXXXXXXXXXXXXXXXXXX&quot;&gt;
+</code></pre><!-- endtab -->
+<!-- tab NexT Config -->
+<p>Copy <code>XXXXXXXXXXXXXXXXXXXXXXX</code> value of <code>content</code> key.<br>Edit {% label primary@theme config file %} and add or change the value of <code>yandex_site_verification</code>:</p>
+<p>```yml next/_config.yml<br>yandex_site_verification: XXXXXXXXXXXXXXXXXXXXXXX</p>
+<pre><code>&lt;!-- endtab --&gt;
+{% endtabs %}
+
+#### Baidu Webmaster Tools
+
+Set the verification string of [Baidu Webmaster Tools](https://ziyuan.baidu.com/site/) which is used in submitting sitemap.
+
+{% tabs Baidu-webmaster-tools %}
+&lt;!-- tab Get Verification Code → --&gt;
+Login to Baidu Webmaster Tools and go to verification methods and choose `HTML Tag`, you will get some code:
+
+```html
+&lt;meta name=&quot;baidu-site-verification&quot; content=&quot;code-XXXXXXXXXX&quot;&gt;
+</code></pre><!-- endtab -->
+<!-- tab NexT Config -->
+<p>Copy <code>code-XXXXXXXXXX</code> value of <code>content</code> key.<br>Edit {% label primary@theme config file %} and add or change the value of <code>baidu_site_verification</code>:</p>
+<p><code>yml next/_config.yml
+baidu_site_verification: code-XXXXXXXXXX</code><br><!-- endtab --><br>{% endtabs %}</p>
+<p>{% note info %}<br>By default Baidu will cache and rewrite your site to provide a webpage snapshot for mobile users. You can disable this by setting the site type.</p>
+<p><img src="/images/baidu.png" alt="Baidu Webmaster Tools"><br>{% endnote %}</p>

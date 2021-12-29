@@ -1,0 +1,185 @@
+<hr>
+<p>title: Misc Theme Settings<br>date: 2018-02-08 18:50:03</p>
+<h2 id="description-NexT-User-Docs-–-Theme-Settings-Misc-Theme-Settings"><a href="#description-NexT-User-Docs-–-Theme-Settings-Misc-Theme-Settings" class="headerlink" title="description: NexT User Docs – Theme Settings - Misc Theme Settings"></a>description: NexT User Docs – Theme Settings - Misc Theme Settings</h2><h3 id="Preconnect"><a href="#Preconnect" class="headerlink" title="Preconnect"></a>Preconnect</h3><p>NexT supports adding preconnect resource hints to establish early connections to fonts and plugins origins.</p>
+<p>You can enable it by setting <code>preconnect: true</code> in {% label primary@theme config file %}.</p>
+<p>```yml next/_config.yml</p>
+<h1 id="Preconnect-CDN-for-fonts-and-plugins"><a href="#Preconnect-CDN-for-fonts-and-plugins" class="headerlink" title="Preconnect CDN for fonts and plugins."></a>Preconnect CDN for fonts and plugins.</h1><h1 id="For-more-information-https-www-w3-org-TR-resource-hints-preconnect"><a href="#For-more-information-https-www-w3-org-TR-resource-hints-preconnect" class="headerlink" title="For more information: https://www.w3.org/TR/resource-hints/#preconnect"></a>For more information: <a href="https://www.w3.org/TR/resource-hints/#preconnect">https://www.w3.org/TR/resource-hints/#preconnect</a></h1><p>preconnect: true</p>
+<pre><code>
+### Text Align
+
+NexT allows to customize the text alignment in posts / pages. The `text-align` CSS property sets the horizontal alignment of a block element or table-cell box.
+
+| Values         | Effect                                                                                                                                                                 |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `start`        | The same as `left` if direction is left-to-right and `right` if direction is right-to-left.                                                                            |
+| `end`          | The same as `right` if direction is left-to-right and `left` if direction is right-to-left.                                                                            |
+| `left`         | The inline contents are aligned to the left edge of the line box.                                                                                                      |
+| `right`        | The inline contents are aligned to the right edge of the line box.                                                                                                     |
+| `center`       | The inline contents are centered within the line box.                                                                                                                  |
+| `justify`      | The inline contents are justified. Text should be spaced to line up its left and right edges to the left and right edges of the line box, except for the last line.    |
+| `justify-all`  | Same as `justify`, but also forces the last line to be justified.                                                                                                      |
+| `match-parent` | Similar to `inherit`, but the values `start` and `end` are calculated according to the parent&#39;s direction and are replaced by the appropriate `left` or `right` value. |
+
+```yml next/_config.yml
+# Set the text alignment in the posts.
+text_align:
+  # Available values: start | end | left | right | center | justify | justify-all | match-parent
+  desktop: justify
+  mobile: justify
+</code></pre><h3 id="Mobile-Devices-Adaptation"><a href="#Mobile-Devices-Adaptation" class="headerlink" title="Mobile Devices Adaptation"></a>Mobile Devices Adaptation</h3><p>If you want to reduce padding/margin indents on devices with narrow width, you can enable it by setting value <code>mobile_layout_economy</code> to <code>true</code> in {% label primary@theme config file %}.</p>
+<p>```yml next/_config.yml<br>mobile_layout_economy: true</p>
+<pre><code>
+### Theme Color
+
+By default NexT uses black-deep (`#222`) as the color of browser header panel (it&#39;s supported by Safari 15 and Android Chrome). You can configure it by editing values with Hex color in `theme_color` section in {% label primary@theme config file %}.
+
+```yml next/_config.yml
+theme_color:
+  light: &quot;#222&quot;
+  dark: &quot;#222&quot;
+</code></pre><h3 id="Body-Scrollbar"><a href="#Body-Scrollbar" class="headerlink" title="Body Scrollbar"></a>Body Scrollbar</h3><p>```yml next/_config.yml</p>
+<h1 id="Override-browsers’-default-behavior"><a href="#Override-browsers’-default-behavior" class="headerlink" title="Override browsers’ default behavior."></a>Override browsers’ default behavior.</h1><p>body_scrollbar:</p>
+<h1 id="Place-the-scrollbar-over-the-content"><a href="#Place-the-scrollbar-over-the-content" class="headerlink" title="Place the scrollbar over the content."></a>Place the scrollbar over the content.</h1><p>  overlay: false</p>
+<h1 id="Present-the-scrollbar-even-if-the-content-is-not-overflowing"><a href="#Present-the-scrollbar-even-if-the-content-is-not-overflowing" class="headerlink" title="Present the scrollbar even if the content is not overflowing."></a>Present the scrollbar even if the content is not overflowing.</h1><p>  stable: false</p>
+<pre><code>
+### Codeblock Style
+
+{% tabs codeblock %}
+&lt;!-- tab &lt;code&gt;theme&lt;/code&gt; --&gt;
+
+NexT uses the [Highlight.js](https://highlightjs.org) and [Prism](https://prismjs.com) package to support code highlight.
+
+{% note warning %}
+Please read Hexo&#39;s documentation on [Syntax Highlighting](https://hexo.io/docs/syntax-highlight) first, and set it up in {% label info@site config file %}.
+{% endnote %}
+
+You can preview all available Code Highlight themes here: [NexT Highlight Theme Preview](https://theme-next.js.org/highlight/). Change the value of `theme` and `prism` to choose the highlight style you like.
+
+```yml next/_config.yml
+codeblock:
+  # Code Highlight theme
+  # All available themes: https://theme-next.js.org/highlight/
+  theme:
+    light: default
+    dark: tomorrow-night
+  prism:
+    light: prism
+    dark: prism-dark
+</code></pre><p>If Dark Mode is enabled, dark code highlighting themes will be available.<br><!-- endtab --></p>
+<!-- tab <code>copy_button</code> -->
+<p>NexT supports the copy-and-paste functionality of codeblock.</p>
+<p>{% subtabs codeblock1 %}<br><!-- tab <code>enable</code> --><br>You can enable it by setting value <code>copy_button.enable</code> to <code>true</code> in {% label primary@theme config file %}. By default NexT shows copy result of the copy-and-paste functionality.</p>
+<p>```yml next/_config.yml<br>codeblock:<br>  copy_button:<br>    enable: true</p>
+<pre><code>&lt;!-- endtab --&gt;
+&lt;!-- tab &lt;code&gt;style&lt;/code&gt; --&gt;
+With `style` option, you can change your copy button style.
+There are three style available currently: `default` (Just leave it empty), `flat` and `mac`.
+
+```yml next/_config.yml
+codeblock:
+  copy_button:
+    style: flat
+</code></pre><!-- endtab -->
+<p>{% endsubtabs %}</p>
+<!-- endtab -->
+<p>{% endtabs %}</p>
+<h3 id="Back-To-Top"><a href="#Back-To-Top" class="headerlink" title="Back To Top"></a>Back To Top</h3><p>{% tabs b2t %}<br><!-- tab <code>enable</code> --><br>```yml next/_config.yml<br>back2top:<br>  enable: true</p>
+<pre><code>
+Set the value `back2top.enable` to `true` to display `Back to top` button.
+&lt;!-- endtab --&gt;
+
+&lt;!-- tab &lt;code&gt;sidebar&lt;/code&gt; --&gt;
+```yml next/_config.yml
+back2top:
+  # Back to top in sidebar.
+  sidebar: true
+</code></pre><p>Set the value <code>back2top.sidebar</code> to <code>true</code> to put the button in sidebar.<br><!-- endtab --></p>
+<!-- tab <code>scrollpercent</code> -->
+<p>```yml next/_config.yml<br>back2top:</p>
+<h1 id="Scroll-percent-label-in-b2t-button"><a href="#Scroll-percent-label-in-b2t-button" class="headerlink" title="Scroll percent label in b2t button."></a>Scroll percent label in b2t button.</h1><p>  scrollpercent: true</p>
+<pre><code>
+Set the value `back2top.scrollpercent` to `true` to display scroll percent label in `Back to top` button.
+&lt;!-- endtab --&gt;
+{% endtabs %}
+
+### Reading Progress
+
+NexT supports the page scroll reading progress indicator.
+
+You can enable it by setting value `reading_progress.enable` to `true` in {% label primary@theme config file %}.
+
+```yml next/_config.yml
+reading_progress:
+  enable: true
+  # Available values: left | right
+  start_at: left
+  # Available values: top | bottom
+  position: top
+  reversed: false
+  color: &quot;#37c6c0&quot;
+  height: 2px
+</code></pre><h3 id="Bookmark"><a href="#Bookmark" class="headerlink" title="Bookmark"></a>Bookmark</h3><p>Bookmark is a plugin that allow the users save their reading progress. Users could just click the bookmark icon (like 🔖) in left-top of the page to save the scroll position. And when they visit your blog in the next time, they can resume the last scroll position of each page automatically.</p>
+<p>You can enable it by setting value <code>bookmark.enable</code> to <code>true</code> in {% label primary@theme config file %}.</p>
+<p>```yml next/_config.yml<br>bookmark:<br>  enable: false</p>
+<h1 id="Customize-the-color-of-the-bookmark"><a href="#Customize-the-color-of-the-bookmark" class="headerlink" title="Customize the color of the bookmark."></a>Customize the color of the bookmark.</h1><p>  color: “#222”</p>
+<h1 id="If-auto-save-the-reading-progress-when-closing-the-page-or-clicking-the-bookmark-icon"><a href="#If-auto-save-the-reading-progress-when-closing-the-page-or-clicking-the-bookmark-icon" class="headerlink" title="If auto, save the reading progress when closing the page or clicking the bookmark-icon."></a>If auto, save the reading progress when closing the page or clicking the bookmark-icon.</h1><h1 id="If-manual-only-save-it-by-clicking-the-bookmark-icon"><a href="#If-manual-only-save-it-by-clicking-the-bookmark-icon" class="headerlink" title="If manual, only save it by clicking the bookmark-icon."></a>If manual, only save it by clicking the bookmark-icon.</h1><p>  save: auto</p>
+<pre><code>
+### GitHub Banner
+
+NexT provides `Follow me on GitHub` banner in right-top corner.
+
+```yml next/_config.yml
+# Follow me on GitHub banner in right-top corner.
+github_banner:
+  enable: true
+  permalink: https://github.com/yourname
+  title: Follow me on GitHub
+</code></pre><p>{% tabs github-banner %}<br><!-- tab <code>permalink</code> --><br><code>permalink</code> → is the specified link must have full url path.<br><!-- endtab --></p>
+<!-- tab <code>title</code> -->
+<p><code>title</code> → is the title and aria-label name.<br><!-- endtab --><br>{% endtabs %}</p>
+<p>You can set <code>enable</code> to <code>true</code> and add your own GitHub link.</p>
+<h3 id="Fonts-Customization"><a href="#Fonts-Customization" class="headerlink" title="Fonts Customization"></a>Fonts Customization</h3><p>NexT gives you 5 specific font settings, they are:</p>
+<ul>
+<li>Global Font: Font used in the whole site.</li>
+<li>Title Font: Font used by site title.</li>
+<li>Headlines Font: Font used by headings in articles (h1, h2, h3, h4, h5, h6).</li>
+<li>Article Font: Font used by articles.</li>
+<li>Code Font: Font used by code blocks in articles.</li>
+</ul>
+<p>Each font will be used as the first font of this class, NexT will fallback to internal font settings if they are unavalible.</p>
+<ul>
+<li>Non-code Font: Fallback to <code>&quot;PingFang SC&quot;, &quot;Microsoft YaHei&quot;, sans-serif</code></li>
+<li>Code Font: Fallback to <code>consolas, Menlo, &quot;PingFang SC&quot;, &quot;Microsoft YaHei&quot;, monospace</code></li>
+</ul>
+<p>Plus each section has a <code>external</code> attribute, this controls whether to use the font library CDN.<br>Use this can help you to use fonts installed in system and reduce unnecessary requests.</p>
+<p>{% note info %}<br>To solve the unstable of <a href="https://fonts.google.com">Google Fonts API</a> in some countries, NexT supports custom URL of fonts library by setting <code>font.host</code>.<br>In addition, we noticed that for requests from certain websites, Google Fonts will return 403. At this time, it is necessary to use <code>font.host</code> to set up a mirror site.<br>Relevant issues: <a href="https://github.com/theme-next/hexo-theme-next/issues/613">#613</a>, <a href="https://github.com/theme-next/hexo-theme-next/issues/1333">#1333</a><br>{% endnote %}</p>
+<p>```yml next/_config.yml<br>font:</p>
+<h1 id="Use-custom-fonts-families-or-not"><a href="#Use-custom-fonts-families-or-not" class="headerlink" title="Use custom fonts families or not."></a>Use custom fonts families or not.</h1><h1 id="Depended-options-external-and-family"><a href="#Depended-options-external-and-family" class="headerlink" title="Depended options: external and family."></a>Depended options: <code>external</code> and <code>family</code>.</h1><p>  enable: true</p>
+<h1 id="Uri-of-fonts-host-e-g-https-fonts-googleapis-com-Default"><a href="#Uri-of-fonts-host-e-g-https-fonts-googleapis-com-Default" class="headerlink" title="Uri of fonts host, e.g. https://fonts.googleapis.com (Default)."></a>Uri of fonts host, e.g. <a href="https://fonts.googleapis.com">https://fonts.googleapis.com</a> (Default).</h1><p>  host:</p>
+<h1 id="Font-options"><a href="#Font-options" class="headerlink" title="Font options:"></a>Font options:</h1><h1 id="external-true-will-load-this-font-family-from-host-above"><a href="#external-true-will-load-this-font-family-from-host-above" class="headerlink" title="external: true will load this font family from host above."></a><code>external: true</code> will load this font family from <code>host</code> above.</h1><h1 id="family-Times-New-Roman-Without-any-quotes"><a href="#family-Times-New-Roman-Without-any-quotes" class="headerlink" title="family: Times New Roman. Without any quotes."></a><code>family: Times New Roman</code>. Without any quotes.</h1><h1 id="size-x-x-Use-em-as-unit-Default-1-16px"><a href="#size-x-x-Use-em-as-unit-Default-1-16px" class="headerlink" title="size: x.x. Use em as unit. Default: 1 (16px)"></a><code>size: x.x</code>. Use <code>em</code> as unit. Default: 1 (16px)</h1><h1 id="Global-font-settings-used-for-all-elements-inside"><a href="#Global-font-settings-used-for-all-elements-inside" class="headerlink" title="Global font settings used for all elements inside ."></a>Global font settings used for all elements inside <body>.</h1><p>  global:<br>    external: true<br>    family: Monda<br>    size: 1.125</p>
+<h1 id="Font-settings-for-site-title-site-title"><a href="#Font-settings-for-site-title-site-title" class="headerlink" title="Font settings for site title (.site-title)."></a>Font settings for site title (.site-title).</h1><p>  title:<br>    external: true<br>    family: Lobster Two<br>    size:</p>
+<h1 id="Font-settings-for-headlines-to"><a href="#Font-settings-for-headlines-to" class="headerlink" title="Font settings for headlines ( to )."></a>Font settings for headlines (<h1> to <h6>).</h1><p>  headings:<br>    external: true<br>    family: Amita<br>    size:</p>
+<h1 id="Font-settings-for-posts-post-body"><a href="#Font-settings-for-posts-post-body" class="headerlink" title="Font settings for posts (.post-body)."></a>Font settings for posts (.post-body).</h1><p>  posts:<br>    external: true<br>    family: Montserrat</p>
+<h1 id="Font-settings-for-and-code-blocks"><a href="#Font-settings-for-and-code-blocks" class="headerlink" title="Font settings for  and code blocks."></a>Font settings for <code> and code blocks.</h1><p>  codes:<br>    external: true<br>    family: PT Mono</p>
+<pre><code>
+And you can apply multiple font families for each option. This is especially useful for those who often writes both Chinese and English.
+
+```yml next/_config.yml
+font:
+  ...
+  title:
+    external: true
+    family: Roboto Slab, Noto Serif SC
+    size:
+</code></pre><p>{% note info %}<br>According to the <a href="https://www.w3.org/TR/2018/REC-css-fonts-3-20180920/#propdef-font-family">CSS Fonts Module Level 3</a> spec:</p>
+<blockquote>
+<p>Font family names other than generic families must either be given quoted as strings, or unquoted as a sequence of one or more identifiers.</p>
+</blockquote>
+<p>To avoid escaping mistakes, quote font family names if necessary.<br>{% endnote %}</p>
+<p>If you still need more customization, following change will cover Fonts Customization function. Edit <code>source/_data/variables.styl</code> in {% label info@site root directory %} and add two varibles:</p>
+<p>```styl hexo/source/_data/variables.styl<br>// Title Font, set it to font family you want.<br>$font-family-headings = Georgia, sans</p>
+<p>// Set it to font family you want.<br>$font-family-base = “Microsoft YaHei”, Verdana, sans-serif</p>
+<p>// Code Font.<br>$code-font-family = “Input Mono”, “PT Mono”, Consolas, Monaco, Menlo, monospace</p>
+<p>// Font size of articles.<br>$font-size-base = 16px</p>
+<p>// Font size of table and code.<br>$table-font-size = 13px<br>```</p>
+<p>Then uncomment <code>variable</code> under the <code>custom_file_path</code> section in {% label primary@theme config file %}.</p>

@@ -1,0 +1,103 @@
+<hr>
+<p>title: Comment Systems</p>
+<h2 id="description-NexT-User-Docs-–-Third-party-Service-Integration-–-Comment-Systems"><a href="#description-NexT-User-Docs-–-Third-party-Service-Integration-–-Comment-Systems" class="headerlink" title="description: NexT User Docs – Third-party Service Integration – Comment Systems"></a>description: NexT User Docs – Third-party Service Integration – Comment Systems</h2><h3 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h3><h4 id="Multiple-Comment-System-Support"><a href="#Multiple-Comment-System-Support" class="headerlink" title="Multiple Comment System Support"></a>Multiple Comment System Support</h4><p>NexT allows you to enable multiple commenting systems at the same time. You can modify the following configuration to adjust the style or behavior of multiple commenting systems.</p>
+<p>```yml next/_config.yml</p>
+<h1 id="Multiple-Comment-System-Support-1"><a href="#Multiple-Comment-System-Support-1" class="headerlink" title="Multiple Comment System Support"></a>Multiple Comment System Support</h1><p>comments:</p>
+<h1 id="Available-values-tabs-buttons"><a href="#Available-values-tabs-buttons" class="headerlink" title="Available values: tabs | buttons"></a>Available values: tabs | buttons</h1><p>  style: tabs</p>
+<h1 id="Choose-a-comment-system-to-be-displayed-by-default"><a href="#Choose-a-comment-system-to-be-displayed-by-default" class="headerlink" title="Choose a comment system to be displayed by default"></a>Choose a comment system to be displayed by default</h1><h1 id="Available-values-disqus-disqusjs-changyan-livere-gitalk-utterances-isso"><a href="#Available-values-disqus-disqusjs-changyan-livere-gitalk-utterances-isso" class="headerlink" title="Available values: disqus | disqusjs | changyan | livere | gitalk | utterances | isso"></a>Available values: disqus | disqusjs | changyan | livere | gitalk | utterances | isso</h1><p>  active:</p>
+<h1 id="Setting-true-means-remembering-the-comment-system-selected-by-the-visitor"><a href="#Setting-true-means-remembering-the-comment-system-selected-by-the-visitor" class="headerlink" title="Setting true means remembering the comment system selected by the visitor"></a>Setting <code>true</code> means remembering the comment system selected by the visitor</h1><p>  storage: true</p>
+<h1 id="Lazyload-all-comment-systems"><a href="#Lazyload-all-comment-systems" class="headerlink" title="Lazyload all comment systems."></a>Lazyload all comment systems.</h1><p>  lazyload: false</p>
+<h1 id="Modify-icons-and-texts-for-any-style-here-are-some-examples"><a href="#Modify-icons-and-texts-for-any-style-here-are-some-examples" class="headerlink" title="Modify icons and texts for any style, here are some examples"></a>Modify icons and texts for any style, here are some examples</h1><p>  nav:</p>
+<pre><code>#disqus:
+#  text: Load Disqus
+#  order: -1
+#gitalk:
+#  order: -2
+</code></pre><pre><code>
+You can enable lazyload by setting value `comments.lazyload` to `true` in {% label primary@theme config file %}. NexT uses IntersectionObserver to lazyload the comments, which is not supported by IE and most browsers released before 2017.
+
+{% caniuse intersectionobserver @ current,past_1,past_2,past_3,past_4,past_5 %}
+
+If your blog readers are mostly using legacy browsers, please consider using [Intersection Observer polyfill](https://github.com/w3c/IntersectionObserver/tree/master/polyfill).
+
+#### How to Disable Comments on Page
+
+When you enabled comment service like Disqus, all new page will have comment service automatically. If you want to disable it in one page, just add `comments` key to [front-matter](https://hexo.io/docs/front-matter) and set its value to `false`. Like following:
+
+```md your-post.md
+title: All tags
+type: &quot;tags&quot;
+comments: false
+---
+</code></pre><h4 id="Rename-Comment-Count-Text"><a href="#Rename-Comment-Count-Text" class="headerlink" title="Rename Comment Count Text"></a>Rename Comment Count Text</h4><p>You can rename the post meta text of comment count using <code>languages.yml</code>: <a href="/docs/theme-settings/internationalization.html#Override-Default-Translations">Override Default Translations</a>.</p>
+<h3 id="Disqus"><a href="#Disqus" class="headerlink" title="Disqus"></a>Disqus</h3><p>Disqus is a global comment system that improves discussion on websites and connects conversations across the web.</p>
+<ol>
+<li>Create an account and log into <a href="https://disqus.com/">Disqus</a>. Once logged in, click the <code>GET STARTED</code> button on the homepage, then select <code>I want to install Disqus on my site</code> option and you will see the <code>Create a new site</code> interface.</li>
+<li>Enter your <code>Website Name</code>, which will serve as your Disqus shortname, and select a Category from the drop-down menu. Then click <code>Create Site</code> button.</li>
+<li>Choose <code>I don&#39;t see my platform listed, install manually with Universal Code</code>, configure Disqus for your site, and click <code>Complete Setup</code> button.</li>
+<li><p>Set the value <code>enable</code> to <code>true</code>, add the obtained Disqus shortname (<code>shortname</code>), and edit other configurations in <code>disqus</code> section in the {% label primary@theme config file %} as following:</p>
+<p> <code>yml next/_config.yml
+ disqus:
+   enable: false
+   shortname: your-short-disqus-name
+   count: true</code></p>
+</li>
+</ol>
+<h3 id="DisqusJS"><a href="#DisqusJS" class="headerlink" title="DisqusJS"></a>DisqusJS</h3><p>Render Disqus comment component using Disqus API.</p>
+<ol>
+<li>Get your Disqus API Key from <a href="https://disqus.com/api/applications/">Disqus API Application</a>.</li>
+<li>Go to the settings page of your Disqus Application, enter your domain in Settings → Domains.</li>
+<li>Get your Disqus Shortname from <a href="https://disqus.com/admin/settings/general/">General Settings - Disqus Admin</a>.</li>
+<li><p>Set the value <code>enable</code> to <code>true</code>, add the obtained Disqus API Key (<code>apikey</code>) and Shortname (<code>shortname</code>), and edit other configurations in <code>disqusjs</code> section in the {% label primary@theme config file %} as following:</p>
+<p> ```yml next/_config.yml</p>
+<h1 id="DisqusJS-1"><a href="#DisqusJS-1" class="headerlink" title="DisqusJS"></a>DisqusJS</h1><h1 id="Demo-https-disqusjs-skk-moe"><a href="#Demo-https-disqusjs-skk-moe" class="headerlink" title="Demo: https://disqusjs.skk.moe"></a>Demo: <a href="https://disqusjs.skk.moe">https://disqusjs.skk.moe</a></h1><p> disqusjs:<br>   enable: false</p>
+<h1 id="API-Endpoint-of-Disqus-API-https-disqus-com-api-docs"><a href="#API-Endpoint-of-Disqus-API-https-disqus-com-api-docs" class="headerlink" title="API Endpoint of Disqus API (https://disqus.com/api/docs/)"></a>API Endpoint of Disqus API (<a href="https://disqus.com/api/docs/">https://disqus.com/api/docs/</a>)</h1><h1 id="leave-api-empty-if-you-are-able-to-connect-to-Disqus-API"><a href="#leave-api-empty-if-you-are-able-to-connect-to-Disqus-API" class="headerlink" title="leave api empty if you are able to connect to Disqus API"></a>leave api empty if you are able to connect to Disqus API</h1><h1 id="otherwise-you-need-a-reverse-proxy-for-Disqus-API"><a href="#otherwise-you-need-a-reverse-proxy-for-Disqus-API" class="headerlink" title="otherwise you need a reverse proxy for Disqus API"></a>otherwise you need a reverse proxy for Disqus API</h1><h1 id="For-example"><a href="#For-example" class="headerlink" title="For example:"></a>For example:</h1><h1 id="api-https-disqus-skk-moe-disqus"><a href="#api-https-disqus-skk-moe-disqus" class="headerlink" title="api: https://disqus.skk.moe/disqus/"></a>api: <a href="https://disqus.skk.moe/disqus/">https://disqus.skk.moe/disqus/</a></h1><p>   api:<br>   apikey: # register new application from <a href="https://disqus.com/api/applications/">https://disqus.com/api/applications/</a><br>   shortname: # See: <a href="https://disqus.com/admin/settings/general/">https://disqus.com/admin/settings/general/</a><br> ```</p>
+</li>
+</ol>
+<h3 id="Changyan-China"><a href="#Changyan-China" class="headerlink" title="Changyan (China)"></a>Changyan (China)</h3><p>Changyan is the industry’s leading social commenting system, supporting both PC and mobile access methods, providing a new way of commenting on websites. Changyan has a variety of common account login, triple filtering mechanism, real-time data statistics, fast data export, comprehensive support for mobile and other leading functions. It fully satisfies the needs of major websites for user login, comment, sharing, and review.</p>
+<ol>
+<li>Create an account or log into <a href="https://changyan.kuaizhan.com/">Changyan</a>, then add your site to get APP ID and APP KEY.</li>
+<li><p>Set the value <code>enable</code> to <code>true</code>, and add the obtained APP ID (<code>appid</code>) and APP KEY (<code>appkey</code>) to the <code>changyan</code> section in the {% label primary@theme config file %} as following:</p>
+<p> ```yml next/_config.yml</p>
+<h1 id="changyan"><a href="#changyan" class="headerlink" title="changyan"></a>changyan</h1><p> changyan:<br>   enable: false<br>   appid:<br>   appkey:<br> ```</p>
+</li>
+</ol>
+<h3 id="LiveRe"><a href="#LiveRe" class="headerlink" title="LiveRe"></a>LiveRe</h3><p>LiveRe is a content platform based on social networking site reviews to help users communicate freely.</p>
+<ol>
+<li>Create an account or log into <a href="https://livere.com">LiveRe</a>, click on the <code>installation</code> button and select the free city version, then click on the <code>install now</code> button.</li>
+<li>Copy the <code>data-uid</code> field in the installation code to get your LiveRe UID.</li>
+<li><p>Add the obtained LiveRe UID to the <code>livere_uid</code> section in the {% label primary@theme config file %} as following:</p>
+<p> ```yml next/_config.yml</p>
+<h1 id="Support-for-LiveRe-comments-system"><a href="#Support-for-LiveRe-comments-system" class="headerlink" title="Support for LiveRe comments system."></a>Support for LiveRe comments system.</h1><h1 id="You-can-get-your-uid-from-https-livere-com-insight-myCode-General-web-site"><a href="#You-can-get-your-uid-from-https-livere-com-insight-myCode-General-web-site" class="headerlink" title="You can get your uid from https://livere.com/insight/myCode (General web site)"></a>You can get your uid from <a href="https://livere.com/insight/myCode">https://livere.com/insight/myCode</a> (General web site)</h1><p> livere_uid: your_uid<br> ```</p>
+</li>
+</ol>
+<h3 id="Gitalk"><a href="#Gitalk" class="headerlink" title="Gitalk"></a>Gitalk</h3><p>Gitalk is a modern comment component based on Github Issue and Preact.</p>
+<ol>
+<li>Click here to sign up for a <a href="https://github.com/settings/applications/new">new OAuth Application</a>. Other content can be filled in at will, but be sure to fill in the correct callback URL (usually the domain name corresponding to the comment page). Then you will get a Client ID and a Client secret.</li>
+<li>Create a repository you want to store Gitalk comments in your GitHub.</li>
+<li><p>Set the value <code>enable</code> to <code>true</code>, add Client ID (<code>client_id</code>) and Client secret (<code>client_secret</code>) in step 1, add your Github username (<code>github_id</code> and <code>admin_user</code>) and the created repository name (<code>repo</code>) in step 2, and edit other configurations in <code>gitalk</code> section in the {% label primary@theme config file %} as following:</p>
+<p> ```yml next/_config.yml</p>
+<h1 id="Gitalk-1"><a href="#Gitalk-1" class="headerlink" title="Gitalk"></a>Gitalk</h1><h1 id="For-more-information-https-gitalk-github-io"><a href="#For-more-information-https-gitalk-github-io" class="headerlink" title="For more information: https://gitalk.github.io"></a>For more information: <a href="https://gitalk.github.io">https://gitalk.github.io</a></h1><p> gitalk:<br>   enable: false<br>   github_id: # GitHub repo owner<br>   repo: # Repository name to store issues<br>   client_id: # GitHub Application Client ID<br>   client_secret: # GitHub Application Client Secret<br>   admin_user: # GitHub repo owner and collaborators, only these guys can initialize gitHub issues<br>   distraction_free_mode: true # Facebook-like distraction free mode</p>
+<h1 id="When-the-official-proxy-is-not-available-you-can-change-it-to-your-own-proxy-address"><a href="#When-the-official-proxy-is-not-available-you-can-change-it-to-your-own-proxy-address" class="headerlink" title="When the official proxy is not available, you can change it to your own proxy address"></a>When the official proxy is not available, you can change it to your own proxy address</h1><p>   proxy: <a href="https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token">https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token</a> # This is official proxy address</p>
+<h1 id="Gitalk’s-display-language-depends-on-user’s-browser-or-system-environment"><a href="#Gitalk’s-display-language-depends-on-user’s-browser-or-system-environment" class="headerlink" title="Gitalk’s display language depends on user’s browser or system environment"></a>Gitalk’s display language depends on user’s browser or system environment</h1><h1 id="If-you-want-everyone-visiting-your-site-to-see-a-uniform-language-you-can-set-a-force-language-value"><a href="#If-you-want-everyone-visiting-your-site-to-see-a-uniform-language-you-can-set-a-force-language-value" class="headerlink" title="If you want everyone visiting your site to see a uniform language, you can set a force language value"></a>If you want everyone visiting your site to see a uniform language, you can set a force language value</h1><h1 id="Available-values-en-es-ES-fr-ru-zh-CN-zh-TW"><a href="#Available-values-en-es-ES-fr-ru-zh-CN-zh-TW" class="headerlink" title="Available values: en | es-ES | fr | ru | zh-CN | zh-TW"></a>Available values: en | es-ES | fr | ru | zh-CN | zh-TW</h1><p>   language:<br> ```</p>
+</li>
+</ol>
+<p>{% note warning %}<br>Hexo has encode URLs by default since version 4.0: <a href="https://github.com/hexojs/hexo/pull/3708">Pull Request #3708</a>.<br>Gitalk relies on the md5 value of the page path for tagging, and this may cause issues. It’s recommended to upgrade Hexo to 4.0 (or later), NexT to 7.7.0 (or later) to use Gitalk.<br>{% endnote %}</p>
+<h3 id="Utterances"><a href="#Utterances" class="headerlink" title="Utterances"></a>Utterances</h3><p>A lightweight comments widget built on GitHub issues. Use GitHub issues for blog comments, wiki pages and more!</p>
+<p>```yml next/_config.yml</p>
+<h1 id="Utterances-1"><a href="#Utterances-1" class="headerlink" title="Utterances"></a>Utterances</h1><h1 id="For-more-information-https-utteranc-es"><a href="#For-more-information-https-utteranc-es" class="headerlink" title="For more information: https://utteranc.es"></a>For more information: <a href="https://utteranc.es">https://utteranc.es</a></h1><p>utterances:<br>  enable: false<br>  repo: # Github repository name</p>
+<h1 id="Available-values-pathname-url-title-og-title"><a href="#Available-values-pathname-url-title-og-title" class="headerlink" title="Available values: pathname | url | title | og:title"></a>Available values: pathname | url | title | og:title</h1><p>  issue_term: pathname</p>
+<h1 id="Available-values-github-light-github-dark-preferred-color-scheme-github-dark-orange-icy-dark-dark-blue-photon-dark-boxy-light"><a href="#Available-values-github-light-github-dark-preferred-color-scheme-github-dark-orange-icy-dark-dark-blue-photon-dark-boxy-light" class="headerlink" title="Available values: github-light | github-dark | preferred-color-scheme | github-dark-orange | icy-dark | dark-blue | photon-dark | boxy-light"></a>Available values: github-light | github-dark | preferred-color-scheme | github-dark-orange | icy-dark | dark-blue | photon-dark | boxy-light</h1><p>  theme: github-light</p>
+<pre><code>
+### Isso
+
+Isso – *Ich schrei sonst* – is a lightweight commenting server written in Python and JavaScript. It aims to be a drop-in replacement for Disqus.
+
+1. You need to [install and configure Isso](https://posativ.org/isso/docs/install/) on your server first.
+2. Set the value `isso` in the {% label primary@theme config file %} as the value `data-isso` in Isso script. An exemplary script tag is given in the `Integration` section of the [Isso quickstart document](https://posativ.org/isso/docs/quickstart/#integration), you need to modify it according to the URL of your server.
+
+    ```yml next/_config.yml
+    # Isso
+    # For more information: https://posativ.org/isso/
+    isso: # &lt;data_isso&gt;
+</code></pre>

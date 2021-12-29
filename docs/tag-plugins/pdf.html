@@ -1,0 +1,18 @@
+<hr>
+<p>title: PDF</p>
+<h2 id="description-NexT-User-Docs-–-NexT-Supported-Tags-–-PDF"><a href="#description-NexT-User-Docs-–-NexT-Supported-Tags-–-PDF" class="headerlink" title="description: NexT User Docs – NexT Supported Tags – PDF"></a>description: NexT User Docs – NexT Supported Tags – PDF</h2><h3 id="Settings"><a href="#Settings" class="headerlink" title="Settings"></a>Settings</h3><p>```yml next/_config.yml<br>pdf:<br>  enable: true</p>
+<h1 id="Default-height"><a href="#Default-height" class="headerlink" title="Default height"></a>Default height</h1><p>  height: 500px</p>
+<pre><code>
+### Usage
+
+```jinja
+{% pdf url [height] %}
+</code></pre><ul>
+<li><code>url</code>      : The URL (Absolute path) of the PDF file.</li>
+<li><code>[height]</code> : <em>Optional parameter.</em> Height of the PDF display element, e.g. 800px.</li>
+</ul>
+<p>{% note warning %}<br>The loading of pdf.js or pdf file might be blocked by CORS policy. If you want to load resources from another website, make sure the Access-Control-Allow-Origin header is set correctly. See also <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin">Access-Control-Allow-Origin - HTTP | MDN</a>.<br>{% endnote %}</p>
+<h3 id="Examples"><a href="#Examples" class="headerlink" title="Examples"></a>Examples</h3><pre><code class="lang-jinja">{% pdf https://example.com/sample.pdf %}
+</code></pre>
+<pre><code class="lang-jinja">{% pdf /path/to/your/file.pdf 600px %}
+</code></pre>

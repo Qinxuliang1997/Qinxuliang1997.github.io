@@ -1,0 +1,108 @@
+<hr>
+<p>title: External Libraries</p>
+<h2 id="description-NexT-User-Docs-–-Third-party-Service-Integration-–-External-Libraries"><a href="#description-NexT-User-Docs-–-Third-party-Service-Integration-–-External-Libraries" class="headerlink" title="description: NexT User Docs – Third-party Service Integration – External Libraries"></a>description: NexT User Docs – Third-party Service Integration – External Libraries</h2><h3 id="PJAX"><a href="#PJAX" class="headerlink" title="PJAX"></a>PJAX</h3><p><a href="https://github.com/MoOx/pjax">Pjax</a> is a standalone JavaScript module that uses AJAX (XmlHttpRequest) and <code>pushState()</code> to deliver a fast browsing experience.</p>
+<p>It allows you to completely transform the user experience of standard websites (server-side generated or static ones) to make users feel like they are browsing an app, especially for those with low bandwidth connections.</p>
+<p>{% note warning %}<br>Please use the absolute path of the image or <a href="https://hexo.io/docs/tag-plugins#Include-Assets">Hexo asset_img tag</a> in your posts, otherwise the images may fail to load during Pjax refresh.<br>{% endnote %}</p>
+<p>You can enable it by setting value <code>pjax</code> to <code>true</code> in {% label primary@theme config file %}.</p>
+<p>```yml next/_config.yml</p>
+<h1 id="Easily-enable-fast-Ajax-navigation-on-your-website"><a href="#Easily-enable-fast-Ajax-navigation-on-your-website" class="headerlink" title="Easily enable fast Ajax navigation on your website."></a>Easily enable fast Ajax navigation on your website.</h1><h1 id="For-more-information-https-github-com-next-theme-pjax"><a href="#For-more-information-https-github-com-next-theme-pjax" class="headerlink" title="For more information: https://github.com/next-theme/pjax"></a>For more information: <a href="https://github.com/next-theme/pjax">https://github.com/next-theme/pjax</a></h1><p>pjax: true</p>
+<pre><code>
+### Fancybox
+
+NexT supports the fancybox plugin, which is a jQuery lightbox script for displaying images, videos and more. Touch enabled, responsive and fully customizable.
+
+You can enable it by setting value `fancybox` to `true` in {% label primary@theme config file %}.
+
+```yml next/_config.yml
+fancybox: true
+</code></pre><h3 id="Medium-Zoom"><a href="#Medium-Zoom" class="headerlink" title="Medium Zoom"></a>Medium Zoom</h3><p><a href="https://github.com/francoischalifour/medium-zoom">Medium Zoom</a> is a JavaScript library for zooming images like Medium.</p>
+<p>You can enable it by setting value <code>mediumzoom</code> to <code>true</code> in {% label primary@theme config file %}.</p>
+<p>```yml next/_config.yml</p>
+<h1 id="A-JavaScript-library-for-zooming-images-like-Medium"><a href="#A-JavaScript-library-for-zooming-images-like-Medium" class="headerlink" title="A JavaScript library for zooming images like Medium."></a>A JavaScript library for zooming images like Medium.</h1><p>mediumzoom: true</p>
+<pre><code>
+{% note warning %}
+Do not enable both `fancybox` and `mediumzoom`.
+{% endnote %}
+
+### Lazyload
+
+[Lozad.js](https://github.com/ApoorvSaxena/lozad.js) is a lazy loader plugin in modern vanilla JavaScript. It delays loading of images in long web pages. Images outside of viewport will not be loaded before user scrolls to them. This is opposite of image preloading.
+
+You can enable it by setting value `lazyload` to `true` in {% label primary@theme config file %}.
+
+```yml next/_config.yml
+# Vanilla JavaScript plugin for lazyloading images.
+lazyload: true
+</code></pre><p>Then run the following command in {% label info@site root dir %} to ensure that <code>lazyload</code> can be enabled or disabled correctly:</p>
+<pre><code class="lang-bash">$ hexo clean
+</code></pre>
+<h3 id="Pangu-Autospace"><a href="#Pangu-Autospace" class="headerlink" title="Pangu Autospace"></a>Pangu Autospace</h3><p><a href="https://github.com/vinta/pangu.js">pangu.js</a> will automatically insert a blank space between all the Chinese characters and the hexagonal English numeric symbols on the page.</p>
+<p>You can enable it by setting value <code>pangu</code> to <code>true</code> in {% label primary@theme config file %}.</p>
+<p>```yml next/_config.yml</p>
+<h1 id="Pangu-Support"><a href="#Pangu-Support" class="headerlink" title="Pangu Support"></a>Pangu Support</h1><p>pangu: true</p>
+<pre><code>
+### Quicklink
+
+[Quicklink](https://github.com/GoogleChromeLabs/quicklink) is a JavaScript plugin that faster subsequent page-loads by prefetching in-viewport links during idle time. Chrome, Firefox, Edge are supported without polyfills.
+
+You can enable it by setting value `quicklink.enable` to `true` in {% label primary@theme config file %}.
+
+```yml next/_config.yml
+...
+quicklink:
+  enable: true
+  home: true
+  archive: true
+  delay: true
+  timeout: 3000
+  priority: true
+...
+</code></pre><h3 id="Animation-Effect"><a href="#Animation-Effect" class="headerlink" title="Animation Effect"></a>Animation Effect</h3><p>NexT enables animation effect by default which is supported by Anime.js and Animate.css, so it will wait for JavaScript loaded to show content.<br>If you need speed you can set the value of <code>motion.enable</code> to <code>false</code> to disable it.</p>
+<p>Edit {% label primary@theme config file %} and set the needed values under the <code>motion</code> to fit your demand. You can preview all Transition variants here: <a href="https://theme-next.js.org/animate/">NexT Animation Effect Preview</a>.</p>
+<p>```yml next/_config.yml</p>
+<h1 id="Use-Animate-css-to-animate-everything"><a href="#Use-Animate-css-to-animate-everything" class="headerlink" title="Use Animate.css to animate everything."></a>Use Animate.css to animate everything.</h1><h1 id="For-more-information-https-animate-style"><a href="#For-more-information-https-animate-style" class="headerlink" title="For more information: https://animate.style"></a>For more information: <a href="https://animate.style">https://animate.style</a></h1><p>motion:<br>  enable: true<br>  async: false<br>  transition:</p>
+<pre><code># All available Transition variants: https://theme-next.js.org/animate/
+post_block: fadeIn
+post_header: fadeInDown
+post_body: fadeInDown
+coll_header: fadeInLeft
+# Only for Pisces | Gemini.
+sidebar: fadeInUp
+</code></pre><pre><code>
+### Progress Bar
+
+Pace will automatically monitor your Ajax requests, event loop lag, document ready state and elements on your page to decide on the progress.
+
+{% tabs pace %}
+&lt;!-- tab &lt;code&gt;pace&lt;/code&gt; --&gt;
+You can enable it by setting value `pace.enable` to `true` in {% label primary@theme config file %}.
+
+```yml next/_config.yml
+pace:
+  enable: true
+</code></pre><!-- endtab -->
+<!-- tab <code>color</code> -->
+<p>You can change the color of progress bar by setting value <code>pace.color</code> in {% label primary@theme config file %}.</p>
+<p>```yml next/_config.yml<br>pace:<br>  color: orange</p>
+<pre><code>&lt;!-- endtab --&gt;
+&lt;!-- tab &lt;code&gt;theme&lt;/code&gt; --&gt;
+Pace includes a bunch of [themes](https://codebyzach.github.io/pace/) to get you started. By default NexT uses `minimal` theme (pace-theme-minimal). You can configure it by editing values in `pace.theme` section in {% label primary@theme config file %}.
+
+```yml next/_config.yml
+pace:
+  theme: minimal
+</code></pre><!-- endtab -->
+<p>{% endtabs %}</p>
+<h3 id="Canvas-Ribbon"><a href="#Canvas-Ribbon" class="headerlink" title="Canvas Ribbon"></a>Canvas Ribbon</h3><p><a href="https://github.com/hustcc/ribbon.js">canvas-ribbon.js</a> is a ribbon backgroud of website draw on canvas.</p>
+<p>You can enable it by setting value <code>canvas_ribbon</code> to <code>true</code> in {% label primary@theme config file %}. You can also configure the ribbon setting by editing values in <code>canvas_ribbon</code> section:</p>
+<ul>
+<li>size: The width of the ribbon.</li>
+<li>alpha: The transparency of the ribbon.</li>
+<li>zIndex: The display level of the ribbon.</li>
+</ul>
+<p><code>yml next/_config.yml
+canvas_ribbon:
+  enable: true
+  size: 300
+  alpha: 0.6
+  zIndex: -1</code></p>

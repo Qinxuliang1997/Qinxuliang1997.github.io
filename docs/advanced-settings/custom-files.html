@@ -1,0 +1,108 @@
+<hr>
+<p>title: Custom Files</p>
+<h2 id="description-NexT-User-Docs-–-Advanced-Settings-Custom-Files"><a href="#description-NexT-User-Docs-–-Advanced-Settings-Custom-Files" class="headerlink" title="description: NexT User Docs – Advanced Settings - Custom Files"></a>description: NexT User Docs – Advanced Settings - Custom Files</h2><h3 id="Custom-File-Support"><a href="#Custom-File-Support" class="headerlink" title="Custom File Support"></a>Custom File Support</h3><p><a href="https://github.com/theme-next/hexo-theme-next/pull/868">Pull Request #868</a> has adjusted the way of customizing the layout or style, canceling the custom files (such as <code>_custom/custom.styl</code>) in the original theme directory, and only retaining the way of specifying the custom file in the {% label primary@theme config file %}.</p>
+<p>It is a good practice to separate the custom files from the theme files, so that you can add custom content without modifying the original source code of the theme, and avoid conflicts due to <code>git merge</code>.</p>
+<p>As with <a href="https://hexo.io/docs/data-files">Data Files</a>, you can place all custom layouts or styles in a specific location (for example: <code>hexo/source/_data</code>). Add the custom file to <code>hexo/source/_data</code> and uncomment the content under the <code>custom_file_path</code> section in the {% label primary@theme config file %}.</p>
+<p>{% note warning %}<br>The file name and path must be the same in <code>custom_file_path</code>.<br>{% endnote %}</p>
+<p>```yml next/_config.yml<br>custom_file_path:</p>
+<h1 id="head-source-data-head-njk"><a href="#head-source-data-head-njk" class="headerlink" title="head: source/_data/head.njk"></a>head: source/_data/head.njk</h1><h1 id="header-source-data-header-njk"><a href="#header-source-data-header-njk" class="headerlink" title="header: source/_data/header.njk"></a>header: source/_data/header.njk</h1><h1 id="sidebar-source-data-sidebar-njk"><a href="#sidebar-source-data-sidebar-njk" class="headerlink" title="sidebar: source/_data/sidebar.njk"></a>sidebar: source/_data/sidebar.njk</h1><h1 id="postMeta-source-data-post-meta-njk"><a href="#postMeta-source-data-post-meta-njk" class="headerlink" title="postMeta: source/_data/post-meta.njk"></a>postMeta: source/_data/post-meta.njk</h1><h1 id="postBodyEnd-source-data-post-body-end-njk"><a href="#postBodyEnd-source-data-post-body-end-njk" class="headerlink" title="postBodyEnd: source/_data/post-body-end.njk"></a>postBodyEnd: source/_data/post-body-end.njk</h1><h1 id="footer-source-data-footer-njk"><a href="#footer-source-data-footer-njk" class="headerlink" title="footer: source/_data/footer.njk"></a>footer: source/_data/footer.njk</h1><h1 id="bodyEnd-source-data-body-end-njk"><a href="#bodyEnd-source-data-body-end-njk" class="headerlink" title="bodyEnd: source/_data/body-end.njk"></a>bodyEnd: source/_data/body-end.njk</h1><h1 id="variable-source-data-variables-styl"><a href="#variable-source-data-variables-styl" class="headerlink" title="variable: source/_data/variables.styl"></a>variable: source/_data/variables.styl</h1><h1 id="mixin-source-data-mixins-styl"><a href="#mixin-source-data-mixins-styl" class="headerlink" title="mixin: source/_data/mixins.styl"></a>mixin: source/_data/mixins.styl</h1><h1 id="style-source-data-styles-styl"><a href="#style-source-data-styles-styl" class="headerlink" title="style: source/_data/styles.styl"></a>style: source/_data/styles.styl</h1><pre><code>
+In addition to `custom_file_path`, we also provide a more flexible way to customize, you can read the [Theme Inject](/docs/advanced-settings/injects.html) in documentation.
+
+### Examples of Modifying Layout
+
+#### Live2d Widget
+
+Edit `source/_data/head.njk` in {% label info@site root directory %} and add the following content:
+
+```html hexo/source/_data/head.njk
+&lt;script src=&quot;https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js&quot;&gt;&lt;/script&gt;
+</code></pre><p>Then uncomment <code>head</code> under the <code>custom_file_path</code> section in {% label primary@theme config file %}.</p>
+<p>```yml next/_config.yml<br>custom_file_path:<br>  head: source/_data/head.njk</p>
+<pre><code>
+#### Netlify Logo in Sidebar
+
+Edit `source/_data/sidebar.njk` in {% label info@site root directory %} and add the following content:
+
+```html hexo/source/_data/sidebar.njk
+&lt;div class=&quot;cc-license animated&quot; itemprop=&quot;sponsor&quot;&gt;
+  &lt;a href=&quot;https://www.netlify.com&quot; class=&quot;cc-opacity&quot; title=&quot;Deploy with Netlify → https://www.netlify.com&quot; target=&quot;_blank&quot;&gt;&lt;img width=&quot;80&quot; src=&quot;https://www.netlify.com/img/global/badges/netlify-dark.svg&quot; alt=&quot;Netlify&quot;&gt;&lt;/a&gt;
+&lt;/div&gt;
+</code></pre><p>Then uncomment <code>sidebar</code> under the <code>custom_file_path</code> section in {% label primary@theme config file %}.</p>
+<p>```yml next/_config.yml<br>custom_file_path:<br>  sidebar: source/_data/sidebar.njk</p>
+<pre><code>
+### Examples of Modifying Style
+
+#### How to Change Content Width
+
+By default NexT has following setting of content width:
+
+* 700px → when screen width &lt; 1200px.
+* 800px → when screen width &gt;= 1200px.
+* 900px → when screen width &gt;= 1600px.
+* In mobile / tablet devices it will use responsive width.
+
+You can override the default content width by editing `source/_data/variables.styl` in {% label info@site root directory %} and add varibles:
+
+{% tabs change-content-width %}
+&lt;!-- tab Muse / Mist schemes --&gt;
+Default variables for both Muse and Mist schemes are located in `source/css/_variables/base.styl` and defined as:
+
+```styl next/source/css/_variables/base.styl
+$content-desktop         = 700px
+$content-desktop-large   = 800px
+$content-desktop-largest = 900px
+</code></pre><p>For example, you want wider content width. You may redefine this variables with percentage width:</p>
+<p>```styl hexo/source/_data/variables.styl<br>$content-desktop         = 90%<br>$content-desktop-large   = 90%<br>$content-desktop-largest = 90%</p>
+<pre><code>
+{% note warning %}
+If values will in percents, during opening sidebar will dynamically decrease content width to defined by you percent.
+But in standard behaviour, sidebar must displace content from yourself.
+To around it, you can specify content width in `em`:
+
+```styl hexo/source/_data/variables.styl
+$content-desktop         = 50em
+$content-desktop-large   = 55em
+$content-desktop-largest = 60em
+</code></pre><p>{% endnote %}<br><!-- endtab --></p>
+<!-- tab Pisces / Gemini schemes -->
+<p>Default variables for Pisces (and Gemini) scheme are located in <code>source/css/_variables/Pisces.styl</code> and defined as:</p>
+<p>```styl next/source/css/_variables/Pisces.styl<br>$content-desktop         = ‘calc(100% - %s)’ % unit($content-desktop-padding / 2, ‘px’)<br>$content-desktop-large   = 1160px<br>$content-desktop-largest = 73%</p>
+<pre><code>
+{% note warning %}
+`$content-desktop` value in this schemes is auto-responsive by default. It can be changed to any value too, but for better content visibility recommended to stay it as is.
+{% endnote %}
+
+In this schemes content width was defined on maximum and already balanced: if desktop width will be wider – content width will more narrowed for easier reading. But if you want to make more narrow content width in wider desktops, here is example:
+
+```styl hexo/source/_data/variables.styl
+$content-desktop-large   = 65em
+$content-desktop-largest = 65%
+</code></pre><p>{% note info %}<br>In fact, Gemini scheme is just fork of Pisces scheme with some style improvements.<br>Therefore, almost all part of variables from Pisces scheme are imported to Gemini scheme too.<br>So, if you want to add any variables or styles to both Pisces and Gemini schemes, need to edit values just in Pisces scheme.<br>{% endnote %}<br><!-- endtab --><br>{% endtabs %}</p>
+<p>Then uncomment <code>variable</code> under the <code>custom_file_path</code> section in {% label primary@theme config file %}.</p>
+<p>```yml next/_config.yml<br>custom_file_path:<br>  variable: source/_data/variables.styl</p>
+<pre><code>
+#### Hide Sidebar on Mobile
+
+Edit `source/_data/styles.styl` in {% label info@site root directory %} and add styles:
+
+```css hexo/source/_data/styles.styl
++tablet-mobile() {
+  .sidebar-toggle, .sidebar {
+    display: none;
+  }
+}
+</code></pre><p>Then uncomment <code>style</code> under the <code>custom_file_path</code> section in {% label primary@theme config file %}.</p>
+<p>```yml next/_config.yml<br>custom_file_path:<br>  style: source/_data/styles.styl</p>
+<pre><code>
+#### Hide &quot;Keep on posting&quot; in Archive Page
+
+Edit `source/_data/styles.styl` in {% label info@site root directory %} and add styles:
+
+```css hexo/source/_data/styles.styl
+.archive .collection-title {
+  display: none !important;
+}
+</code></pre><p>Then uncomment <code>style</code> under the <code>custom_file_path</code> section in {% label primary@theme config file %}.</p>
+<p><code>yml next/_config.yml
+custom_file_path:
+  style: source/_data/styles.styl</code></p>
