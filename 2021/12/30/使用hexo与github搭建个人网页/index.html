@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+  <title>
+    使用hexo与github搭建个人网页 |
+    
+    Hexo
+  </title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<script src="/js/pace.min.js"></script>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"></head>
+
+<body>
+  <main class="content">
+    <section class="outer">
+  <article id="post-使用hexo与github搭建个人网页" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+      
+
+<h1 class="article-title" itemprop="name">
+  使用hexo与github搭建个人网页
+</h1>
+
+
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2021/12/30/%E4%BD%BF%E7%94%A8hexo%E4%B8%8Egithub%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%BD%91%E9%A1%B5/" class="article-date">
+  <time datetime="2021-12-30T01:02:53.000Z" itemprop="datePublished">2021-12-30</time>
+</a>
+      
+    </div>
+    
+
+    
+    
+<div class="tocbot"></div>
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+      
+      <p>本文介绍如何搭建个人博客平台，使用的工具是<a target="_blank" rel="noopener" href="https://hexo.io/zh-cn/">Hexo</a>框架和Github。</p>
+<span id="more"></span>
+<h1 id="1-Hexo"><a href="#1-Hexo" class="headerlink" title="1 Hexo"></a>1 Hexo</h1><p>hexo是一个快速简介和高效的静态博客框架，使用它，可以快速美观的把markdown格式的文件转换为漂亮的网页格式。</p>
+<h2 id="1-1-Hexo的安装"><a href="#1-1-Hexo的安装" class="headerlink" title="1.1 Hexo的安装"></a>1.1 Hexo的安装</h2><p>hexo是基于Node.js 运行的，因此我们首先需要下载并安装Node.js，下载地址为：<a target="_blank" rel="noopener" href="https://nodejs.org/zh-cn/">Node.js</a>，按照提示安装即可。</p>
+<p>在安装完Node后，打开命令行（window用户使用win+R，输入cmd），在命令行中输入<code>node -v</code>，如果出现了版本号，就说明安装成功了，此时就可以安装Hexo了，在命令行中输入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+<p>安装的过程有点久，等安装结束，输入<code>hexo -v</code>，出现版本号代表hexo安装成功。</p>
+<h2 id="1-2-Hexo的使用"><a href="#1-2-Hexo的使用" class="headerlink" title="1.2 Hexo的使用"></a>1.2 Hexo的使用</h2><h1 id="2-将本地网页部署到Github"><a href="#2-将本地网页部署到Github" class="headerlink" title="2 将本地网页部署到Github"></a>2 将本地网页部署到Github</h1><h2 id="2-1-安装Git"><a href="#2-1-安装Git" class="headerlink" title="2.1 安装Git"></a>2.1 安装Git</h2><h2 id="2-2-Git的使用"><a href="#2-2-Git的使用" class="headerlink" title="2.2 Git的使用"></a>2.2 Git的使用</h2><h1 id="3-Hexo使用过程中遇到的问题"><a href="#3-Hexo使用过程中遇到的问题" class="headerlink" title="3 Hexo使用过程中遇到的问题"></a>3 Hexo使用过程中遇到的问题</h1><h2 id="3-1-hexo-d出现错误"><a href="#3-1-hexo-d出现错误" class="headerlink" title="3.1 hexo d出现错误"></a>3.1 hexo d出现错误</h2><p><code>hexo d</code>出现错误，代表的是本地文件上传到github上出现了问题，解决方案有两步：</p>
+<ul>
+<li><p>首先将_config.yml中deploy中<em><a target="_blank" rel="noopener" href="https://github.com/yourgitname/yourgitname.github.io.git">https://github.com/yourgitname/yourgitname.github.io.git</a></em>替换为：<em>git@github.com:yourgitname/yourgitname.github.io.git</em>，如果已经是这这个就不同换了；</p>
+</li>
+<li><p>删除你的博客文件夹内的 <em>.deploy_git</em> 文件夹后再试</p>
+</li>
+</ul>
+<h2 id="3-2-如何更换主题"><a href="#3-2-如何更换主题" class="headerlink" title="3.2 如何更换主题"></a>3.2 如何更换主题</h2><h2 id="3-3-不支持latex格式"><a href="#3-3-不支持latex格式" class="headerlink" title="3.3 不支持latex格式"></a>3.3 不支持latex格式</h2>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/12/30/%E4%BD%BF%E7%94%A8hexo%E4%B8%8Egithub%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%BD%91%E9%A1%B5/" data-id="ckxsbil190001f0u54eexgnbx" class="article-share-link">
+        Share
+      </a>
+      
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%B8%83%E4%B8%83%E5%85%AB%E5%85%AB/" rel="tag">七七八八</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+<nav class="article-nav">
+  
+  
+  <a href="/2021/12/29/Self-attention%E8%AF%A6%E8%A7%A3/" class="article-nav-link">
+    <strong class="article-nav-caption">Older</strong>
+    <div class="article-nav-title">Self-attention详解</div>
+  </a>
+  
+</nav>
+
+  
+
+  
+  
+  
+  
+
+</article>
+</section>
+
+
+  
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@2.7.8/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+    <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+  <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+  <li><i class="fe fe-bookmark"></i> <span id="busuanzi_value_page_pv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>Hexo &copy; 2021</li>
+      
+        <li>ZHWANGART</li>
+      
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>theme  <a target="_blank" rel="noopener" href="https://github.com/zhwangart/hexo-theme-ocean">Ocean</a></li>
+    </ul>
+  </div>
+</footer>
+  </main>
+  <aside class="sidebar">
+    <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/hexo.svg" alt="Hexo"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">Home</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">Archives</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/gallery">Gallery</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">About</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="Search">
+        <i class="fe fe-search"></i>
+        Search
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="fe fe-feed"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+  </aside>
+  
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/copybtn.js"></script>
+
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+  });
+</script>
+
+
+
+<script src="/js/ocean.js"></script>
+
+</body>
+
+</html>
