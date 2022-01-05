@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+  <title>
+    《Artificial Intelligence： A modern approach》读书笔记——贰 |
+    
+    Hexo
+  </title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<script src="/js/pace.min.js"></script>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"></head>
+
+<body>
+  <main class="content">
+    <section class="outer">
+  <article id="post-AIMP2" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+      
+
+<h1 class="article-title" itemprop="name">
+  《Artificial Intelligence： A modern approach》读书笔记——贰
+</h1>
+
+
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2021/11/08/AIMP2/" class="article-date">
+  <time datetime="2021-11-08T12:13:41.000Z" itemprop="datePublished">2021-11-08</time>
+</a>
+      
+    </div>
+    
+
+    
+    
+<div class="tocbot"></div>
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+      
+      <p>本文介绍《Artificial Intelligence： A modern approach》的第二章，介绍人工智能的基本概率，包括什么是Agent，它的内部构造是什么样的，以及什么样的Agent的是“好”的，还包括对agent所处环境的介绍。</p>
+<span id="more"></span>
+<h1 id="第二章-智能环境"><a href="#第二章-智能环境" class="headerlink" title="第二章 智能环境"></a>第二章 智能环境</h1><h2 id="1-Agent和环境"><a href="#1-Agent和环境" class="headerlink" title="1 Agent和环境"></a>1 Agent和环境</h2><p>Agent通过传感器<strong>感知</strong>环境，通过执行器与环境<strong>交互</strong>。</p>
+<ul>
+<li>感知：任何时刻Agent的感知输入；感知序列：所有历史输入数据的集合。</li>
+</ul>
+<ul>
+<li>Agent函数：将给定感知序列映射为行动；Agent程序：Agent函数的具体实现，是在物理系统内部运行的。</li>
+</ul>
+<img src="/2021/11/08/AIMP2/1.jpg" class>
+<h2 id="2-什么是“好”的行为：理性的概念"><a href="#2-什么是“好”的行为：理性的概念" class="headerlink" title="2 什么是“好”的行为：理性的概念"></a>2 什么是“好”的行为：理性的概念</h2><p>性能度量：对环境状态的任何给定序列进行评估，而不是Agent的内部状态。</p>
+<p>性能度量的标准很多，最好根据实际环境中希望得到的结果来设计性能度量。</p>
+<h3 id="2-1-理性"><a href="#2-1-理性" class="headerlink" title="2.1 理性"></a>2.1 理性</h3><p>理性的判断标准：</p>
+<ul>
+<li><p>良好定义的性能度量</p>
+</li>
+<li><p>Agent对环境的先验知识</p>
+</li>
+<li><p>Agent可以完成的动作</p>
+</li>
+<li><p>Agent截至此刻的感知序列</p>
+</li>
+</ul>
+<p>理性Agent：对于每一个可能的感知序列，根据已知的感知序列提供的证据和Agent具有的先验知识，理性Agent应该选择能使其<strong>性能度量最大化</strong>的动作。</p>
+<h3 id="2-2-全知者、学习者和自主性"><a href="#2-2-全知者、学习者和自主性" class="headerlink" title="2.2 全知者、学习者和自主性"></a>2.2 全知者、学习者和自主性</h3><p>理性 不等于 全知： 理性是使期望性能最大化，而完美则是实际性能最大化。</p>
+<p>理性的Agent要求主动的收集信息，并从感知到的信息中学习。</p>
+<p>Agent最初的设定反映了对环境的先验知识，随着学习的过程，先验知识会被修改和增加。如果Agent一直依赖于先验知识，那么就缺乏了自主性。</p>
+<h2 id="3-环境的性质"><a href="#3-环境的性质" class="headerlink" title="3 环境的性质"></a>3 环境的性质</h2><p>任务环境：理性Agent要求解的基本问题。</p>
+<h3 id="3-1-任务环境的规范描述"><a href="#3-1-任务环境的规范描述" class="headerlink" title="3.1 任务环境的规范描述"></a>3.1 任务环境的规范描述</h3><p>任务环境的PEAS描述：<strong>Performance（性能），Environment（环境），Actuator（执行器），Sensors（传感器）</strong></p>
+<h3 id="3-2-任务环境的性质"><a href="#3-2-任务环境的性质" class="headerlink" title="3.2 任务环境的性质"></a>3.2 任务环境的性质</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>描述</th>
+<th>分类</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>可观察</td>
+<td>传感器是否可以在任何时刻获得环境的完整状态</td>
+<td>完全可观察/部分可观察</td>
+</tr>
+<tr>
+<td>Agent数目</td>
+<td>A的行为是否影响到B的性能最大化</td>
+<td>单Agent/多Agent</td>
+</tr>
+<tr>
+<td>随机性</td>
+<td>环境的下一个状态是否完全取决与当前状态和Agent执行的动作</td>
+<td>确定的/随机的</td>
+</tr>
+<tr>
+<td>片段性</td>
+<td>下一个片段是否依赖于上一个片段采取的行动</td>
+<td>片段式/延续式</td>
+</tr>
+<tr>
+<td>动态性</td>
+<td>环境在Agent计算时候是否会变化</td>
+<td>静态/动态</td>
+</tr>
+<tr>
+<td>连续性</td>
+<td>状态是否连续性变化</td>
+<td>离散/连续</td>
+</tr>
+<tr>
+<td>已知与未知  （Agent）</td>
+<td>所有行动的结果是否是给定的</td>
+<td>已知/未知</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="4-Agent的结构"><a href="#4-Agent的结构" class="headerlink" title="4 Agent的结构"></a>4 Agent的结构</h2><p>Agent程序：将感知信息映射到行动；体系结构：具备物理传感器和执行器的计算装置。</p>
+<p><strong>Agent = 体系结构+程序</strong></p>
+<p>本书绝大部分介绍设计Agent的程序。</p>
+<h3 id="4-1-Agent的程序"><a href="#4-1-Agent的程序" class="headerlink" title="4.1 Agent的程序"></a>4.1 Agent的程序</h3><p>Agent的程序以当前感知作为输入，而Agent的函数以整合历史感知信息作为输入。如果Agent的行动依赖于整个感知序列，那么Agent必须要记住感知信息。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">四种基本的Agent</th>
+<th style="text-align:center">描述</th>
+<th style="text-align:center">图示</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">简单反射Agent</td>
+<td style="text-align:center">基于当前感知，不关注历史  条件-行为规则  局限：环境需要完全可观察</td>
+<td style="text-align:center"><img src="/2021/11/08/AIMP2/2.png" class></td>
+</tr>
+<tr>
+<td style="text-align:center">基于模型的反射Agent</td>
+<td style="text-align:center">跟踪记录历史，维持内部状态  更新内部状态需要的两类知识：独立于Agent发展的信息、Agent的动作如何影响世界的信息</td>
+<td style="text-align:center"><img src="/2021/11/08/AIMP2/3.png" class></td>
+</tr>
+<tr>
+<td style="text-align:center">基于目标的Agent</td>
+<td style="text-align:center">目标信息：描述想要到达的状态</td>
+<td style="text-align:center"><img src="/2021/11/08/AIMP2/4.png" class></td>
+</tr>
+<tr>
+<td style="text-align:center">基于效用的Agent</td>
+<td style="text-align:center">效用函数：度量性能的内在化  期望效用最大化</td>
+<td style="text-align:center"><img src="/2021/11/08/AIMP2/5.png" class></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="4-2-学习的Agent"><a href="#4-2-学习的Agent" class="headerlink" title="4.2 学习的Agent"></a>4.2 学习的Agent</h3><p>Agent程序的形成需要大量的工作量，所以需要建造可以学习的机器。分为四个部分：</p>
+<ul>
+<li><p>学习元件（负责改进提高）；</p>
+</li>
+<li><p>性能元件（选择外部行动）；</p>
+</li>
+<li><p>评判元件（外部评价）；</p>
+</li>
+<li><p>问题产生器（建议探索性的行动）</p>
+</li>
+</ul>
+<img src="/2021/11/08/AIMP2/6.png" class>
+<h3 id="4-3-Agent程序各种组件之间如何工作"><a href="#4-3-Agent程序各种组件之间如何工作" class="headerlink" title="4.3 Agent程序各种组件之间如何工作"></a>4.3 Agent程序各种组件之间如何工作</h3><p>组件以不同的方式表示环境：</p>
+<ul>
+<li><p><strong>原子</strong>表示，每个状态是不可见的，没有内部结构，算法：搜索和博弈论，隐马尔可夫模型，马尔可夫决策过程。</p>
+</li>
+<li><p><strong>要素</strong>化表示：状态表示为特征的集合，算法：约束满足算法，命题逻辑，规划，Bayesian网。</p>
+</li>
+<li><p><strong>结构化</strong>表示：考察事物之间的关联，算法：关系数据库，一阶逻辑，一阶概率模型，基于知识的学习，自然语言处理。</p>
+<img src="/2021/11/08/AIMP2/7.png" class>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/11/08/AIMP2/" data-id="cky0wn4t800016ou5ceqwhetz" class="article-share-link">
+        Share
+      </a>
+      
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" rel="tag">人工智能</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+<nav class="article-nav">
+  
+  <a href="/2021/12/28/%E6%89%8B%E5%86%99CNN/" class="article-nav-link">
+    <strong class="article-nav-caption">Newer</strong>
+    <div class="article-nav-title">
+      
+      Numpy实现卷积和最大池化
+      
+    </div>
+  </a>
+  
+  
+  <a href="/2021/10/18/AIMP3/" class="article-nav-link">
+    <strong class="article-nav-caption">Older</strong>
+    <div class="article-nav-title">《Artificial Intelligence： A modern approach》读书笔记——叁</div>
+  </a>
+  
+</nav>
+
+  
+
+  
+  
+  
+  
+
+</article>
+</section>
+
+
+  
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@2.7.8/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+    <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+  <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+  <li><i class="fe fe-bookmark"></i> <span id="busuanzi_value_page_pv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>Hexo &copy; 2022</li>
+      
+        <li>ZHWANGART</li>
+      
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>theme  <a target="_blank" rel="noopener" href="https://github.com/zhwangart/hexo-theme-ocean">Ocean</a></li>
+    </ul>
+  </div>
+</footer>
+  </main>
+  <aside class="sidebar">
+    <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/hexo.svg" alt="Hexo"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">Home</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">Archives</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/gallery">Gallery</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">About</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="Search">
+        <i class="fe fe-search"></i>
+        Search
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="fe fe-feed"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+  </aside>
+  
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/copybtn.js"></script>
+
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+  });
+</script>
+
+
+
+<script src="/js/ocean.js"></script>
+
+</body>
+
+</html>

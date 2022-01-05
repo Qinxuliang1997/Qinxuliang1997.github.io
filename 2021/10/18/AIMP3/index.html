@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  
+  
+  <title>
+    《Artificial Intelligence： A modern approach》读书笔记——叁 |
+    
+    Hexo
+  </title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<script src="/js/pace.min.js"></script>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"></head>
+
+<body>
+  <main class="content">
+    <section class="outer">
+  <article id="post-AIMP3" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+      
+
+<h1 class="article-title" itemprop="name">
+  《Artificial Intelligence： A modern approach》读书笔记——叁
+</h1>
+
+
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2021/10/18/AIMP3/" class="article-date">
+  <time datetime="2021-10-18T02:39:46.000Z" itemprop="datePublished">2021-10-18</time>
+</a>
+      
+    </div>
+    
+
+    
+    
+<div class="tocbot"></div>
+
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+      
+      <p>本部分介绍《Artificial Intelligence： A modern approach》的第三部分，通过搜索进行问题求解，包括非启发式搜索和启发式搜索。</p>
+<span id="more"></span>
+<h1 id="第三章-通过搜索进行问题求解"><a href="#第三章-通过搜索进行问题求解" class="headerlink" title="第三章 通过搜索进行问题求解"></a>第三章 通过搜索进行问题求解</h1><p>基于目标的agent：问题求解Agent和规划Agent，本部分介绍问题求解Agent。</p>
+<p>包括：问题和解的描述；通用的搜索算法（无信息的（uninformed）和有信息的（informed）），本章假设问题的解是有固定的顺序的行动。</p>
+<h2 id="1-问题求解agent"><a href="#1-问题求解agent" class="headerlink" title="1 问题求解agent"></a>1 问题求解agent</h2><p>假设一个agent要最大化一个性能度量——目标形式化；给目标定下需要考虑哪些行动和状态——问题形式化。暂时考虑环境是确定的和可以观察的，任务环境是离散的。</p>
+<p>基于这些假设，问题的解总是一个行动的固定序列。为了求解这个序列，就需要过程搜索算法。</p>
+<h3 id="1-1-定义问题和解"><a href="#1-1-定义问题和解" class="headerlink" title="1.1 定义问题和解"></a>1.1 定义问题和解</h3><p>一个问题包括如下5个部分：</p>
+<ul>
+<li><p>Agent的初始状态</p>
+</li>
+<li><p>表述Agent可能的行动</p>
+</li>
+<li><p>转移模型：已知现在状态和动作，得到后继状态</p>
+</li>
+<li><p>目标测试：确定给定的状态是不是目标状态</p>
+</li>
+<li><p>路径耗散：为每条路径赋一个耗散值（代价），是单步耗散的总和</p>
+</li>
+</ul>
+<p>上述五个部分组成一个数据结构，作为问题求解算法的一个输入，问题的解就是从初始状态到目标状态的一组行动序列，解的质量由路径耗散函数度量，所有解中路径耗散最小的解即为最优解。</p>
+<h3 id="1-2-问题的形式化"><a href="#1-2-问题的形式化" class="headerlink" title="1.2 问题的形式化"></a>1.2 问题的形式化</h3><p>对现实问题进行合理的抽象化，既不能太具体，导致问题过于复杂；又不能太抽象，不具备现实参考价值</p>
+<h2 id="2-问题实例"><a href="#2-问题实例" class="headerlink" title="2 问题实例"></a>2 问题实例</h2><p> 书中给了几个案例，本笔记没有给出。</p>
+<h2 id="3-通过搜索求解"><a href="#3-通过搜索求解" class="headerlink" title="3 通过搜索求解"></a>3 通过搜索求解</h2><p>解是一个行动序列，可能的行动序列是搜索树中根节点的初始状态出发，连线表示动作，节点表示问题状态空间中的状态。父节点出发可以得到子节点，叶节点是所有待扩展的节点。数搜索是无限的，因为包括环路，所以添加一个探索集，用于标注已经探索过的节点集合——图搜索。</p>
+<h3 id="3-1-搜索算法基础"><a href="#3-1-搜索算法基础" class="headerlink" title="3.1 搜索算法基础"></a>3.1 搜索算法基础</h3><p>需要一个数据结构用于记录搜索树的构造过程，对于每个节点，定义的数据结构包括：</p>
+<ul>
+<li>n.STATE：对应搜索空间中的状态</li>
+</ul>
+<ul>
+<li>n.PARENT：产生该节点的父节点</li>
+</ul>
+<ul>
+<li>n.ACTION：父节点生成该节点时的动作</li>
+</ul>
+<ul>
+<li>n.PATH-COST：从初始状态到达该节点的路径消耗。</li>
+</ul>
+<p>节点VS状态：节点时用来表示搜索数的数据结构，状态对应于现实世界中的一个匹配。如果同一个状态可以通过两种不同的路径生成，则两个不同的节点包含同样的世界状态。</p>
+<h3 id="3-2-问题求解算法的性能"><a href="#3-2-问题求解算法的性能" class="headerlink" title="3.2 问题求解算法的性能"></a>3.2 问题求解算法的性能</h3><ul>
+<li><strong>完备性</strong>：问题有解时，能否保证找到解</li>
+</ul>
+<ul>
+<li><strong>最优性</strong>：搜索策略能否找到最优解</li>
+</ul>
+<ul>
+<li><strong>时间复杂度</strong>：找到解需要花费多长时间</li>
+</ul>
+<ul>
+<li><strong>空间复杂度</strong>：在执行过程中需要多少内存。</li>
+</ul>
+<p>度量标准：d，分支因子，任何节点的最多后继数；d，目标节点所在的最浅深度；m，状态空间中任何路径的最大长度。$C^\star$代表最优解的代价，假设每个行动的代价至少为$\epsilon$</p>
+<h2 id="4-无信息的搜索策略"><a href="#4-无信息的搜索策略" class="headerlink" title="4 无信息的搜索策略"></a>4 无信息的搜索策略</h2><p>有信息（启发式）：知道一个非目标状态是否比其他状态 “更有希望”接近目标。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:center">宽度优先</th>
+<th style="text-align:center">代价一致</th>
+<th style="text-align:center">深度优先</th>
+<th style="text-align:center">深度受限</th>
+<th style="text-align:center">迭代加深</th>
+<th style="text-align:center">双向搜索</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>完备性</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td>最优性</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td>时间复杂度</td>
+<td style="text-align:center">$O(b^d)$</td>
+<td style="text-align:center">$O(b^{1+[C^\star/\epsilon]})$</td>
+<td style="text-align:center">$O(b^m)$</td>
+<td style="text-align:center">$O(b^l)$</td>
+<td style="text-align:center">$O(b^d)$</td>
+<td style="text-align:center">$O(b^{d/2})$</td>
+</tr>
+<tr>
+<td>空间复杂度</td>
+<td style="text-align:center">$O(b^d)$</td>
+<td style="text-align:center">$O(b^{1+[C^\star/\epsilon]})$</td>
+<td style="text-align:center">$O(bm)$</td>
+<td style="text-align:center">$O(bl)$</td>
+<td style="text-align:center">$O(bd)$</td>
+<td style="text-align:center">$O(b^{d/2})$</td>
+</tr>
+<tr>
+<td>算法描述</td>
+<td style="text-align:center">先扩展根节点，然后扩展他们的后继，下一层的任何节点扩展之前，本层深度的节点都已经扩展完。</td>
+<td style="text-align:center">不在扩展深度最浅的节点，而是扩展路径消耗最小的节点。</td>
+<td style="text-align:center">扩展数的当前边缘节点集中最深的节点</td>
+<td style="text-align:center">对深度优先算法设置界限l</td>
+<td style="text-align:center">不断增大深度限制，直到找到目标</td>
+<td style="text-align:center">从初始状态和目标开始双向搜索，希望在中点相遇</td>
+</tr>
+<tr>
+<td>其他</td>
+<td style="text-align:center">FIFO  目标测试在节点被生成时  空间消耗巨大</td>
+<td style="text-align:center">目标测试在节点被选择扩展时  在单步耗散相同时，$O(b^{d+1})$</td>
+<td style="text-align:center">LIFO  回溯算法：只产生一个后继，内存!$O(m)$</td>
+<td style="text-align:center">根据先验知识，选择一个状态空间的直径  两种失败方式：无解，在深度界限内无解</td>
+<td style="text-align:center">首选算法  深度每增加一次，之前前几层算的状态就被重复（影响不大）</td>
+<td style="text-align:center">两个小圆的面积比一个大圆（半径之和）要大  从目标开始搜不易实现；  没有明确的目标</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="5-有信息（启发式）的搜索策略"><a href="#5-有信息（启发式）的搜索策略" class="headerlink" title="5 有信息（启发式）的搜索策略"></a>5 有信息（启发式）的搜索策略</h2><p>即使用问题本身之外的特定知识辅助搜索。</p>
+<p>考虑最佳优先搜索策略，节点是基于评价函数值被选择扩展的，评价函数$f(n)$是一种代价估计。最佳优先策略和一致代价搜索类似，不过根据f值而不是g值对优先级进行排队。一般最优优先搜索算法的f由启发函数构成，启发函数是在搜索算法中利用问题额外信息的常见形式。</p>
+<p>$h(n)$可采纳：$f(n)$不会高估到达目标的代价，即$f(n)$永远不会超过经过节点n的解的实际代价；</p>
+<p>$h(n)$一致：$h(n)&lt;= c(n,a,n’)+h(n’)$,即$h(n)$单调增加</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:left"></th>
+<th style="text-align:center">贪婪最佳优先</th>
+<th style="text-align:center">$A^*$搜索</th>
+<th style="text-align:center">存储受限</th>
+<th style="text-align:left">学习促进搜索</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">完备性</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">是（h(n)一致）</td>
+<td style="text-align:center"></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">最优性</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">是（h(n)可采纳）</td>
+<td style="text-align:center"></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">时间复杂度</td>
+<td style="text-align:center">$O(b^m)$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">空间复杂度</td>
+<td style="text-align:center">$O(b^m)$</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left">算法描述</td>
+<td style="text-align:center">$f(n) = h(n) $  只扩展离目标最近的点</td>
+<td style="text-align:center">缩小总评估代价  $f(n)=g(n)+h(n)$  评价函数是经过节点n的最小代价解的估计代价，扩展评价函数最小的节点</td>
+<td style="text-align:center">迭代加升+ $A^*$</td>
+<td style="text-align:left">元状态空间</td>
+</tr>
+<tr>
+<td style="text-align:left">其他</td>
+<td style="text-align:center">可能导致死循环，下降的幅度取决于特定的问题和启发式函数的质量</td>
+<td style="text-align:center">从起始点发散，以f值增长的同心带状的方式添加节点</td>
+<td style="text-align:center"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="6-启发式函数"><a href="#6-启发式函数" class="headerlink" title="6 启发式函数"></a>6 启发式函数</h2><h3 id="6-1-启发式函数的精确度对性能的影响"><a href="#6-1-启发式函数的精确度对性能的影响" class="headerlink" title="6.1 启发式函数的精确度对性能的影响"></a>6.1 启发式函数的精确度对性能的影响</h3><p>有效分支因子：总结点数为N，解的深度为d，那么$b^{*}$是深度为d的标准搜索树为了能够包括N+1个节点所必须的分支因子，即：</p>
+<script type="math/tex; mode=display">N+1 = 1 + b^*+ （b^*）^2+ （b^*）^3+ （b^*）^4+……（b^*）^d</script><h3 id="6-2-从松弛问题的角度出发设计可采纳的启发式"><a href="#6-2-从松弛问题的角度出发设计可采纳的启发式" class="headerlink" title="6.2 从松弛问题的角度出发设计可采纳的启发式"></a>6.2 从松弛问题的角度出发设计可采纳的启发式</h3><p>减少了行动限制的问题称为松弛问题，松弛问题的状态空间图是原有状态空间图的超图。松弛问题增加了状态空间的边，原有问题中的任一最优解同样是松弛问题的最优解，但是松弛问题可能纯在更好的解，因为增加的边可能导致捷径。因此，松弛问题的最优解代价是原问题的可采纳的启发式。</p>
+<p>对不同的启发式集合，通过选取其中的最大值，构成新的启发式比所以的成员都更有优势。</p>
+<h3 id="6-3-从子问题出发设计可采纳的启发式：模式数据库"><a href="#6-3-从子问题出发设计可采纳的启发式：模式数据库" class="headerlink" title="6.3 从子问题出发设计可采纳的启发式：模式数据库"></a>6.3 从子问题出发设计可采纳的启发式：模式数据库</h3><p>模式数据库就是对每个可能的子问题实例存储解代价，对搜索中遇到的每个完备状态计算其可采纳的启发式。</p>
+<h3 id="6-4-从经验中学习启发式"><a href="#6-4-从经验中学习启发式" class="headerlink" title="6.4 从经验中学习启发式"></a>6.4 从经验中学习启发式</h3><p>直接构造函数用于估计$h(n)$。这个函数在不断的求解问题过程中学习，最终实现预测探索过程中所出现的其他状态的解代价。可以使用神经网络和决策树等技术实现。</p>
+<p>如果在状态描述外还能刻画给定状态的特征，则可以采用归纳学习的方法，通过回归等方法计算启发式。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/10/18/AIMP3/" data-id="cky0wn4tb00036ou530ro5dc1" class="article-share-link">
+        Share
+      </a>
+      
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" rel="tag">人工智能</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+  
+<nav class="article-nav">
+  
+  <a href="/2021/11/08/AIMP2/" class="article-nav-link">
+    <strong class="article-nav-caption">Newer</strong>
+    <div class="article-nav-title">
+      
+      《Artificial Intelligence： A modern approach》读书笔记——贰
+      
+    </div>
+  </a>
+  
+  
+  <a href="/2021/10/10/AIMP1/" class="article-nav-link">
+    <strong class="article-nav-caption">Older</strong>
+    <div class="article-nav-title">《Artificial Intelligence： A modern approach》读书笔记——壹</div>
+  </a>
+  
+</nav>
+
+  
+
+  
+  
+  
+  
+
+</article>
+</section>
+
+
+  
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  });
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@2.7.8/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+    <footer class="footer">
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+  <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+  <li><i class="fe fe-bookmark"></i> <span id="busuanzi_value_page_pv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>Hexo &copy; 2022</li>
+      
+        <li>ZHWANGART</li>
+      
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>theme  <a target="_blank" rel="noopener" href="https://github.com/zhwangart/hexo-theme-ocean">Ocean</a></li>
+    </ul>
+  </div>
+</footer>
+  </main>
+  <aside class="sidebar">
+    <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/hexo.svg" alt="Hexo"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">Home</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">Archives</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/gallery">Gallery</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">About</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="Search">
+        <i class="fe fe-search"></i>
+        Search
+      </a>
+    </li>
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      <div class="totop" id="totop">
+  <i class="fe fe-rocket"></i>
+</div>
+    </li>
+    <li class="nav-item">
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="fe fe-feed"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+  </aside>
+  
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/jquery.justifiedGallery.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/copybtn.js"></script>
+
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto',
+  });
+</script>
+
+
+
+<script src="/js/ocean.js"></script>
+
+</body>
+
+</html>
