@@ -27,16 +27,16 @@
 <meta property="og:site_name" content="HelloBear">
 <meta property="og:description" content="本文介绍self-attention的原理以及常见问题。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="file:///E:/blog/source/_posts/Self-attention详解/4797131a4930c56efe793655ee1196c4.png">
-<meta property="og:image" content="file:///E:/blog/source/_posts/Self-attention详解/80a1b848973caba1a2abf65d365a71d8.png">
-<meta property="og:image" content="file:///E:/blog/source/_posts/Self-attention详解/9df849d7ade3306038ad87845782d27d.png">
-<meta property="og:image" content="file:///E:/blog/source/_posts/Self-attention详解/af943ad7d3ff9cedd8bfaf76e50ce798.png">
+<meta property="og:image" content="file:///E:/blog/source/_posts/Self-attention/4797131a4930c56efe793655ee1196c4.png">
+<meta property="og:image" content="file:///E:/blog/source/_posts/Self-attention/80a1b848973caba1a2abf65d365a71d8.png">
+<meta property="og:image" content="file:///E:/blog/source/_posts/Self-attention/9df849d7ade3306038ad87845782d27d.png">
+<meta property="og:image" content="file:///E:/blog/source/_posts/Self-attention/af943ad7d3ff9cedd8bfaf76e50ce798.png">
 <meta property="article:published_time" content="2021-12-29T14:30:02.000Z">
-<meta property="article:modified_time" content="2022-03-03T13:03:06.896Z">
+<meta property="article:modified_time" content="2022-03-08T04:09:14.122Z">
 <meta property="article:author" content="xlQ">
 <meta property="article:tag" content="深度学习">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="file:///E:/blog/source/_posts/Self-attention详解/4797131a4930c56efe793655ee1196c4.png">
+<meta name="twitter:image" content="file:///E:/blog/source/_posts/Self-attention/4797131a4930c56efe793655ee1196c4.png">
 
 <link rel="canonical" href="http://example.com/2021/12/29/Self-attention/">
 
@@ -191,7 +191,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-03-03 21:03:06" itemprop="dateModified" datetime="2022-03-03T21:03:06+08:00">2022-03-03</time>
+                <time title="Modified: 2022-03-08 12:09:14" itemprop="dateModified" datetime="2022-03-08T12:09:14+08:00">2022-03-08</time>
               </span>
 
           
@@ -208,16 +208,16 @@
         <p>本文介绍self-attention的原理以及常见问题。</p>
 <span id="more"></span>
 <h1 id="1-Self-attention用于提取序列特征"><a href="#1-Self-attention用于提取序列特征" class="headerlink" title="1 Self-attention用于提取序列特征"></a>1 Self-attention用于提取序列特征</h1><p>Self-attention机制是一种计算单个序列各个元素之间关联性的方法，例如给定一个输入序列：”Hello，I love you！”,通过self-attention机制可以计算单词之间的关系，例如”Hello”和”I”之间的关系更为接近，与”you”则没有什么关系。最终可以得到一个这样的得分矩阵，通过这个矩阵我们可以猜测，在出现了文本预测的时候，当输入的是”Hello”的时候，后面接着的是”I”的概率最大。</p>
-<p><img title src="file:///E:/blog/source/_posts/Self-attention详解/4797131a4930c56efe793655ee1196c4.png" alt data-align="center"></p>
+<p><img title src="file:///E:/blog/source/_posts/Self-attention/4797131a4930c56efe793655ee1196c4.png" alt data-align="center"></p>
 <h1 id="2-获取attention矩阵"><a href="#2-获取attention矩阵" class="headerlink" title="2 获取attention矩阵"></a>2 获取attention矩阵</h1><p>如何得到这样一个矩阵呢？以及得到了这样一个矩阵之后，如何利用这个矩阵对输入数据进行进一步处理呢？我们还以上面这句话为例介绍。</p>
 <p>首先在文本处理中，第一步肯定是Embedding，也就是将文本转换为向量。转换的方法很多，包括传统的one-hot encoding，word2vec方法，到现在的BERT，GPT等。比如说我们将”Hello”转换为向量$x^{1}$，”I”转换为向量$x^{2}$，”love”转换为向量$x^{3}$，”you”转换为向量$x^{4}$。那么如何得到如图1这样的矩阵呢？</p>
 <p>这边借用一下李宏毅老师的课件分析一下。对于一排输入向量$\left\lbrack x^{1},x^{2},x^{3},x^{4} \right\rbrack$，首先对它们做一下线性变化得到向量$\left\lbrack a^{1},a^{2},a^{3},a^{4}\, \right\rbrack$。得到这样一排向量之后，分别对每一个向量$a^{i}$乘以$w^{q},w^{k},w^{v}$，得到向量$q,k,v$，即大家常说的query，key和value，具体如图2所示。至于如何理解这仨个量，直观理解参考：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/427629601/answer/1558216827"><span class="underline">如何理解Q、K、V？</span></a></p>
-<p><img src="file:///E:/blog/source/_posts/Self-attention详解/80a1b848973caba1a2abf65d365a71d8.png" title alt data-align="center"></p>
+<p><img title src="file:///E:/blog/source/_posts/Self-attention/80a1b848973caba1a2abf65d365a71d8.png" alt data-align="center"></p>
 <p>得到了每个向量对应的$q^{i},k^{i},v^{i}$后，就可以开始计算attention的数值了，这里采用的是Scaled Dot-Product的方法，具体操作如下：</p>
-<p><img src="file:///E:/blog/source/_posts/Self-attention详解/9df849d7ade3306038ad87845782d27d.png" title alt data-align="center"></p>
+<p><img title src="file:///E:/blog/source/_posts/Self-attention/9df849d7ade3306038ad87845782d27d.png" alt data-align="center"></p>
 <p>比如说为了计算$x^{1}$和其他三个向量之间的关联性，用$q^{1}$乘以包括$k^{1}$在内的所有$k^{i}$值，然后再除以$\sqrt{d}$，得到了四个$\alpha_{1,i}$值，这四个值做完softmax之后，就是图1中的第一列（行）的值，过程如图3所示。对所有的向量都做同样的过程，最终就可以得到图1所示的得分矩阵啦。</p>
 <p>那么我们就知道了，$q,k$是为了计算得分矩阵的，那么剩下来的$v$,是干什么的呢？其实向量$v$就是保存原始向量$x$信息的，既然有了向量之间的关联性，那么我们用这个作为权重，对向量$v$进行加权，就可以得到每个向量对应的输出啦。如图4所示，输入向量$x^{1}$最终得到的输出是向量$q^{1}$。可以想到，$q^{1}$是和$v^{1}$最像的，因为在加权平均里$v^{1}$的权重$\alpha$最大；但是同时，它和$v^{1}$不同之处在于，它融合了整个序列的其他信息，这样输出的结果表达能力更好。</p>
-<p><img src="file:///E:/blog/source/_posts/Self-attention详解/af943ad7d3ff9cedd8bfaf76e50ce798.png" title alt data-align="center"></p>
+<p><img title src="file:///E:/blog/source/_posts/Self-attention/af943ad7d3ff9cedd8bfaf76e50ce798.png" alt data-align="center"></p>
 <h1 id="3-常见问题"><a href="#3-常见问题" class="headerlink" title="3 常见问题"></a>3 常见问题</h1><p>自然的，有如下一些疑问？</p>
 <ul>
 <li>为什么不能$q,k,v$都等于向量$x$，而是要分别乘以不同的向量来得到这么多向量？</li>
@@ -262,8 +262,8 @@
       <i class="fa fa-chevron-left"></i> 机器学习三大数学基础——概率论、决策论和信息论
     </a></div>
       <div class="post-nav-item">
-    <a href="/2021/12/29/Transformers%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97%E4%BB%A3%E7%A0%81%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB/" rel="next" title="Transformers各个模块代码解读">
-      Transformers各个模块代码解读 <i class="fa fa-chevron-right"></i>
+    <a href="/2021/12/29/Transformers%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97%E4%BB%A3%E7%A0%81%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB/" rel="next" title="Transformers">
+      Transformers <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
