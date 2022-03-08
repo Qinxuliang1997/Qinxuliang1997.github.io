@@ -32,7 +32,7 @@
 <meta property="og:image" content="http://example.com/2021/12/29/Self-attention/9df849d7ade3306038ad87845782d27d.png">
 <meta property="og:image" content="http://example.com/2021/12/29/Self-attention/af943ad7d3ff9cedd8bfaf76e50ce798.png">
 <meta property="article:published_time" content="2021-12-29T14:30:02.000Z">
-<meta property="article:modified_time" content="2022-03-08T11:01:33.915Z">
+<meta property="article:modified_time" content="2022-03-08T11:04:41.117Z">
 <meta property="article:author" content="xlQ">
 <meta property="article:tag" content="深度学习">
 <meta name="twitter:card" content="summary">
@@ -191,7 +191,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-03-08 19:01:33" itemprop="dateModified" datetime="2022-03-08T19:01:33+08:00">2022-03-08</time>
+                <time title="Modified: 2022-03-08 19:04:41" itemprop="dateModified" datetime="2022-03-08T19:04:41+08:00">2022-03-08</time>
               </span>
 
           
@@ -230,11 +230,11 @@
 <ul>
 <li>$w<em>{q},w</em>{k},w_{v}$是如何得到的？</li>
 </ul>
-<p>在实际的代码过程中，这一步是通过nn.linear模块得到的，<em>w_q,w_k,w_v</em>则是模块的参数，随着训练的过程而学习到。</p>
+<p>在实际的代码过程中，这一步是通过nn.linear模块得到的，$w_q,w_k,w_v$则是模块的参数，随着训练的过程而学习到。</p>
 <ul>
 <li>为何$q*k$后要除以$\sqrt{k}$，不除行不行？</li>
 </ul>
-<p>因为使用softmax进行分类，较大的值梯度较小，且softmax有放大作用会把大部分概率给最大的元素，其他的元素梯度消失；因为原q和k都是满足0均值，1为方差的正态分布的，但是，在向量相乘之后均值仍然为0,方差变为了k，所以除以$\sqrt{k}$。</p>
+<p>因为使用softmax进行分类，较大的值梯度较小，且softmax有放大作用会把大部分概率给最大的元素，其他的元素梯度消失；因为原q和k都是满足0均值，1为方差的正态分布的，但是，在向量相乘之后均值仍然为0,方差变为了$k$，所以除以$\sqrt{k}$。</p>
 <h1 id="4-多头注意力"><a href="#4-多头注意力" class="headerlink" title="4 多头注意力"></a>4 多头注意力</h1><p>介绍了以上的基础，下面介绍multi-head self-attention。多头注意力机制只是在单头的基础上，直接把输入中的向量在embedding维度上切分为N份，计算多个N和q，k，v，最后把计算结果取一个均值得到的，这么做的好处包括：</p>
 <ul>
 <li>并行计算；</li>
