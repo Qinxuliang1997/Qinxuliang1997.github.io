@@ -27,7 +27,7 @@
 <meta property="og:site_name" content="HelloBear">
 <meta property="og:description" content="本文介绍Transformers代码实现的细节，包括7个部分。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/2021/12/29/Transformers%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97%E4%BB%A3%E7%A0%81%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB/Transformers各个模块代码详细解读/transformer_model_architecture.png">
+<meta property="og:image" content="http://example.com/2021/12/29/Transformers%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97%E4%BB%A3%E7%A0%81%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB/0.png">
 <meta property="og:image" content="http://example.com/2021/12/29/Transformers%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97%E4%BB%A3%E7%A0%81%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB/1.png">
 <meta property="og:image" content="http://example.com/2021/12/29/Transformers%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97%E4%BB%A3%E7%A0%81%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB/2.png">
 <meta property="og:image" content="http://example.com/2021/12/29/Transformers%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97%E4%BB%A3%E7%A0%81%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB/3.png">
@@ -36,11 +36,11 @@
 <meta property="og:image" content="http://example.com/2021/12/29/Transformers%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97%E4%BB%A3%E7%A0%81%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB/6.png">
 <meta property="og:image" content="http://example.com/2021/12/29/Transformers%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97%E4%BB%A3%E7%A0%81%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB/7.png">
 <meta property="article:published_time" content="2021-12-29T15:32:11.000Z">
-<meta property="article:modified_time" content="2022-03-15T13:30:06.721Z">
+<meta property="article:modified_time" content="2022-03-15T13:37:34.966Z">
 <meta property="article:author" content="xlQ">
 <meta property="article:tag" content="深度学习">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2021/12/29/Transformers%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97%E4%BB%A3%E7%A0%81%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB/Transformers各个模块代码详细解读/transformer_model_architecture.png">
+<meta name="twitter:image" content="http://example.com/2021/12/29/Transformers%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97%E4%BB%A3%E7%A0%81%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB/0.png">
 
 <link rel="canonical" href="http://example.com/2021/12/29/Transformers%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97%E4%BB%A3%E7%A0%81%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB/">
 
@@ -195,7 +195,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-03-15 21:30:06" itemprop="dateModified" datetime="2022-03-15T21:30:06+08:00">2022-03-15</time>
+                <time title="Modified: 2022-03-15 21:37:34" itemprop="dateModified" datetime="2022-03-15T21:37:34+08:00">2022-03-15</time>
               </span>
 
           
@@ -212,7 +212,9 @@
         <p>本文介绍Transformers代码实现的细节，包括7个部分。</p>
 <span id="more"></span>
 <p>在开始之前，先放上论文中的模型架构，下面的每个部分将依次实现这个架构中的一部分。</p>
-<p><img src="/2021/12/29/Transformers%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97%E4%BB%A3%E7%A0%81%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB/Transformers各个模块代码详细解读\transformer_model_architecture.png" alt></p>
+<ul>
+<li><img src="/2021/12/29/Transformers%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97%E4%BB%A3%E7%A0%81%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB/0.png" title alt data-align="center"></li>
+</ul>
 <h1 id="Embedding"><a href="#Embedding" class="headerlink" title="Embedding"></a>Embedding</h1><p>为了处理文本，首先需要对所有的文本进行一个数字化的处理。表示文本的方法都多种，最容易想到的是one-hot编码，如下图所示，这种方法没有考虑到单词之间的关联性，表示能力不强。</p>
 <ul>
 <li><img src="/2021/12/29/Transformers%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97%E4%BB%A3%E7%A0%81%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB/1.png" title alt data-align="center"></li>
