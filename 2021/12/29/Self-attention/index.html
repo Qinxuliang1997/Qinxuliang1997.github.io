@@ -31,8 +31,9 @@
 <meta property="og:image" content="http://example.com/2021/12/29/Self-attention/80a1b848973caba1a2abf65d365a71d8.png">
 <meta property="og:image" content="http://example.com/2021/12/29/Self-attention/9df849d7ade3306038ad87845782d27d.png">
 <meta property="og:image" content="http://example.com/2021/12/29/Self-attention/af943ad7d3ff9cedd8bfaf76e50ce798.png">
+<meta property="og:image" content="http://example.com/2021/12/29/Self-attention/matrix.png">
 <meta property="article:published_time" content="2021-12-29T14:30:02.000Z">
-<meta property="article:modified_time" content="2022-03-08T11:04:41.117Z">
+<meta property="article:modified_time" content="2022-03-17T15:09:00.670Z">
 <meta property="article:author" content="xlQ">
 <meta property="article:tag" content="深度学习">
 <meta name="twitter:card" content="summary">
@@ -191,7 +192,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-03-08 19:04:41" itemprop="dateModified" datetime="2022-03-08T19:04:41+08:00">2022-03-08</time>
+                <time title="Modified: 2022-03-17 23:09:00" itemprop="dateModified" datetime="2022-03-17T23:09:00+08:00">2022-03-17</time>
               </span>
 
           
@@ -218,23 +219,69 @@
 <p>比如说为了计算$x^1$和其他三个向量之间的关联性，用$q^1$乘以包括$k^1$在内的所有$k^i$值，然后再除以$\sqrt{d}$，得到了四个$\alpha_{1,i}$值，这四个值做完softmax之后，就是图1中的第一列（行）的值，过程如图3所示。对所有的向量都做同样的过程，最终就可以得到图1所示的得分矩阵啦。</p>
 <p>那么我们就知道了，$q,k$是为了计算得分矩阵的，那么剩下来的$v$,是干什么的呢？其实向量$v$就是保存原始向量$x$信息的，既然有了向量之间的关联性，那么我们用这个作为权重，对向量$v$进行加权，就可以得到每个向量对应的输出啦。如图4所示，输入向量$x^1$最终得到的输出是向量$q^1$。可以想到，$q^1$是和$v^1$最像的，因为在加权平均里$v^1$的权重$\alpha$最大；但是同时，它和$v^1$不同之处在于，它融合了整个序列的其他信息，这样输出的结果表达能力更好。</p>
 <p><img title src="/2021/12/29/Self-attention/af943ad7d3ff9cedd8bfaf76e50ce798.png" alt data-align="center"></p>
+<p>以上是个向量维度的演示，实际做的时候，我们是把向量拼成矩阵，用矩阵的乘法代替向量的乘法，$I$中为输入向量按照列拼成的输入矩阵，$Q$的是$q$按照列拼接起来的，$A$是算出的attention矩阵，$A’$是除以$\sqrt{k}$并做softmax之后的的矩阵，$O$是输出结果。</p>
+<p><img title src="/2021/12/29/Self-attention/matrix.png" alt data-align="center"></p>
 <h1 id="3-常见问题"><a href="#3-常见问题" class="headerlink" title="3 常见问题"></a>3 常见问题</h1><p>自然的，有如下一些疑问？</p>
 <ul>
-<li>为什么不能$q,k,v$都等于向量$x$，而是要分别乘以不同的向量来得到这么多向量？</li>
-</ul>
+<li><p>为什么不能$q,k,v$都等于向量$x$，而是要分别乘以不同的向量来得到这么多向量？</p>
 <p>使用不同的q，k，v可以保证在不同的空间进行投影，增强了模型的表达能力，提高了泛化性能。</p>
-<ul>
-<li>经过self-attention得到的输出在形状上和输入相同，为什么就可以得到更好结果？</li>
-</ul>
+</li>
+<li><p>经过self-attention得到的输出在形状上和输入相同，为什么就可以得到更好结果？</p>
 <p>输出与输入相比，更多的增加了元素之间的关联特性，这些特性在文本处理中十分有益。</p>
-<ul>
-<li>$w<em>{q},w</em>{k},w_{v}$是如何得到的？</li>
+</li>
+<li><p>$w_q,w_k,w_v$是如何得到的？</p>
+<p>在实际的代码过程中，这一步是通过nn.linear模块得到的，w_q,w_k,w_v则是模块的参数，随着训练的过程而学习到。</p>
+</li>
+<li><p>为何$q*k$后要除以$\sqrt{k}$，不除行不行？</p>
+<p>因为使用softmax进行分类，较大的值梯度较小，且softmax有放大作用会把大部分概率给最大的元素，其他的元素梯度消失；因为原q和k都是满足0均值，1为方差的正态分布的，但是，在向量相乘之后均值仍然为0,方差变为了k，所以除以$\sqrt{k}$。</p>
+</li>
 </ul>
-<p>在实际的代码过程中，这一步是通过nn.linear模块得到的，$w_q,w_k,w_v$则是模块的参数，随着训练的过程而学习到。</p>
 <ul>
-<li>为何$q*k$后要除以$\sqrt{k}$，不除行不行？</li>
+<li><p>Self-attention与其他模型的比较？</p>
+<p>我们从三个方面衡量模型的优劣，第一是性能，指标是时间复杂度，第二是可并行性，第二是可并性行行，指标是所需要的最小顺序操作数；第三是处理长依赖的能力，指标是网络中远程依赖项之间的路劲距离。</p>
+<p>先规定一下参数表示，$n$表示序列的长度，$d$表示每个词的向量维度，$k$表示卷积核的大小，$r$表示限制版自注意力中领域的大小。</p>
+</li>
 </ul>
-<p>因为使用softmax进行分类，较大的值梯度较小，且softmax有放大作用会把大部分概率给最大的元素，其他的元素梯度消失；因为原q和k都是满足0均值，1为方差的正态分布的，但是，在向量相乘之后均值仍然为0,方差变为了$k$，所以除以$\sqrt{k}$。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Layer Type</th>
+<th style="text-align:center">Complexity</th>
+<th style="text-align:center">Sequential Operations</th>
+<th style="text-align:center">Max Path Length</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Self-Attention</td>
+<td style="text-align:center">$O(n^2d)$</td>
+<td style="text-align:center">$O(1)$</td>
+<td style="text-align:center">$O(1)$</td>
+</tr>
+<tr>
+<td style="text-align:center">Recurrent</td>
+<td style="text-align:center">$O(nd^2)$</td>
+<td style="text-align:center">$O(n)$</td>
+<td style="text-align:center">$O(n)$</td>
+</tr>
+<tr>
+<td style="text-align:center">Convolutional</td>
+<td style="text-align:center">$O(knd^2)$</td>
+<td style="text-align:center">$O(1)$</td>
+<td style="text-align:center">$O(log_k(n))$</td>
+</tr>
+<tr>
+<td style="text-align:center">Self-Attention (restricted)</td>
+<td style="text-align:center">$O(rnd)$</td>
+<td style="text-align:center">$O(1)$</td>
+<td style="text-align:center">$O(n/r)$</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>自注意力包括三个步骤：相似度计算、softmax和加权求和。相似度计算的时间复杂度是$O(n^2d)$，因为可以看成(n,d)和(d,n)两个矩阵的相乘。softmax的时间复杂度是$O(n^2)$。加权求和的时间复杂度是$O(n^2d)$，同样可以看成(n,n)和(n,d)的矩阵相乘。</p>
+<p>从性能角度说，该模型在序列长度过长时表现不如RNN，不过在可并行性和处理长依赖的能力上具有绝对的优势。我们的任务，就是想办法尽可能用词向量维度来弥补长度的劣势，只要$d&lt;n$，那么模型的性能也是杠杠的。</p>
 <h1 id="4-多头注意力"><a href="#4-多头注意力" class="headerlink" title="4 多头注意力"></a>4 多头注意力</h1><p>介绍了以上的基础，下面介绍multi-head self-attention。多头注意力机制只是在单头的基础上，直接把输入中的向量在embedding维度上切分为N份，计算多个N和q，k，v，最后把计算结果取一个均值得到的，这么做的好处包括：</p>
 <ul>
 <li>并行计算；</li>
