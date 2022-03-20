@@ -152,6 +152,99 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/20/K-means/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/spicy.jpg">
+      <meta itemprop="name" content="xlQ">
+      <meta itemprop="description" content="AI for ai ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HelloBear">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/03/20/K-means/" class="post-title-link" itemprop="url">K-means</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-03-20 11:11:48 / Modified: 11:48:35" itemprop="dateCreated datePublished" datetime="2022-03-20T11:11:48+08:00">2022-03-20</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="K-means算法简介"><a href="#K-means算法简介" class="headerlink" title="K-means算法简介"></a>K-means算法简介</h1><h2 id="算法原理"><a href="#算法原理" class="headerlink" title="算法原理"></a>算法原理</h2><p>对于一组数据${x<em>1,…,x_n}$，目标是将其划分为$K$个类别，每个类别的中心是$\mu_k$，对于每个数据点$x_n$，引入二值指示变量$r</em>{nk}={0,1}$，其中$k=1,…n$表示数据点属于$K$个聚类中的哪一个，从而如果数据点$x<em>n$被分配到类别$k$，那么$r</em>{nk}=k$，且对于$j\ne k$，有$r_{nj}=0$。目标函数为失真度量：</p>
+<script type="math/tex; mode=display">
+J = \sum_{n = 1}^N{\sum_{k = 1}^{K}{r_{nk} |\mathbf{x}_n - \mathbf{\mu}_k |^{2}}}</script><p>表示的是每个数据点到与它被分配的向量$\mu_k$之间的距离平方和。未来使得$J$最小化，分两步：</p>
+<ul>
+<li><p><strong>E</strong>步骤：保持$\mu<em>{k}$不变，关于$r</em>{nk}$最小化$J$（计算KN次，每次将样本分配给距离最近的中心）</p>
+</li>
+<li><p><strong>M</strong>步骤：保持$r<em>{\text{nk}}$不变，关于$\mu</em>{k}$最小化$J$（求导数，得到：$\mu<em>{k} = \frac{\sum</em>{n}{r_{nk}\mathbf{x}_n} }{\sum_n r_nk}$，即对样本取平均）</p>
+</li>
+</ul>
+<p><img src="/2022/03/20/K-means/1.png" alt></p>
+<h2 id="改进措施"><a href="#改进措施" class="headerlink" title="改进措施"></a>改进措施</h2><ul>
+<li><p>聚类中心初始化选择：⼀个更好的初始化步骤是将聚类中⼼选择为由K个随机数据点组成的⼦集</p>
+</li>
+<li><p>加速K-means：对数据结构的预先计算法使⽤距离的三⾓不等式避免了不必要的距离计算</p>
+</li>
+<li><p>在线随机算法：</p>
+<script type="math/tex; mode=display">
+\mathbf{\mu}_{\mathbf{k}}^{\mathrm{新}\mathrm{\ }} = \mathbf{\mu}_{\mathbf{k}}^{\mathrm{旧}\mathrm{\ }} + \eta_{n}\left( \mathbf{x}_{\mathbf{n}} - \mathbf{\mu}_{\mathbf{k}}^{\mathrm{旧}\mathrm{\ }} \right)</script></li>
+<li><p>K中⼼点算法：</p>
+<script type="math/tex; mode=display">
+\overline{J} = \sum_{n = 1}^{N}{\sum_{k = 1}^{K}{r_{\text{nk}}\mathcal{V}\left( \mathbf{x}_{\mathbf{n}},\mathbf{\mu}_{\mathbf{k}} \right)}}</script><p>引用新的不相似度度量，E步骤相同，M步骤更复杂</p>
+</li>
+<li><p>位于两个聚类中⼼的⼤概中间的位置的数据点：使⽤概率的⽅法，我们得到了对数据点聚类的”软”分配</p>
+</li>
+</ul>
+<h2 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h2><ul>
+<li><p>图像分割：不考虑像素的空间上的近似性，下图给出了运⾏K均值算法直⾄收敛的结果。对于任意特定的K值，我们将每个像素的{R,G,B}亮度三元组⽤聚类中心$\mu_{k}$的亮度值替代。</p>
+</li>
+<li><p>图像压缩：保存每个像素点对应的聚类中心，以及聚类中心即可。</p>
+</li>
+</ul>
+<p><img src="/2022/03/20/K-means/2.png" alt></p>
+<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><h2 id="基础实现"><a href="#基础实现" class="headerlink" title="基础实现"></a>基础实现</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">distEclud</span>(<span class="params">x1,x2</span>):</span></span><br><span class="line">    <span class="keyword">return</span> np.sqrt(np.<span class="built_in">sum</span>(np.power(x1-x2,<span class="number">2</span>)))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">randCent</span>(<span class="params">dataSet,k</span>):</span></span><br><span class="line">    n = np.shape(dataSet)[<span class="number">1</span>]</span><br><span class="line">    centroids = np.mat(np.zeros(k,n))</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">        minJ = <span class="built_in">min</span>(dataSet[:,j])</span><br><span class="line">        rangeJ = <span class="built_in">float</span>(<span class="built_in">max</span>(dataSet[:,j])-minJ)</span><br><span class="line">        centroids[:,j] = minJ + rangeJ * random.rand(k,<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> centroids</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">kmeans</span>(<span class="params">dataSet,k,distMeas=distEclud, createCent=randCent</span>):</span></span><br><span class="line">    m = shape(dataSet)[<span class="number">0</span>]</span><br><span class="line">    clusterAssment = np.mat(zeros((m,<span class="number">2</span>)))</span><br><span class="line">    centroids = createCent(dataSet,k)</span><br><span class="line">    clusterChanged = <span class="literal">True</span></span><br><span class="line">    <span class="keyword">while</span> clusterChanged: </span><br><span class="line">        clusterChanged = <span class="literal">False</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(m):</span><br><span class="line">            minDist = inf</span><br><span class="line">            minIndex = -<span class="number">1</span></span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(k):</span><br><span class="line">                distJI = distMeas(centroids[j,:],dataSet[i,:])</span><br><span class="line">                <span class="keyword">if</span> distJI &lt; minDist:</span><br><span class="line">                    minDist = distJI</span><br><span class="line">                    minIndex = j</span><br><span class="line">            <span class="keyword">if</span> clusterAssment[i,<span class="number">0</span>] != minIndex:</span><br><span class="line">                clusterChanged = <span class="literal">True</span></span><br><span class="line">            clusterAssment[i,:] = minIndex,minDist**<span class="number">2</span></span><br><span class="line">        <span class="built_in">print</span>(centroids)</span><br><span class="line">        <span class="keyword">for</span> cent <span class="keyword">in</span> <span class="built_in">range</span>(k):</span><br><span class="line">            ptsInClust = dataSet[nonzero(clusterAssment[:,<span class="number">0</span>]==cent)[<span class="number">0</span>]]</span><br><span class="line">            centroids[cent,:] = mean(ptsInClust,axis=<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> centroids,clusterAssment</span><br></pre></td></tr></table></figure>
+<h2 id="改进K-means"><a href="#改进K-means" class="headerlink" title="改进K-means"></a>改进K-means</h2><h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p>1、模式识别与机器学习</p>
+<p>2、动手学习机器学习</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/10/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -754,7 +847,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-03-17 23:09:00" itemprop="dateModified" datetime="2022-03-17T23:09:00+08:00">2022-03-17</time>
+                <time title="Modified: 2022-03-17 23:10:54" itemprop="dateModified" datetime="2022-03-17T23:10:54+08:00">2022-03-17</time>
               </span>
 
           
@@ -772,78 +865,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2021/12/29/Self-attention/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/spicy.jpg">
-      <meta itemprop="name" content="xlQ">
-      <meta itemprop="description" content="AI for ai ">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="HelloBear">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">机器学习三大数学基础——概率论、决策论和信息论</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2021-12-28 14:58:57" itemprop="dateCreated datePublished" datetime="2021-12-28T14:58:57+08:00">2021-12-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-01-07 14:12:52" itemprop="dateModified" datetime="2022-01-07T14:12:52+08:00">2022-01-07</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>模式识别领域关注的是利⽤计算机算法自动发现数据中的规律，以及使⽤这些规律采取将数据分类等⾏动。而为了实现这一个目的，首先需要一些基础的理论知识，本文参考自《模式识别与机器论文》第一章，介绍模式识别的三类基础知识：概率论、决策论与信息论。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -934,7 +955,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-count">15</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
