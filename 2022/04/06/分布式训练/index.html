@@ -20,29 +20,26 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="1234title: 分布式训练date: 2022-04-6 10:03:11mathjax: truetags: 深度学习 本文介绍深度学习训练中的分布式训练技术。">
+  <meta name="description" content="本文介绍深度学习训练中的分布式训练技术。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="HelloBear">
-<meta property="og:url" content="http://example.com/2022/04/04/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/index.html">
+<meta property="og:title" content="分布式训练">
+<meta property="og:url" content="http://example.com/2022/04/06/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/index.html">
 <meta property="og:site_name" content="HelloBear">
-<meta property="og:description" content="1234title: 分布式训练date: 2022-04-6 10:03:11mathjax: truetags: 深度学习 本文介绍深度学习训练中的分布式训练技术。">
+<meta property="og:description" content="本文介绍深度学习训练中的分布式训练技术。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/2022/04/04/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/1.png">
+<meta property="og:image" content="http://example.com/2022/04/06/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/1.png">
 <meta property="og:image" content="https://static001.geekbang.org/infoq/2b/2bb95659f2085831170acf95851ebda0.png">
-<meta property="og:image" content="https://docs.microsoft.com/zh-cn/azure/machine-learning/media/concept-distributed-training/distributed-training.svg">
-<meta property="og:image" content="https://docs.microsoft.com/zh-cn/azure/machine-learning/media/concept-distributed-training/distributed-training.svg">
-<meta property="og:image" content="https://docs.microsoft.com/zh-cn/azure/machine-learning/media/concept-distributed-training/distributed-training.svg">
-<meta property="og:image" content="https://docs.microsoft.com/zh-cn/azure/machine-learning/media/concept-distributed-training/distributed-training.svg">
 <meta property="og:image" content="https://pic1.zhimg.com/80/v2-74a8a4f104b4fe9aa2c83df3fe8da708_720w.jpg">
 <meta property="og:image" content="https://pic3.zhimg.com/v2-348713a787aef1e522818bba3ce48fb6_r.jpg">
 <meta property="og:image" content="https://static001.geekbang.org/infoq/15/15f853298caef76d9e3d775cfbfbe357.png">
-<meta property="article:published_time" content="2022-04-04T06:45:17.773Z">
-<meta property="article:modified_time" content="2022-04-06T02:07:12.182Z">
+<meta property="article:published_time" content="2022-04-06T02:03:11.000Z">
+<meta property="article:modified_time" content="2022-04-06T02:13:22.157Z">
 <meta property="article:author" content="xlQ">
+<meta property="article:tag" content="深度学习">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2022/04/04/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/1.png">
+<meta name="twitter:image" content="http://example.com/2022/04/06/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/1.png">
 
-<link rel="canonical" href="http://example.com/2022/04/04/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/">
+<link rel="canonical" href="http://example.com/2022/04/06/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/">
 
 
 <script id="page-configurations">
@@ -55,7 +52,7 @@
   };
 </script>
 
-  <title> | HelloBear</title>
+  <title>分布式训练 | HelloBear</title>
   
 
 
@@ -165,7 +162,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/04/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/06/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/spicy.jpg">
@@ -178,7 +175,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          
+          分布式训练
         </h1>
 
         <div class="post-meta">
@@ -187,16 +184,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2022-04-04 14:45:17" itemprop="dateCreated datePublished" datetime="2022-04-04T14:45:17+08:00">2022-04-04</time>
+              <time title="Created: 2022-04-06 10:03:11 / Modified: 10:13:22" itemprop="dateCreated datePublished" datetime="2022-04-06T10:03:11+08:00">2022-04-06</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-04-06 10:07:12" itemprop="dateModified" datetime="2022-04-06T10:07:12+08:00">2022-04-06</time>
-              </span>
 
           
 
@@ -209,15 +200,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">title:</span> <span class="string">分布式训练</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2022-04-6</span> <span class="number">10</span><span class="string">:03:11</span></span><br><span class="line"><span class="attr">mathjax:</span> <span class="literal">true</span></span><br><span class="line"><span class="attr">tags:</span> <span class="string">深度学习</span></span><br></pre></td></tr></table></figure>
-<p>本文介绍深度学习训练中的分布式训练技术。</p>
+        <p>本文介绍深度学习训练中的分布式训练技术。</p>
 <span id="more"></span>
-<p><img src="/2022/04/04/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/1.png" alt></p>
+<p><img src="/2022/04/06/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/1.png" alt></p>
 <h1 id="分布式训练"><a href="#分布式训练" class="headerlink" title="分布式训练"></a>分布式训练</h1><p>分布式训练主要分为两种：数据并行与模型并行。</p>
 <p><img src="https://static001.geekbang.org/infoq/2b/2bb95659f2085831170acf95851ebda0.png" alt></p>
 <h2 id="数据并行"><a href="#数据并行" class="headerlink" title="数据并行"></a>数据并行</h2><p>数据并行是两种分布式训练方法中较易实现的一个，对于大多数用例来说已经足够了。</p>
 <p>在此方法中，数据划分到计算群集中的分区内，其中分区数等于可用节点的总数。 将在这些工作器节点的每一个中复制模型，每个工作器都操作和处理自己的数据子集。 请记住，每个节点都必须有能力支持正在进行训练的模型，也就是说，模型需要拟合每个节点。 下图直观地阐释了此方法。</p>
-<p><img src="https://docs.microsoft.com/zh-cn/azure/machine-learning/media/concept-distributed-training/distributed-training.svg" alt="Data-parallelism-concept-diagram"><img src="https://docs.microsoft.com/zh-cn/azure/machine-learning/media/concept-distributed-training/distributed-training.svg" alt><img src="https://docs.microsoft.com/zh-cn/azure/machine-learning/media/concept-distributed-training/distributed-training.svg" alt="Data-parallelism-concept-diagram"><img src="https://docs.microsoft.com/zh-cn/azure/machine-learning/media/concept-distributed-training/distributed-training.svg" alt="Data-parallelism-concept-diagram">每个节点独立计算其训练样本的预测结果与标记输出之间的误差。 每个节点又会基于该误差更新其模型，且必须将其所有更改传达给其他节点，以便其相应更新其自己的模型。 这意味着，工作器节点需要在批处理计算结束时同步模型参数或梯度，以确保其训练的是一致的模型。</p>
+<p>每个节点独立计算其训练样本的预测结果与标记输出之间的误差。 每个节点又会基于该误差更新其模型，且必须将其所有更改传达给其他节点，以便其相应更新其自己的模型。 这意味着，工作器节点需要在批处理计算结束时同步模型参数或梯度，以确保其训练的是一致的模型。</p>
 <h2 id="模型并行"><a href="#模型并行" class="headerlink" title="模型并行"></a>模型并行</h2><p>与数据并行不同，分布式训练中的模型并行是指将整个神经网络模型拆解分布到不同的 GPU 中，不同的 GPU 负责计算网络模型中的不同部分。这通常是在网络模型很大很大、单个 GPU 的显存已经完全装不下整体网络的情况下才会采用。由于深度学习的模型通常包含很多层，层与层之间的运行有先后训练，前向传播和反向梯度计算的时候，前面的层和后面的层都会彼此依赖作为输入输出，因此这种串行的逻辑对加速造成了一定的限制。但是相比起来，我们也算可以通过模型并行的方式把一个超大模型训练起来，不然对于一个单 GPU 的话，超大模型是完全没办法 work 的。因此，对比起来，模型并行由于各个 GPU 只加载了模型的一部分网络结构，存在一定的依赖关系，造成了规模的伸缩性比较差，不能随意的增减 GPU 的数量，因此在实际中运用的并不多。而数据并行的方式，由于各个 GPU 相互独立，方便 GPU 的扩缩容，同时加速效果好，因此在实际中运用较多，但是在某些时候，我们也可以同时结合数据并行和模型并行两种方式。</p>
 <h1 id="架构设计"><a href="#架构设计" class="headerlink" title="架构设计"></a>架构设计</h1><h2 id="基于参数服务器-Parameter-Server"><a href="#基于参数服务器-Parameter-Server" class="headerlink" title="基于参数服务器(Parameter Server)"></a>基于参数服务器(Parameter Server)</h2><p>PS由两部分组成：服务器（server/master）和节点（client/worker）。</p>
 <ul>
@@ -292,6 +282,9 @@
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag"># 深度学习</a>
+          </div>
 
         
 
@@ -468,6 +461,59 @@
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 
