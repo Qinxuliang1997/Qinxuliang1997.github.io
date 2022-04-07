@@ -28,10 +28,10 @@
 <meta property="og:description" content="本文介绍利用HuggingFace预训练模型，并在下游数据集上微调，实现文本数据的情感分类任务。">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/2022/03/28/HuggingFace%E9%A2%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E5%BE%AE%E8%B0%83/1.png">
-<meta property="og:image" content="https://miro.medium.com/max/1296/1*BOPnuP6VP0JVnJsoCdTo-g.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20200424224104858.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2h1c3RxYg==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="http://example.com/2022/03/28/HuggingFace%E9%A2%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E5%BE%AE%E8%B0%83/2.png">
+<meta property="og:image" content="http://example.com/2022/03/28/HuggingFace%E9%A2%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E5%BE%AE%E8%B0%83/3.png">
 <meta property="article:published_time" content="2022-03-28T02:09:17.000Z">
-<meta property="article:modified_time" content="2022-03-29T02:27:55.678Z">
+<meta property="article:modified_time" content="2022-04-07T02:01:29.036Z">
 <meta property="article:author" content="xlQ">
 <meta property="article:tag" content="深度学习">
 <meta name="twitter:card" content="summary">
@@ -190,7 +190,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-03-29 10:27:55" itemprop="dateModified" datetime="2022-03-29T10:27:55+08:00">2022-03-29</time>
+                <time title="Modified: 2022-04-07 10:01:29" itemprop="dateModified" datetime="2022-04-07T10:01:29+08:00">2022-04-07</time>
               </span>
 
           
@@ -224,7 +224,7 @@
 <ul>
 <li><p>AdamW</p>
 <p>AdamW与Adam+L2正则化的区别用下面这张图说明，可以看到，使用Adam+L2正则化时候，我们直接将损失函数进行了改写，也就等价于将梯度改写了，这个改写的梯度会用在后续的动量法以及自适应参数中；而AdamW方法则是把L2正则化理解为权重衰减，即假设原目标函数没有变化，而是在最后一步更新的时候，先对参数做一个权值衰减，再更新。</p>
-<p><img src="https://miro.medium.com/max/1296/1*BOPnuP6VP0JVnJsoCdTo-g.png" alt></p>
+<p><img src="/2022/03/28/HuggingFace%E9%A2%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E5%BE%AE%E8%B0%83/2.png" alt></p>
 </li>
 <li><p>warmup</p>
 <p>Warm up是一种学习率的设置方法，其学习率的变化如下图所示。为什么这么设置呢？</p>
@@ -232,7 +232,7 @@
 <li>有助于减缓模型在初始阶段对mini-batch的提前过拟合现象，保持分布的平稳</li>
 <li>有助于保持模型深层的稳定性</li>
 </ul>
-<p><img src="https://img-blog.csdnimg.cn/20200424224104858.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2h1c3RxYg==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p><img src="/2022/03/28/HuggingFace%E9%A2%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E5%BE%AE%E8%B0%83/3.png" alt="在这里插入图片描述"></p>
 </li>
 </ul>
 <p>总体代码如下：</p>
