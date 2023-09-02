@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在机器学习的理论学习中，我们经常过于关注模型，而忽略了其他的一些问题。在实际的机器学习问题中，选择一个好的特征可能和使用一个好的模型一样重要，甚至特征的选择会直接影响最后模型的结果。本文介绍机器学习中的特征选择与稀疏学习。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="特征选择与稀疏学习">
+<meta property="og:url" content="http://example.com/2022/03/22/%E7%89%B9%E5%BE%81%E9%80%89%E6%8B%A9%E4%B8%8E%E7%A8%80%E7%96%8F%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="HelloBear">
+<meta property="og:description" content="在机器学习的理论学习中，我们经常过于关注模型，而忽略了其他的一些问题。在实际的机器学习问题中，选择一个好的特征可能和使用一个好的模型一样重要，甚至特征的选择会直接影响最后模型的结果。本文介绍机器学习中的特征选择与稀疏学习。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/03/22/%E7%89%B9%E5%BE%81%E9%80%89%E6%8B%A9%E4%B8%8E%E7%A8%80%E7%96%8F%E5%AD%A6%E4%B9%A0/LVM.png">
+<meta property="article:published_time" content="2022-03-22T02:12:26.000Z">
+<meta property="article:modified_time" content="2022-03-24T08:12:25.270Z">
+<meta property="article:author" content="xlQ">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/03/22/%E7%89%B9%E5%BE%81%E9%80%89%E6%8B%A9%E4%B8%8E%E7%A8%80%E7%96%8F%E5%AD%A6%E4%B9%A0/LVM.png">
+
+<link rel="canonical" href="http://example.com/2022/03/22/%E7%89%B9%E5%BE%81%E9%80%89%E6%8B%A9%E4%B8%8E%E7%A8%80%E7%96%8F%E5%AD%A6%E4%B9%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>特征选择与稀疏学习 | HelloBear</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">HelloBear</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Less is More</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/22/%E7%89%B9%E5%BE%81%E9%80%89%E6%8B%A9%E4%B8%8E%E7%A8%80%E7%96%8F%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/spicy.jpg">
+      <meta itemprop="name" content="xlQ">
+      <meta itemprop="description" content="AI for ai ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HelloBear">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          特征选择与稀疏学习
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-03-22 10:12:26" itemprop="dateCreated datePublished" datetime="2022-03-22T10:12:26+08:00">2022-03-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-03-24 16:12:25" itemprop="dateModified" datetime="2022-03-24T16:12:25+08:00">2022-03-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在机器学习的理论学习中，我们经常过于关注模型，而忽略了其他的一些问题。在实际的机器学习问题中，选择一个好的特征可能和使用一个好的模型一样重要，甚至特征的选择会直接影响最后模型的结果。本文介绍机器学习中的特征选择与稀疏学习。</p>
+<span id="more"></span>
+
+<h1 id="子集搜索与子集评价"><a href="#子集搜索与子集评价" class="headerlink" title="子集搜索与子集评价"></a>子集搜索与子集评价</h1><h2 id="为什么需要特征选择？"><a href="#为什么需要特征选择？" class="headerlink" title="为什么需要特征选择？"></a>为什么需要特征选择？</h2><ul>
+<li><p>现实的任务中经常会遇到维数灾难问题，这是由于属性过多造成的，这里和降维的出发点一样，都是处理高维数据的两大主流技术；</p>
+</li>
+<li><p>去除不相关的特征往往会降低学习的难度。</p>
+</li>
+</ul>
+<h2 id="冗余特征与无关特征"><a href="#冗余特征与无关特征" class="headerlink" title="冗余特征与无关特征"></a>冗余特征与无关特征</h2><p>无关特性是指与当前学习任务无关的特征，而冗余特征是指可以从其他的特征推演出来的特征。冗余特征可能会让学习任务变得简单，尤其是冗余特征恰好对应于完成学习任务所需的”中间概率“。下面的讨论不涉及冗余特征，而是关注如何去除无关特征。</p>
+<h2 id="从初始的特征集合中选取包含所有重要信息的特征子集"><a href="#从初始的特征集合中选取包含所有重要信息的特征子集" class="headerlink" title="从初始的特征集合中选取包含所有重要信息的特征子集"></a>从初始的特征集合中选取包含所有重要信息的特征子集</h2><ul>
+<li><p>根据先验知识选择</p>
+</li>
+<li><p>遍历所有可能的子集，但是实际中会遇到组合爆炸，不可行</p>
+</li>
+<li><p>产生一个候选子集，评价他的好坏，基于评价结果产生下一个候选子集，然后再评价，如此往复。涉及到两个关键环节：如何根据评价结果获取下一个候选特征子集？如何评价候选特征子集的好坏？</p>
+</li>
+</ul>
+<h3 id="子集搜索"><a href="#子集搜索" class="headerlink" title="子集搜索"></a>子集搜索</h3><ul>
+<li><p>前向搜索：假设有d个特征集合，根据子集评价，依次选出k个特征</p>
+</li>
+<li><p>后向搜索：从完整的特征集合开始，每次尝试去掉一个无关的特征，剩下k个特征</p>
+</li>
+<li><p>双向搜索：结合前向搜索和后向搜索</p>
+</li>
+</ul>
+<h3 id="子集评价"><a href="#子集评价" class="headerlink" title="子集评价"></a>子集评价</h3><p>子集评价的方法，和决策树中选择划分特征的方式一模一样。下面用信息增益准则为例，其实所有可以用于决策树特征选择的准则都可以使用。</p>
+<p>给定一个数据集合D，计算每一个属性A将数据集划分以后的信息增益，假设属性A将数据集合分成了V个子集。</p>
+<p>$$<br>Gain(A) &#x3D; Ent(D) - \sum_{v&#x3D;1}^V \frac{D^v}{D} Ent(D^v)<br>$$</p>
+<p>其中信息熵的定义为：</p>
+<p>$$<br>Ent(D) &#x3D; -\sum_{k&#x3D;1}^{|y|} p_k log_2 p_k<br>$$</p>
+<p>其中假定D中第i类样本所占的比例为$p_i$。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>将特征子集搜索和特征评价相结合，就可以得到特征选择的方法。</p>
+<p>例如将前向搜索和信息熵结合，这个方法和决策树非常相似，事实上，决策树中树结点划分属性所组成的集合就是选择出的特征子集。</p>
+<p>常见的特征选择方法大致分为三种：过滤式（filter）、包裹式（wrapper）和嵌入式（embedding）。</p>
+<h1 id="过滤式选择"><a href="#过滤式选择" class="headerlink" title="过滤式选择"></a>过滤式选择</h1><p>过滤式方法先对数据集合进行特征选择，然后再训练学习器，特征选择过程与后续学习器无关。</p>
+<h2 id="Relief（二分类问题）"><a href="#Relief（二分类问题）" class="headerlink" title="Relief（二分类问题）"></a>Relief（二分类问题）</h2><p>Relief是一种著名的过滤式特征选择方法，该方法设计了一个”相关统计量“用来度量特征的重要性。每个特征对应于一个特征统计量，特征子集的重要性则是由子集中每个特征所应用的相关统计量之和来决定。</p>
+<p><strong>如何选择特征：</strong></p>
+<p>设置一个阈值，选择比阈值大的相关统计分量对应的特征即可；如果选择k个特征，那么选择相关统计分量最大的k个特征。</p>
+<p><strong>如何确定相关统计量：</strong></p>
+<p>对于每一个样本特征，Relief先在该样本的同类中寻找其最近邻$x_{i,nh}$，称为猜中近邻</p>
+<p>再从该样本的异类样本中寻找其最近邻$x_{i,nm}$，称为猜错近邻。</p>
+<p>特征j的相关统计量为：</p>
+<p>$$<br>\delta^j &#x3D; \sum_i -diff(x_i^j,x_{i,nh}^j)^2 + diff(x_i^j,x_{i,nm}^j)^2<br>$$</p>
+<p>其中$x_i^j$表示样本在j属性上的取值。而diff（）的取值取决于属性j的类型，如果j为离散性那么当两个离散型类别相同时，值为0，反之为1；如果属性j为数值型，那么取值为两个数值的差的绝对值（先规范化）。</p>
+<p>从公式中可以看出，如果样本与其猜中近邻在属性j上的距离小于与其猜错近邻的距离，那么说明属性j对区分同类与异类样本是有益的，于是增大属性j的统计分量。反之，减少分量。</p>
+<h2 id="Relief-F（多分类问题）"><a href="#Relief-F（多分类问题）" class="headerlink" title="Relief-F（多分类问题）"></a>Relief-F（多分类问题）</h2><p>为了将Relief应用于多分类问题，计算相关统计量的方式改为：</p>
+<p>$$<br>\delta^j &#x3D; \sum_i -diff(x_i^j,x_{i,nh}^j)^2 + \sum_{l\ne k}(p_l \times diff(x_i^j,x_{i,nm}^j)^2)<br>$$</p>
+<p>其中$p_l$表示第k类样本在数据集D中的比例。</p>
+<h1 id="包裹式选择"><a href="#包裹式选择" class="headerlink" title="包裹式选择"></a>包裹式选择</h1><p>前面介绍的过滤式特征选择不考虑后续学习器的不同，与之相对应的是包裹式选择方法，该方法直接把最终要使用的学习器的性能作为特征子集的评价准则。</p>
+<p>包裹式特征选择方法直接针对给定的学习器进行优化，因此从最终的学习器性能来看，包裹式特征选择比过滤式特征选择更好。</p>
+<h2 id="LVM特征选择方法"><a href="#LVM特征选择方法" class="headerlink" title="LVM特征选择方法"></a>LVM特征选择方法</h2><p>算法描述如下：</p>
+<img title src="/2022/03/22/%E7%89%B9%E5%BE%81%E9%80%89%E6%8B%A9%E4%B8%8E%E7%A8%80%E7%96%8F%E5%AD%A6%E4%B9%A0/LVM.png" alt data-align="center">
+
+<p>算法在第8行通过在数据集D上，使用交叉验证来估计学习器的误差，这个误差是在仅考虑特征子集时得到的，<strong>如果在该特征子集上的误差比当前特征子集上误差更小，或者误差相当但是包含的特征数目更少</strong>，那么就将该特征子集存在来。</p>
+<p>这个算法的开销很大。</p>
+<h1 id="嵌入式选择与L1正则化"><a href="#嵌入式选择与L1正则化" class="headerlink" title="嵌入式选择与L1正则化"></a>嵌入式选择与L1正则化</h1><p>前面的特征选择方法中，都是将选择过程与学习器训练过程区分开。嵌入式特征选择则是将二者融为一体，在学习器的训练过程中自动地进行特征选择。</p>
+<p>L1正则化的效果就是，得到一个”稀疏“的解，即初始的d个特征中仅有对应w非0的分量的特征才会出现在最终模型中。</p>
+<p>L1正则化问题的求解方法是近端点梯度下降法。近端点法的推到过程是，假设原目标函数满足L-Lipshitz梯度条件，将目标函数在点$x_k$点出用二阶泰勒展开，计算闭式解为：</p>
+<p>$$<br>z &#x3D; x_{k+1} &#x3D; x_k - \frac{1}{L} \nabla f(x_k)<br>$$</p>
+<p>将改思路拓展到L1正则化之后的目标函数中，得到闭式解：</p>
+<p>$$<br>x_{k+1}^i &#x3D;<br>&#x3D;\left{<br>\begin{aligned}<br>&amp;z^i-\lambda&#x2F;L,&amp;\lambda&#x2F;L&lt;z^i \<br>&amp;0,&amp;|z^i| \le \lambda&#x2F;L \<br>&amp;z^i+\lambda&#x2F;L,&amp;z^i&lt;-\lambda&#x2F;L<br>\end{aligned}<br>\right.</p>
+<p>$$</p>
+<p>其中i表示x中第i个分量。</p>
+<h1 id="稀疏表示与字典学习"><a href="#稀疏表示与字典学习" class="headerlink" title="稀疏表示与字典学习"></a>稀疏表示与字典学习</h1><p>如果把数据集合看一个矩阵，每一行是一个样本，每列是一个特征，那么特征选择的过程就是选择这个矩阵中的一部分列，用于表征这个矩阵的信息。</p>
+<p>稀疏表示则是另外一种稀疏性：数据集合Ｄ中存在很多的０元素。稀疏表示有很多优点，例如稀疏表示的问题更容易线性可分，学习任务得以简化；此外有很多高效的稀疏矩阵存储方法，稀疏样本的存储并不会造成很多的负担。</p>
+<p>那么如何将稠密的数据转为稀疏的表示呢？一般使用“字典学习”或称为“稀疏编码”。“字典学习”更加关注于学习字典的过程，而“稀疏编码”更加关注于对样本的稀疏表达过程。</p>
+<p>字典学习的形式为：</p>
+<p>$$<br>\mathop{min}\limits_{B,\alpha_i} \sum_{i&#x3D;1}^m || x_i-B\alpha_i||<em>2^2 + \lambda\sum</em>{i&#x3D;1}^m ||\alpha_i||_1<br>$$</p>
+<p>其中B为大小为d×k的字典矩阵，$\alpha_i$为大小为k的向量，是样本的稀疏表示。第一项希望能够尽量重构样本，第二项则希望尽量稀疏。</p>
+<p>它的优化算法是交替优化B和alpha。</p>
+<h1 id="压缩感知"><a href="#压缩感知" class="headerlink" title="压缩感知"></a>压缩感知</h1><p>压缩感知的任务与前面的特征提取任务相反，压缩感知是希望根据部分信息来恢复全部信息。</p>
+<p>压缩感知相关理论比较复杂， 具体可以参见《机器学习》第11章第六节。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p>1.《机器学习》第十一章</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/20/python%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/" rel="prev" title="python协程、asyncio、异步编程">
+      <i class="fa fa-chevron-left"></i> python协程、asyncio、异步编程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/24/python%E7%9A%84%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" rel="next" title="python的进程与线程">
+      python的进程与线程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%90%E9%9B%86%E6%90%9C%E7%B4%A2%E4%B8%8E%E5%AD%90%E9%9B%86%E8%AF%84%E4%BB%B7"><span class="nav-number">1.</span> <span class="nav-text">子集搜索与子集评价</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E7%89%B9%E5%BE%81%E9%80%89%E6%8B%A9%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">为什么需要特征选择？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%97%E4%BD%99%E7%89%B9%E5%BE%81%E4%B8%8E%E6%97%A0%E5%85%B3%E7%89%B9%E5%BE%81"><span class="nav-number">1.2.</span> <span class="nav-text">冗余特征与无关特征</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E5%88%9D%E5%A7%8B%E7%9A%84%E7%89%B9%E5%BE%81%E9%9B%86%E5%90%88%E4%B8%AD%E9%80%89%E5%8F%96%E5%8C%85%E5%90%AB%E6%89%80%E6%9C%89%E9%87%8D%E8%A6%81%E4%BF%A1%E6%81%AF%E7%9A%84%E7%89%B9%E5%BE%81%E5%AD%90%E9%9B%86"><span class="nav-number">1.3.</span> <span class="nav-text">从初始的特征集合中选取包含所有重要信息的特征子集</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90%E9%9B%86%E6%90%9C%E7%B4%A2"><span class="nav-number">1.3.1.</span> <span class="nav-text">子集搜索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90%E9%9B%86%E8%AF%84%E4%BB%B7"><span class="nav-number">1.3.2.</span> <span class="nav-text">子集评价</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">1.4.</span> <span class="nav-text">小结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4%E5%BC%8F%E9%80%89%E6%8B%A9"><span class="nav-number">2.</span> <span class="nav-text">过滤式选择</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Relief%EF%BC%88%E4%BA%8C%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">Relief（二分类问题）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Relief-F%EF%BC%88%E5%A4%9A%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98%EF%BC%89"><span class="nav-number">2.2.</span> <span class="nav-text">Relief-F（多分类问题）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8C%85%E8%A3%B9%E5%BC%8F%E9%80%89%E6%8B%A9"><span class="nav-number">3.</span> <span class="nav-text">包裹式选择</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LVM%E7%89%B9%E5%BE%81%E9%80%89%E6%8B%A9%E6%96%B9%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">LVM特征选择方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B5%8C%E5%85%A5%E5%BC%8F%E9%80%89%E6%8B%A9%E4%B8%8EL1%E6%AD%A3%E5%88%99%E5%8C%96"><span class="nav-number">4.</span> <span class="nav-text">嵌入式选择与L1正则化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A8%80%E7%96%8F%E8%A1%A8%E7%A4%BA%E4%B8%8E%E5%AD%97%E5%85%B8%E5%AD%A6%E4%B9%A0"><span class="nav-number">5.</span> <span class="nav-text">稀疏表示与字典学习</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8E%8B%E7%BC%A9%E6%84%9F%E7%9F%A5"><span class="nav-number">6.</span> <span class="nav-text">压缩感知</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">7.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xlQ"
+      src="/images/spicy.jpg">
+  <p class="site-author-name" itemprop="name">xlQ</p>
+  <div class="site-description" itemprop="description">AI for ai </div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlQ</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

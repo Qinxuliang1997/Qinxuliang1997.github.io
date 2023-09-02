@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本文介绍深度学习训练中的分布式训练技术。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式训练">
+<meta property="og:url" content="http://example.com/2022/04/06/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/index.html">
+<meta property="og:site_name" content="HelloBear">
+<meta property="og:description" content="本文介绍深度学习训练中的分布式训练技术。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/04/06/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/1.png">
+<meta property="og:image" content="https://static001.geekbang.org/infoq/2b/2bb95659f2085831170acf95851ebda0.png">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-74a8a4f104b4fe9aa2c83df3fe8da708_720w.jpg">
+<meta property="og:image" content="https://pic3.zhimg.com/v2-348713a787aef1e522818bba3ce48fb6_r.jpg">
+<meta property="og:image" content="https://static001.geekbang.org/infoq/15/15f853298caef76d9e3d775cfbfbe357.png">
+<meta property="article:published_time" content="2022-04-06T02:03:11.000Z">
+<meta property="article:modified_time" content="2022-04-06T02:13:22.157Z">
+<meta property="article:author" content="xlQ">
+<meta property="article:tag" content="深度学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/04/06/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/1.png">
+
+<link rel="canonical" href="http://example.com/2022/04/06/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>分布式训练 | HelloBear</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">HelloBear</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Less is More</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/06/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/spicy.jpg">
+      <meta itemprop="name" content="xlQ">
+      <meta itemprop="description" content="AI for ai ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HelloBear">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          分布式训练
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-04-06 10:03:11 / Modified: 10:13:22" itemprop="dateCreated datePublished" datetime="2022-04-06T10:03:11+08:00">2022-04-06</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文介绍深度学习训练中的分布式训练技术。</p>
+<span id="more"></span>
+
+<p><img src="/2022/04/06/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/1.png"></p>
+<h1 id="分布式训练"><a href="#分布式训练" class="headerlink" title="分布式训练"></a>分布式训练</h1><p>分布式训练主要分为两种：数据并行与模型并行。</p>
+<p><img src="https://static001.geekbang.org/infoq/2b/2bb95659f2085831170acf95851ebda0.png"></p>
+<h2 id="数据并行"><a href="#数据并行" class="headerlink" title="数据并行"></a>数据并行</h2><p>数据并行是两种分布式训练方法中较易实现的一个，对于大多数用例来说已经足够了。</p>
+<p>在此方法中，数据划分到计算群集中的分区内，其中分区数等于可用节点的总数。 将在这些工作器节点的每一个中复制模型，每个工作器都操作和处理自己的数据子集。 请记住，每个节点都必须有能力支持正在进行训练的模型，也就是说，模型需要拟合每个节点。 下图直观地阐释了此方法。</p>
+<p>每个节点独立计算其训练样本的预测结果与标记输出之间的误差。 每个节点又会基于该误差更新其模型，且必须将其所有更改传达给其他节点，以便其相应更新其自己的模型。 这意味着，工作器节点需要在批处理计算结束时同步模型参数或梯度，以确保其训练的是一致的模型。</p>
+<h2 id="模型并行"><a href="#模型并行" class="headerlink" title="模型并行"></a>模型并行</h2><p>与数据并行不同，分布式训练中的模型并行是指将整个神经网络模型拆解分布到不同的 GPU 中，不同的 GPU 负责计算网络模型中的不同部分。这通常是在网络模型很大很大、单个 GPU 的显存已经完全装不下整体网络的情况下才会采用。由于深度学习的模型通常包含很多层，层与层之间的运行有先后训练，前向传播和反向梯度计算的时候，前面的层和后面的层都会彼此依赖作为输入输出，因此这种串行的逻辑对加速造成了一定的限制。但是相比起来，我们也算可以通过模型并行的方式把一个超大模型训练起来，不然对于一个单 GPU 的话，超大模型是完全没办法 work 的。因此，对比起来，模型并行由于各个 GPU 只加载了模型的一部分网络结构，存在一定的依赖关系，造成了规模的伸缩性比较差，不能随意的增减 GPU 的数量，因此在实际中运用的并不多。而数据并行的方式，由于各个 GPU 相互独立，方便 GPU 的扩缩容，同时加速效果好，因此在实际中运用较多，但是在某些时候，我们也可以同时结合数据并行和模型并行两种方式。</p>
+<h1 id="架构设计"><a href="#架构设计" class="headerlink" title="架构设计"></a>架构设计</h1><h2 id="基于参数服务器-Parameter-Server"><a href="#基于参数服务器-Parameter-Server" class="headerlink" title="基于参数服务器(Parameter Server)"></a>基于参数服务器(Parameter Server)</h2><p>PS由两部分组成：服务器（server&#x2F;master）和节点（client&#x2F;worker）。</p>
+<ul>
+<li>Parameter server 负责整合梯度，更新参数</li>
+<li>woker负责计算，训练网络</li>
+</ul>
+<p>有一组机器只用来存储参数和梯度，其他所有的 Worker 与 PS 服务器 通信，把自己的梯度上传(Push)到 PS，PS 把所有 Worker 的梯度收集 计算(通常是求均值)，然后各 Worker 再从 PS 拉回(Pull)更新后的 参数&#x2F;梯度并应用到自己的参数上。这样相比于单机的训练过程，梯度的产生是在多个worker上，而参数的更新是在server上完成。在分布式训练中iteration前多出了pull操作，用以从server读取等待更新的参数，完成计算后需要push操作将产生的梯度返回给server。</p>
+<p>单机训练不用考虑这些问题，但在分布式训练中梯度不是存储在一块GPU上的，梯度的收集与参数的更新涉及到一些问题：在每个iteration开始之前，每个计算节点是否能够获得当前的模型参数 ；在每个iteration的计算结束之后，我们能否同样地把所有节点上产生的梯度都收集起来并更新当前参数。</p>
+<p><img src="https://pic1.zhimg.com/80/v2-74a8a4f104b4fe9aa2c83df3fe8da708_720w.jpg"></p>
+<p>从上图可以很清楚的看到PS的流程，共分为4步。</p>
+<ul>
+<li><p>Task Scheduler：</p>
+<ul>
+<li>加载数据，并将数据分发给不同的workers</li>
+</ul>
+</li>
+<li><p>Workers：</p>
+<ul>
+<li><p>计算梯度（1. compute）</p>
+<ul>
+<li><p>加载训练数据</p>
+</li>
+<li><p>从servers拉取最新的参数（4. Pull）</p>
+</li>
+</ul>
+</li>
+<li><p>将梯度push到servers（2.Push）</p>
+<ul>
+<li>从servers拉取最新的参数（4. Pull）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Servers：</p>
+<ul>
+<li><p>聚合梯度</p>
+</li>
+<li><p>更新参数（3. Update）</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="基于规约-Reduce-模式"><a href="#基于规约-Reduce-模式" class="headerlink" title="基于规约(Reduce)模式"></a>基于规约(Reduce)模式</h2><p><img src="https://pic3.zhimg.com/v2-348713a787aef1e522818bba3ce48fb6_r.jpg" alt="preview"></p>
+<p>Ring-AllReduce算法的通信成本是恒定的，与系统中gpu的数量无关，完全由系统中gpu之间最慢的连接决定;事实上，如果只考虑带宽作为通信成本的一个因素(并忽略延迟)，那么Ring-AllReduce是一种最优通信算法（当模型很大，并且需要发送大量数据的次数很少时，这是一个很好的通信成本估算。）环中的gpu都被安排在一个逻辑环中。每个GPU应该有一个左邻和一个右邻;它只会向它的右邻居发送数据，并从它的左邻居接收数据。</p>
+<p>该算法分两个步骤进行:首先是scatter-reduce，然后是allgather。在scatter-reduce步骤中，GPU将交换数据，使每个GPU可得到最终结果的一个块。在allgather步骤中，gpu将交换这些块，以便所有gpu得到完整的最终结果。</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/129912419">All-reduce的具体实现方式</a></p>
+<h2 id="基于MPI的方式-互联网中使用的比较少"><a href="#基于MPI的方式-互联网中使用的比较少" class="headerlink" title="基于MPI的方式(互联网中使用的比较少)"></a>基于MPI的方式(互联网中使用的比较少)</h2><p>「消息传递接口」(Message Passing Interface, MPI) 指程序通过在进程间传递消息(消息可以理解成带有一些信息和数据的 一个数据结构)来完成某些任务。举例来说，主进程(master process)可以通过对从进程(slave process)发送一个描述工作的消息来把这个工作分配给它。另一个例 子就是一个并发的排序程序可以在当前进程中对当前进程可⻅的(我们称作本地的，locally)数据进行排序，然后把排好序的数据发送的邻居 进程上面来进行合并的操作。几乎所有的并行程序可以使用消息传递模 型来描述。 MPI 是一个接口的定义而已，需要程序员去根据不同的架构去实现 这个接口。</p>
+<h1 id="同步与异步更新"><a href="#同步与异步更新" class="headerlink" title="同步与异步更新"></a>同步与异步更新</h1><p><img src="https://static001.geekbang.org/infoq/15/15f853298caef76d9e3d775cfbfbe357.png"></p>
+<h2 id="同步（Sync）"><a href="#同步（Sync）" class="headerlink" title="同步（Sync）"></a>同步（Sync）</h2><p>当所有的 Worker 完成计算后，才开始进行下一轮迭代。所有 GPU 在同 一时间点与参数服务器交换、融合梯度。 但是传统的同步更新方法(各个 gpu 卡算好梯度，求和算平均的方 式)，在融合梯度时，会产生巨大的通信数据量，这种通信压力往往在模型参数量很大时，显得很明显。因此我们需要找到一种方法，来解决 同步更新的网络瓶颈问题。其中最具代表性的一种方法就是:ring-allreduce。</p>
+<h2 id="异步（Async）"><a href="#异步（Async）" class="headerlink" title="异步（Async）"></a>异步（Async）</h2><p>每个 Worker 完成计算后就尝试更新，能跟其他多少个 Worker之间没有沟通。这种机制避免了木桶效应，但是其过程非常不可控，有可能出现正确性问题。所有 GPU 各自独立与参数服务器通信，交换、融合梯度。</p>
+<p>异步更新由于不用等待其他 GPU 节点，因此总体训练速度会快一些，但是会有一个严重的梯度失效的问题。即在异步的情况下，每一个节点完成训练之后，都会马上去更新，这会造成其他节点现在的模型参数和这一轮训练前采用的模型参数可能不一致，从而导致此时的梯度过期。因此，异步更新虽然快，但是由于梯度失效问题，模型往往会陷入到次优解中。</p>
+<h2 id="混合-Mix"><a href="#混合-Mix" class="headerlink" title="混合 (Mix):"></a>混合 (Mix):</h2><p>混合模式结合上面两种方式，各个 Worker 都会等待其他 Worker 的完成，但不是永远等待。这里有一个”超时“的机制。这个超时机制可以是超过某个时间，也可以是到达某个最小副本数。如果”超时“了，等待的 Worker 就只用当前获取到的梯度来更新并继续下一个迭代，避免无意义 的等待。而没来得及完成计算的 Worker，其梯度则被标记为”stale“而抛弃或另作处理。</p>
+<h1 id="通信方式"><a href="#通信方式" class="headerlink" title="通信方式"></a>通信方式</h1><h2 id="MPI"><a href="#MPI" class="headerlink" title="MPI"></a><a target="_blank" rel="noopener" href="https://mpitutorial.com/">MPI</a></h2><p>在程序中，不同的进程需要相互的数据交换，特别是在科学计算中，需要大规模的计算与数据交换，集群可以很好解决单节点计算力不足的问题，但在集群中大规模的数据交换是很耗费时间的，因此需要一种在多节点的情况下能快速进行数据交流的标准，这就是MPI。MPI是一组用于多节点数据通信的标准，而非一种语言或者接口。具体的使用方法需要依赖它的具体实现(mpich or openmpi等)。</p>
+<p>但其不适合互联网情况下使用：一是MPI的容错性很差；二是MPI的通信是All2All，就是说每台机器都要跟其他所有机器进行通信，通信的复杂度是N2，当机器数大量增加时其通信成本将不可接受。</p>
+<h2 id="NCCL"><a href="#NCCL" class="headerlink" title="NCCL"></a><a target="_blank" rel="noopener" href="https://developer.nvidia.com/nccl">NCCL</a></h2><p>NVIDIA集体通信库（NCCL）实现了针对NVIDIA GPU性能优化的多GPU和多节点集体通信原语。NCCL提供了诸如all-gather, all-reduce, broadcast, reduce, reduce-scatter等动作，这些例程经过优化，可通过PCIe和NVLink高速互连实现高带宽和低延迟。单机多卡默认NCCL方式。</p>
+<h2 id="gRPC"><a href="#gRPC" class="headerlink" title="gRPC"></a>gRPC</h2><p>在本地调用了一个函数，或者对象的方法，实际上是调用了远程机器上的函数，或者远程对象的方法，但是这个通信过程对于程序员来说是透明的，即达到了一种位置上的透明性。RPC是一种技术思想而非一种规范。协议只规定了 Client 与 Server 之间的点对点调用流程，包括 stub、通信协议、RPC 消息解析等部分，在实际应用中，还需要考虑服务的高可用、负载均衡等问题。</p>
+<h1 id="基于Pytorch的分布式训练方法"><a href="#基于Pytorch的分布式训练方法" class="headerlink" title="基于Pytorch的分布式训练方法"></a>基于Pytorch的分布式训练方法</h1><p>在 Pytorch 中为我们提供了两种多 GPU 的分布式训练方案：<code>torch.nn.DataParallel</code>（DP）和 <code>torch.nn.parallel.Distributed Data Parallel</code>（DDP）。</p>
+<h2 id="Data-Parallel"><a href="#Data-Parallel" class="headerlink" title="Data Parallel"></a>Data Parallel</h2><p>DP 模式使用起来非常容易，只需要对单 GPU 的代码修改其中一行就可以运行了，由于 DP 模式采用的是 PS 架构，存在负载不均衡问题，主卡往往会成为训练的瓶颈，因此训练速度会比 DDP 模式慢一些。而且 DP 只支持单机多卡的方式，一般一台机器只能安装最多 8 张卡，当我们要训练特别大型的任务时，8 卡就会显得特别吃紧，因此会有一定的限制。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># use DataParallel</span></span><br><span class="line"><span class="keyword">if</span> torch.cuda.device_count() &gt; <span class="number">1</span>:    </span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Let&#x27;s use&quot;</span>, torch.cuda.device_count(), <span class="string">&quot;GPUs!&quot;</span>)    </span><br><span class="line">    model = torch.nn.DataParallel(model)</span><br><span class="line">model.to(device)</span><br></pre></td></tr></table></figure>
+
+<h2 id="Distributed-Data-Parallel"><a href="#Distributed-Data-Parallel" class="headerlink" title="Distributed Data Parallel"></a>Distributed Data Parallel</h2><p>与 DP 模式不同，DDP 模式本身是为多机多卡设计的，当然在单机多卡的情况下也可以使用。DDP 采用的是 all-reduce 架构，基本解决了 PS 架构中通信成本与 GPU 的数量线性相关的问题。虽然在单机多卡情况下，可以使用 DP 模式，但是使用 DDP 通常会比 DP 模式快一些，因此 DDP 模式也是官方推荐大家使用的方式。改造现有的代码使用 DDP 也非常方便，通过下面几个步骤就可以轻松搞定。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. init backend nccl</span></span><br><span class="line">torch.distributed.init_process_group(backend=<span class="string">&#x27;nccl&#x27;</span>)</span><br><span class="line"><span class="comment"># 2. config gpu</span></span><br><span class="line">local_rank = torch.distributed.get_rank()</span><br><span class="line">torch.cuda.set_device(local_rank)</span><br><span class="line">device = torch.device(<span class="string">&quot;cuda&quot;</span>, local_rank)</span><br><span class="line"><span class="comment"># 3. use DistributedSampler</span></span><br><span class="line">training_loader = DataLoader(training_set, batch_size=TRAIN_BATCH_SIZE, sampler=DistributedSampler(training_set))</span><br><span class="line"><span class="comment"># 4. move model to gpu</span></span><br><span class="line">model.to(device)</span><br><span class="line"><span class="comment"># 5. use DistributedDataParallel</span></span><br><span class="line"><span class="keyword">if</span> torch.cuda.device_count() &gt; <span class="number">1</span>:    </span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Let&#x27;s use&quot;</span>, torch.cuda.device_count(), <span class="string">&quot;GPUs!&quot;</span>)    </span><br><span class="line">    model = DistributedDataParallel(model, device_ids=[local_rank], output_device=local_rank)</span><br></pre></td></tr></table></figure>
+
+<h2 id="Horovod"><a href="#Horovod" class="headerlink" title="Horovod"></a>Horovod</h2><p>除了 Pytorch 原生提供的 DP 和 DDP 方式以外，也有很多优秀的由第三方提供的分布式训练工具，其中 Horovod 就是比较常用的一款。Horovod 是 Uber 开源的跨平台分布式训练框架，从名字可以看出来，Horovod 采用 all-reduce 架构来提高分布式设备的通信效率。同时，Horovod 不仅支持 Pytorch，也支持 TensorFlow 等其他深度学习框架。训练中如果想使用 Horovod 的话，其实对代码的改动也比较少，如下所示。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> horovod.torch <span class="keyword">as</span> hvd</span><br><span class="line"><span class="comment"># 1. init horovod</span></span><br><span class="line">hvd.init()</span><br><span class="line"><span class="comment"># 2. Pin GPU to be used to process local rank (one GPU per process)</span></span><br><span class="line">torch.cuda.set_device(hvd.local_rank())</span><br><span class="line"><span class="comment"># 3. Partition dataset among workers using DistributedSampler</span></span><br><span class="line">train_sampler = DistributedSampler(training_set, num_replicas=hvd.size(), rank=hvd.rank())</span><br><span class="line">training_loader = DataLoader(training_set, batch_size=TRAIN_BATCH_SIZE, sampler=train_sampler)</span><br><span class="line"><span class="comment"># 4. Add Horovod Distributed Optimizer</span></span><br><span class="line">optimizer = hvd.DistributedOptimizer(optimizer, named_parameters=model.named_parameters())</span><br><span class="line"><span class="comment"># 5. Horovod: broadcast parameters from rank 0 to all other processes.</span></span><br><span class="line">hvd.broadcast_parameters(model.state_dict(), root_rank=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考文献："><a href="#参考文献：" class="headerlink" title="参考文献："></a>参考文献：</h1><p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/news/841792">深度学习中的分布式训练 - 云+社区 - 腾讯云</a></p>
+<p><a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/azure/machine-learning/concept-distributed-training">什么是分布式训练？ - Azure Machine Learning | Microsoft Docs</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/161652132">https://zhuanlan.zhihu.com/p/161652132</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag"># 深度学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/30/%E4%BD%8D%E8%BF%90%E7%AE%97/" rel="prev" title="位运算">
+      <i class="fa fa-chevron-left"></i> 位运算
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/09/%E5%88%86%E8%AF%8D/" rel="next" title="分词">
+      分词 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83"><span class="nav-number">1.</span> <span class="nav-text">分布式训练</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C"><span class="nav-number">1.1.</span> <span class="nav-text">数据并行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E5%B9%B6%E8%A1%8C"><span class="nav-number">1.2.</span> <span class="nav-text">模型并行</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1"><span class="nav-number">2.</span> <span class="nav-text">架构设计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8-Parameter-Server"><span class="nav-number">2.1.</span> <span class="nav-text">基于参数服务器(Parameter Server)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E8%A7%84%E7%BA%A6-Reduce-%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.2.</span> <span class="nav-text">基于规约(Reduce)模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EMPI%E7%9A%84%E6%96%B9%E5%BC%8F-%E4%BA%92%E8%81%94%E7%BD%91%E4%B8%AD%E4%BD%BF%E7%94%A8%E7%9A%84%E6%AF%94%E8%BE%83%E5%B0%91"><span class="nav-number">2.3.</span> <span class="nav-text">基于MPI的方式(互联网中使用的比较少)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%E4%B8%8E%E5%BC%82%E6%AD%A5%E6%9B%B4%E6%96%B0"><span class="nav-number">3.</span> <span class="nav-text">同步与异步更新</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%EF%BC%88Sync%EF%BC%89"><span class="nav-number">3.1.</span> <span class="nav-text">同步（Sync）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E6%AD%A5%EF%BC%88Async%EF%BC%89"><span class="nav-number">3.2.</span> <span class="nav-text">异步（Async）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B7%E5%90%88-Mix"><span class="nav-number">3.3.</span> <span class="nav-text">混合 (Mix):</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">通信方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MPI"><span class="nav-number">4.1.</span> <span class="nav-text">MPI</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NCCL"><span class="nav-number">4.2.</span> <span class="nav-text">NCCL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gRPC"><span class="nav-number">4.3.</span> <span class="nav-text">gRPC</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EPytorch%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83%E6%96%B9%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">基于Pytorch的分布式训练方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Data-Parallel"><span class="nav-number">5.1.</span> <span class="nav-text">Data Parallel</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Distributed-Data-Parallel"><span class="nav-number">5.2.</span> <span class="nav-text">Distributed Data Parallel</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Horovod"><span class="nav-number">5.3.</span> <span class="nav-text">Horovod</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE%EF%BC%9A"><span class="nav-number">6.</span> <span class="nav-text">参考文献：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xlQ"
+      src="/images/spicy.jpg">
+  <p class="site-author-name" itemprop="name">xlQ</p>
+  <div class="site-description" itemprop="description">AI for ai </div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlQ</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

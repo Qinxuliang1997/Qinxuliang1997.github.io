@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="模式识别领域关注的是利⽤计算机算法自动发现数据中的规律，以及使⽤这些规律采取将数据分类等⾏动。而为了实现这一个目的，首先需要一些基础的理论知识，本文参考自《模式识别与机器论文》第一章，介绍模式识别的三类基础知识：概率论、决策论与信息论。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习三大数学基础——概率论、决策论和信息论">
+<meta property="og:url" content="http://example.com/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="HelloBear">
+<meta property="og:description" content="模式识别领域关注的是利⽤计算机算法自动发现数据中的规律，以及使⽤这些规律采取将数据分类等⾏动。而为了实现这一个目的，首先需要一些基础的理论知识，本文参考自《模式识别与机器论文》第一章，介绍模式识别的三类基础知识：概率论、决策论与信息论。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/f4a8b22b23f757104cab2764d693c45d.png">
+<meta property="og:image" content="http://example.com/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/8f3a87ec85962993f1eb791ea8de47d0.png">
+<meta property="og:image" content="http://example.com/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/3ac6454deb8c66630af2f3458f4884d6.png">
+<meta property="og:image" content="http://example.com/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/2ab945061757f22bc0324af94414c7ad.png">
+<meta property="article:published_time" content="2021-12-28T06:58:57.000Z">
+<meta property="article:modified_time" content="2022-01-07T06:12:52.656Z">
+<meta property="article:author" content="xlQ">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/f4a8b22b23f757104cab2764d693c45d.png">
+
+<link rel="canonical" href="http://example.com/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>机器学习三大数学基础——概率论、决策论和信息论 | HelloBear</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">HelloBear</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Less is More</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/spicy.jpg">
+      <meta itemprop="name" content="xlQ">
+      <meta itemprop="description" content="AI for ai ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HelloBear">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          机器学习三大数学基础——概率论、决策论和信息论
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-12-28 14:58:57" itemprop="dateCreated datePublished" datetime="2021-12-28T14:58:57+08:00">2021-12-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-01-07 14:12:52" itemprop="dateModified" datetime="2022-01-07T14:12:52+08:00">2022-01-07</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>模式识别领域关注的是利⽤计算机算法自动发现数据中的规律，以及使⽤这些规律采取将数据分类等⾏动。而为了实现这一个目的，首先需要一些基础的理论知识，本文参考自《模式识别与机器论文》第一章，介绍模式识别的三类基础知识：概率论、决策论与信息论。</p>
+<span id="more"></span>
+
+<h2 id="1-概率论"><a href="#1-概率论" class="headerlink" title="1 概率论"></a>1 概率论</h2><p>在模式识别领域的⼀个关键概念是不确定性的概念。它可以由测量的误差引起，也可以由数据集的有限⼤⼩引起。</p>
+<ul>
+<li>乘法规则和加法规则：</li>
+</ul>
+<p>$$<br>Sum\ rual:\ p\left( X \right) &#x3D; \sum_{Y}^{}{p\left( X,Y \right)}<br>$$</p>
+<p>$$<br>\ Product\ rual:\ p\left( X,Y \right) &#x3D; p\left( Y\mid X \right)p\left( X \right)<br>$$</p>
+<p>其中，$p\left( X,Y \right)$ 是联合概率，$p\left( Y\mid X \right)$是条件概率。</p>
+<ul>
+<li>贝叶斯定理：</li>
+</ul>
+<p>$$<br>p\left( Y\mid X \right) &#x3D; \frac{p\left( X\mid Y \right)p\left( Y \right)}{p\left( X \right)} &#x3D; \frac{p\left( X\mid Y \right)p\left( Y \right)}{\sum_{Y}^{}{p\left( X\mid Y \right)p\left( Y \right)}}<br>$$</p>
+<p>先验概率与后验概率：$p\left( Y \right)$为先验概率，$p\left( Y\mid X \right)$称为后验概率，这是观察了$X$的结果后对$Y$的估计。</p>
+<ul>
+<li>X和Y 相互独⽴：</li>
+</ul>
+<p>$$<br>p\left( X,Y \right) &#x3D; p\left( X \right)p\left( Y \right)<br>$$</p>
+<img src="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/f4a8b22b23f757104cab2764d693c45d.png" class title="This is an test image">
+
+
+
+
+<h3 id="1-1-概率密度"><a href="#1-1-概率密度" class="headerlink" title="1.1 概率密度"></a>1.1 概率密度</h3><ul>
+<li>概率密度函数：</li>
+</ul>
+<p>$$<br>p\left( x \in \left( a,b \right) \right) &#x3D; \int_{a}^{b}{p\left( x \right)\mathrm{d}}x<br>$$</p>
+<p>满足$p\left( x \right) &gt; 1$,$\ \int_{- \infty}^{+ \infty}{p\left( x \right)\mathrm{d}}x &#x3D; 1$</p>
+<ul>
+<li>随机变量的非线性变化$x &#x3D; f\left( y \right)$：</li>
+</ul>
+<p>$$<br>p_{y}\left( y \right) &#x3D; p_{x}\left( x \right)\left| \frac{\mathrm{d}x}{\mathrm{d}y} \right| &#x3D; p_{x}\left( g\left( y \right) \right)\left| g^{‘}\left( y \right) \right|<br>$$</p>
+<ul>
+<li>累计分布函数：</li>
+</ul>
+<p>$$<br>P\left( z \right) &#x3D; \int_{- \infty}^{z}{p\left( x \right)\mathrm{d}}x<br>$$</p>
+<ul>
+<li><p>联合概率密度：$x$为一个向量</p>
+</li>
+<li><p>运算规则：加和规则、乘积规则、贝叶斯规则</p>
+</li>
+</ul>
+<h3 id="1-2-期望与协方差"><a href="#1-2-期望与协方差" class="headerlink" title="1.2 期望与协方差"></a>1.2 期望与协方差</h3><ul>
+<li>期望：加权平均：</li>
+</ul>
+<p>$$<br>E\left\lbrack f \right\rbrack &#x3D; \sum_{x}^{}{p\left( x \right)f\left( x \right)}<br>$$</p>
+<p>$$<br>E\left\lbrack f \right\rbrack &#x3D; \int_{}^{}{p\left( x \right)f\left( x \right)\mathrm{d}}x<br>$$</p>
+<ul>
+<li>估计：</li>
+</ul>
+<p>$$<br>E\left\lbrack f \right\rbrack \simeq \frac{1}{N}\sum_{n &#x3D; 1}^{N}{f\left( x_{n} \right)}<br>$$</p>
+<ul>
+<li>条件期望：</li>
+</ul>
+<p>$$<br>E_{x}\left\lbrack f\mid y \right\rbrack &#x3D; \sum_{x}^{}{p\left( x\mid y \right)f\left( x \right)}<br>$$</p>
+<ul>
+<li>方差度量了$f\left( x \right)$在均值附近变化的大小：</li>
+</ul>
+<p>$$<br>\text{var}\left\lbrack f \right\rbrack &#x3D; E\left\lbrack \left( f\left( x \right) - E\left\lbrack f\left( x \right) \right\rbrack \right)^{2} \right\rbrack &#x3D; E\left\lbrack f\left( x \right)^{2} \right\rbrack - E\left\lbrack f\left( x \right) \right\rbrack^{2}<br>$$</p>
+<ul>
+<li>协方差度量两个随机变量的关联性：</li>
+</ul>
+<p>$$<br>c\text{ov}\left\lbrack x,y \right\rbrack &#x3D; E_{x,y}\left\lbrack { x - E\left\lbrack x \right\rbrack}{ y - E\left\lbrack y \right\rbrack} \right\rbrack &#x3D; E_{x,y}\left\lbrack \text{xy} \right\rbrack - E\left\lbrack x \right\rbrack E\left\lbrack y \right\rbrack<br>$$</p>
+<ul>
+<li><p>协方差矩阵：</p>
+<p>已知了数据$X$，每一行为一个样本，每一列为一个随机变量$c_i$，协方差矩阵：</p>
+</li>
+</ul>
+<p>$$<br>\text{covMatrix} &#x3D; \frac{1}{m - 1}\begin{bmatrix}<br>\text{cov}\left( c_{1},c_{1} \right) &amp; \text{cov}\left( c_{1},c_{2} \right) &amp; \cdots &amp; \text{cov}\left( c_{1},c_{n} \right) \<br>\text{cov}\left( c_{2},c_{1} \right) &amp; \text{cov}\left( c_{2},c_{2} \right) &amp; \cdots &amp; \text{cov}\left( c_{2},c_{n} \right) \<br> \vdots &amp; \vdots &amp; \vdots &amp; \vdots \<br>\text{cov}\left( c_{n},c_{1} \right) &amp; \text{cov}\left( c_{n},c_{2} \right) &amp; \cdots &amp; \text{cov}\left( c_{n},c_{n} \right) \<br>\end{bmatrix} &#x3D; \frac{1}{m - 1}X^{T}X<br>$$</p>
+<p><em><strong>补充</strong></em> ：方差的估计中，为什么除以$n - 1$:</p>
+<p>首先，对于全体样本，方差的计算中除以$n$；但是在用一组样本对总体进行估计时，由于均值本身就是通过估计得到的，因此自由度$- 1$，所以为了得到无偏估计，方差计算中除以$n - 1$。</p>
+<h3 id="1-3-贝叶斯概率"><a href="#1-3-贝叶斯概率" class="headerlink" title="1.3 贝叶斯概率"></a>1.3 贝叶斯概率</h3><p>$$<br>p(\mathbf{w} \mid \mathcal{D}) &#x3D; \frac{p(\mathcal{D} \mid \mathbf{w})p(\mathbf{w})}{p(\mathcal{D})}<br>$$</p>
+<p>在观察到数据之前，我们有⼀些关于参数$w$的假设，这以先验概率$p\left( w \right)$的形式给出。观测数据$D$的效果可以通过条件概率$p(\mathcal{D} \mid \mathbf{w})$表达，其中$p(\mathcal{D} \mid \mathbf{w})$叫做似然函数，表达了在不同的参数向量$w$下，观测数据可能出现的大小。似然函数的负对数被叫做误差函数，</p>
+<p>1、频率学派vs贝叶斯学派：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>频率学派</th>
+<th>贝叶斯学派</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>参数估计</td>
+<td>参数虽然未知，但是存在客观的固定值</td>
+<td>参数本身是随机变量，先假定一个先验分布后通过后验修正</td>
+</tr>
+<tr>
+<td>代表方法</td>
+<td>最大似然：$w$的值是使似然函数$p(D!w)$最⼤值的$w$</td>
+<td>最大后验：$w$的值是使似然函数$p(w!D)$最⼤值的$w$</td>
+</tr>
+<tr>
+<td>优缺点</td>
+<td>缺点：方差估计比真实值小</td>
+<td>优：包含先验概率；  缺：但是先验概率的选择通常是为了计算的⽅便，造成结果不准</td>
+</tr>
+<tr>
+<td>例子（曲线拟合）</td>
+<td>目标函数为平方和</td>
+<td>目标函数为正则化的平方和</td>
+</tr>
+</tbody></table>
+<h3 id="1-4-高斯分布"><a href="#1-4-高斯分布" class="headerlink" title="1.4 高斯分布"></a>1.4 高斯分布</h3><p>$$<br>\mathcal{N}\left( x \mid \mu,\sigma^{2} \right) &#x3D; \frac{1}{\left( 2\pi\sigma^{2} \right)^{\frac{1}{2}}}\exp\left{ - \frac{1}{2\sigma^{2}}(x - \mu)^{2} \right}<br>$$</p>
+<p>其中，$\beta &#x3D; \frac{1}{\sigma^{2}}$称为精度。向量的高斯分布：</p>
+<p>$$<br>\mathcal{N}(\mathbf{x} \mid \mathbf{\mu},\mathbf{\Sigma}) &#x3D; \frac{1}{(2\pi)^{\frac{D}{2}}}\frac{1}{|\mathbf{\Sigma}|^{\frac{1}{2}}}\exp\left{ - \frac{1}{2}(\mathbf{x} - \mathbf{\mu})^{T}\mathbf{\Sigma}^{- 1}(\mathbf{x} - \mathbf{\mu}) \right}<br>$$</p>
+<p>维数为$D$，$\sum_{}^{}{}$为协方差矩阵。</p>
+<h3 id="1-5-重新考察曲线拟合问题"><a href="#1-5-重新考察曲线拟合问题" class="headerlink" title="1.5 重新考察曲线拟合问题"></a>1.5 重新考察曲线拟合问题</h3><img src="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/8f3a87ec85962993f1eb791ea8de47d0.png" class title="This is an test image">
+
+
+
+
+<p>假定给定x，t满足高斯分布：</p>
+<p>$$<br>p(t \mid x,\mathbf{w},\beta) &#x3D; \mathcal{N}\left( t \mid y(x,\mathbf{w}\mathbf{),}\beta^{- 1} \right)<br>$$</p>
+<p><strong>最大先验：</strong><br>$$<br>p(\mathbf{t} \mid \mathbf{x},\mathbf{w},\beta) &#x3D; \prod_{n &#x3D; 1}^{N}\mspace{2mu}\mathcal{N}\left( t_{n} \mid y\left( x_{n},\mathbf{w} \right),\beta^{- 1} \right)<br>$$</p>
+<p>取对数，分别求解$w,\beta$，得到在⾼斯噪声的假设下，平⽅和误差函数是最⼤化似然函数的⼀个⾃然结果；确定⾼斯条件分布的精度参数$\beta$后即可得到概率分布的预测分布：</p>
+<p>$$<br>p\left( t \mid x,\mathbf{w}<em>{\text{ML}},\beta</em>{\text{ML}} \right) &#x3D; \mathcal{N}\left( t \mid y\left( x,\mathbf{w}<em>{\text{ML}} \right),\beta</em>{\text{ML}}^{- 1} \right)<br>$$</p>
+<p><strong>最大后验：</strong></p>
+<p>引⼊在多项式系数$w$上的先验分布：</p>
+<p>$$<br>p(\mathbf{w} \mid \alpha) &#x3D; \mathcal{N}\left( \mathbf{w} \mid \mathbf{0},\alpha^{- 1}\mathbf{I} \right) &#x3D; \left( \frac{\alpha}{2\pi} \right)^{\frac{M + 1}{2}}\exp\left{ - \frac{\alpha}{2}\mathbf{w}^{T}\mathbf{w} \right}<br>$$</p>
+<p>$\beta$是分布的精度，$M\  + \ 1$是对于$M$阶多项式的向量$w$的元素的总数。</p>
+<p>采用贝叶斯定理，$w$的后验概率正⽐于先验分布和似然函数的乘积：</p>
+<p>$$<br>p(\mathbf{w} \mid \mathbf{x},\mathbf{t},\alpha,\beta) \propto p(\mathbf{t} \mid \mathbf{x},\mathbf{w},\beta)p(\mathbf{w} \mid \alpha)<br>$$</p>
+<p>最终计算得到，最大后验等价于：</p>
+<p>$$<br>\frac{\beta}{2}\sum_{n &#x3D; 1}^{N}\mspace{2mu}\left{ y\left( x_{n},\mathbf{w} \right) - t_{n} \right}^{2} + \frac{\alpha}{2}\mathbf{w}^{T}\mathbf{w}<br>$$</p>
+<p>即：最⼤化后验概率等价于最⼩化正则化的平⽅和误差函数</p>
+<h3 id="1-6-贝叶斯曲线拟合"><a href="#1-6-贝叶斯曲线拟合" class="headerlink" title="1.6 贝叶斯曲线拟合"></a>1.6 贝叶斯曲线拟合</h3><p>⼀个纯粹的贝叶斯⽅法中，我们应该⾃始⾄终地应⽤概率的加和规则和乘积规则。</p>
+<h2 id="2-维数灾难"><a href="#2-维数灾难" class="headerlink" title="2 维数灾难"></a>2 维数灾难</h2><p>我们用输入数据将空间切分为无数个单元格，预测类别的时候，我们⾸先判断它属于哪个单元格，然后我们寻找训练集中落在同⼀个单元格中的训练数据点，测试点的类别就是测试点所在的单元格中数量最多的训练数据点的类别。但是为了保证单元格不空，我们所需要指数级的训练数据。</p>
+<p>在多项式拟合中，对于D个输入变量，三阶多项式形式为：</p>
+<p>$$<br>y\left( \mathbf{x},\mathbf{w} \right) &#x3D; w_{0} + \sum_{i &#x3D; 1}^{D}\mspace{2mu} w_{i}x_{i} + \sum_{i &#x3D; 1}^{D}\mspace{2mu}\sum_{j &#x3D; 1}^{D}{w_{\text{ij}}x_{i}x_{j}} + \sum_{i &#x3D; 1}^{D}\mspace{2mu}\sum_{j &#x3D; 1}^{D}\mspace{2mu}\sum_{k &#x3D; 1}^{}\mspace{2mu} w_{\text{ijk}}x_{i}x_{j}x_{k}<br>$$</p>
+<p>参数的数量随着$D^{3}$的速度增加，因此实际使用中不方便。</p>
+<p>此外，高纬空间中的球体的大部分体积都汇聚在表面附近的薄球壳上。⾼维空间产⽣的这种困难有时被称为维度灾难（curse of dimensionality）。</p>
+<p>在模式识别中，这种问题并不能阻止我们寻找适用于高纬空间的有效技术。原因有两⽅⾯。第⼀，真实的数据经常被限制在有着较低的有效维度的空间区域中，特别地，在⽬标值会发⽣重要变化的⽅向上也会有这种限制。第⼆，真实数据通常⽐较光滑（⾄少局部上⽐较光滑），因此⼤多数情况下，对于输⼊变量的微⼩改变，⽬标值的改变也很⼩，因此对于新的输⼊变量，我们可以通过局部的类似于插值的技术来进⾏预测。</p>
+<h2 id="3-决策论"><a href="#3-决策论" class="headerlink" title="3 决策论"></a>3 决策论</h2><p>推断（inference）：从训练数据集中确定$p\left( x,t \right)$。</p>
+<p>决策（decision）：对t采取预测或者采取一定的动作。</p>
+<h3 id="3-1-最⼩化错误分类率"><a href="#3-1-最⼩化错误分类率" class="headerlink" title="3.1 最⼩化错误分类率"></a>3.1 最⼩化错误分类率</h3><p>为了尽可能的减少分类错误率，我们使用一个规则将输入空间切分成不同的区域$R_k$，这种区域被称为决策区域，每个区域$R_k$中的点被分到$C_k$类中。我们的目的是为了减少错误分类率，假设有两类：</p>
+<p>$$<br>\begin{matrix}<br>p(mistake) &#x3D; p\left( \mathbf{x} \in \mathcal{R}<em>{1},\mathcal{C}</em>{2} \right) + p\left( \mathbf{x} \in \mathcal{R}<em>{2},\mathcal{C}</em>{1} \right)<br> &#x3D; \int_{\mathcal{R}<em>{1}}^{}\mspace{2mu} p\left( \mathbf{x},\mathcal{C}</em>{2} \right)d\mathbf{x} + \int_{\mathcal{R}<em>{2}}^{}\mspace{2mu} p\left( \mathbf{x},\mathcal{C}</em>{1} \right)d\mathbf{x} \<br>\end{matrix}<br>$$</p>
+<p>为了使得上式最小，需要最小化两个积分，因此，对于给定的x值，如果$\mathbf{p}\left( \mathbf{x}\mathbf{;}\mathbf{C}\mathbf{1} \right)\mathbf{&gt;}\mathbf{p}\left( \mathbf{x}\mathbf{;}\mathbf{C}\mathbf{2} \right)$<strong>，那么就把x分类到</strong>$\mathbf{C}_{\mathbf{1}}$<strong>中</strong>。根据乘积规则$p\left( \mathbf{x};Ck \right) &#x3D; p\left( Ck|\ \mathbf{x} \right)p\left( \mathbf{x} \right)$，也就等价于分到后验概率最大的类别中。</p>
+<img src="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/3ac6454deb8c66630af2f3458f4884d6.png" class title="This is an test image">
+
+
+
+<p>对于更一般的情况同理，最终也是得到，每个x应该被分到有着最大后验概率的类别中。</p>
+<h3 id="3-2-最小化期望损失"><a href="#3-2-最小化期望损失" class="headerlink" title="3.2 最小化期望损失"></a>3.2 最小化期望损失</h3><p>对于一些问题，我们的目标不单纯是最小化错误分类的数量，而是要考虑每种错误分类的情况下，可能造成的损失。例如把没有患癌症的病人分为有癌症，肯定比把患癌症的病人分为没有癌症的损失来的大，此时我们的目标是最小化期望损失。</p>
+<p>假设对于新的x的值，真实的类别为$$C_k$$，我们把x分类为$$C_j$$（其中j可能与k相等，也可能不相等）。这样做的结果是，我们会造成某种程度的损失，记作$$L_{kj}$$，它可以看成损失矩阵（loss matrix）的第$k,j$个元素。损失函数为</p>
+<p>$$<br>\mathbb{E}\lbrack L\rbrack &#x3D; \sum_{k}^{}\mspace{2mu}\sum_{j}^{}\mspace{2mu}\int_{\mathcal{R}<em>{j}}^{}\mspace{2mu} L</em>{\text{kj}}p\left( \mathbf{x},\mathcal{C}_{k} \right)d\mathbf{x}<br>$$</p>
+<h3 id="3-3-拒绝选项"><a href="#3-3-拒绝选项" class="headerlink" title="3.3 拒绝选项"></a>3.3 拒绝选项</h3><p>当$p(C_k | \mathbf{x})$的值近似时，难以做出正确的选择，此时可以设置一个阈值$\theta$，拒绝后验概率$p(C_k\ |\ \mathbf{x})$的最大值小于等于$\theta$的那些输入x。</p>
+<p>令$x &#x3D; 1$会使所有的样本都被拒绝，⽽如果有k个类别，那么令$x\  &lt; \ 1&#x2F;K$将会确保没有样本被拒绝。</p>
+<img src="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/2ab945061757f22bc0324af94414c7ad.png" class title="This is an test image">
+
+
+<h3 id="3-4-决策和推断"><a href="#3-4-决策和推断" class="headerlink" title="3.4 决策和推断"></a>3.4 决策和推断</h3><p>我们已经把分类问题划分成了两个阶段：推断（inference）阶段和决策（decision）阶段。在推断阶段，我们使⽤训练数据学习$p\left( C_{k} \middle| x \right)$的模型。在接下来的决策阶段，我们使⽤这些后验概率来进⾏最优的分类。另⼀种可能的⽅法是，同时解决两个问题，即简单地学习⼀个函数，将输⼊x直接映射为决策。这样的函数被称为判别函数（discriminant function）。</p>
+<p>三种不同的⽅法来解决决策问题:</p>
+<ul>
+<li>生成式模型：</li>
+</ul>
+<p>⾸先对于每个类别$C_{k}$，独⽴地确定类条件密度$p(x| C_k)$。这是⼀个推断问题，然后，推断先验类概率$p | C_k )$，之后，使⽤贝叶斯定理：<br>$$<br>p\left( \mathcal{C}<em>{k} \mid \mathbf{x} \right) &#x3D; \frac{p\left( \mathbf{x} \mid \mathcal{C}</em>{k} \right)p\left( \mathcal{C}_{k} \right)}{p(\mathbf{x})}<br>$$</p>
+<p>求出后验概率。或者先求出联合概率密度$p\left( \mathcal{C}_{k},\mathbf{x} \right)$，在进行归一化最后得到后验概率，得到后验概率后采用决策论进行判别。通过取样，可以人为生成输入空间的数据。	</p>
+<ul>
+<li>判别式模型：</li>
+</ul>
+<p>⾸先解决确定后验类密度$p\left( C_{k} \middle| x \right)$这⼀推断问题，接下来使⽤决策论来对新的输⼊x进⾏分类。直接对后验概率建模。</p>
+<ul>
+<li>判别函数</li>
+</ul>
+<p>这个函数把每个输⼊x直接映射为类别标签，例如对于二分类问题，f直接输出等于0或1，此时概率不起作用。</p>
+<table>
+<thead>
+<tr>
+<th>决策问题的方法</th>
+<th>描述</th>
+<th>优缺点</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>生成式模型</td>
+<td>先定先验$p(x!C_k)$再确定后验$p(C_k!x)$，最后判别</td>
+<td>需要求解的东西最多；  能够通过公式求出数据的边缘概率密度$p(x)$，用于检测模型中具有低概率的新数据点</td>
+<td>朴素贝叶斯，隐马尔可夫模型</td>
+</tr>
+<tr>
+<td>判别模型</td>
+<td>直接定后验$p(C_x!x)$，最后判别</td>
+<td></td>
+<td>LR，SVM，FNN</td>
+</tr>
+<tr>
+<td>判别函数</td>
+<td>直接计算$f(x)$得到结果</td>
+<td>得到不后验概率；不能进行最小化风险，拒绝选择，补偿先验概率，以及模型组合</td>
+<td>线性判别函数</td>
+</tr>
+</tbody></table>
+<h3 id="3-5-回归问题的损失函数"><a href="#3-5-回归问题的损失函数" class="headerlink" title="3.5 回归问题的损失函数"></a>3.5 回归问题的损失函数</h3><p>前面用分类问题讨论了决策论，后面看一下回归问题的损失函数。对于每个x，有一个估计y(x)，对应的损失为L，期望损失：</p>
+<p>$$<br>\mathbb{E}\lbrack L\rbrack &#x3D; \iint L(t,y(\mathbf{x}))p(\mathbf{x},t)d\mathbf{x}dt<br>$$</p>
+<p>回归问题常损失一般为平方损失：$L(t,y(\mathbf{x})) &#x3D; { y(\mathbf{x}) - t}^{2}$，对于任意的y(x)，采用变分法解方程，最终得到的$\mathbf{y}(\mathbf{x}) &#x3D; \mathbb{E}_{t}\lbrack\mathbf{t} \mid \mathbf{x}\rbrack$，即最⼩化了期望平⽅损失的回归函数y(x)由条件概率分布$p\left( t \middle| x \right)$的均值给出。或者我们也可以直接展开上式，最终得到：</p>
+<p>$$<br>\mathbb{E}\lbrack L\rbrack &#x3D; \int{ y(\mathbf{x}) - \mathbb{E}\lbrack t \mid \mathbf{x}\rbrack}^{2}p(\mathbf{x})d\mathbf{x} + \int\text{var}\lbrack t \mid \mathbf{x}\rbrack p(\mathbf{x})d\mathbf{x}<br>$$</p>
+<p>也是有三种方法解决回归问题：</p>
+<ul>
+<li><p>⾸先解决确定联合概率密度p(x, t)的推断问题，之后计算条件概率密度p(t | x)，最后求均值</p>
+</li>
+<li><p>直接确定条件概率密度p(t |x)，然后求均值</p>
+</li>
+<li><p>直接从训练数据中寻找⼀个回归函数y(x)</p>
+</li>
+</ul>
+<p>和分类时相同。</p>
+<h2 id="4-信息论"><a href="#4-信息论" class="headerlink" title="4 信息论"></a>4 信息论</h2><ul>
+<li><p>信息量：</p>
+<p>对于一个随机变量，信息量的意思是学习x的值时候的惊讶程度，也就是x越小信息量越大（不确定性越强）；信息量的表达式：</p>
+</li>
+</ul>
+<p>$$<br>h(x) &#x3D; - \log_{2}p(x)<br>$$<br>   2为底的时候，单位是bit，e为底的时候单位是nat。</p>
+<ul>
+<li>熵：衡量随机变量的不确定性大下的，在0.5的时候熵最大，等于0或1时候最小。</li>
+</ul>
+<p>$$<br>H\lbrack x\rbrack &#x3D; - \sum_{x}^{}\mspace{2mu} p(x)\log_{2}p(x)<br>$$</p>
+<ul>
+<li>KL散度（相对熵）：描述两个变量之间的区别大小的，当两个分布相同时，散度为0。</li>
+</ul>
+<p>$$<br>\begin{matrix}<br>\text{KL}(p \parallel q)&amp; &#x3D; - \int p(\mathbf{x})\ln q(\mathbf{x})d\mathbf{x} - \left( - \int p(\mathbf{x})\ln p(\mathbf{x})d\mathbf{x} \right) \<br>&amp; &#x3D; - \int p(\mathbf{x})\ln\left{ \frac{q(\mathbf{x})}{p(\mathbf{x})} \right} d\mathbf{x} \<br>\end{matrix}<br>$$</p>
+<ul>
+<li>互信息：由于知道了y值造成的x的不确定性的减少：</li>
+</ul>
+<p>$$<br>&#x3D; - \iint_{}^{}{p\left( \mathbf{x},\mathbf{y} \right)l\operatorname{n}{\left( \frac{p\left( \mathbf{x} \right)p\left( \mathbf{y} \right)}{p\left( \mathbf{x},\mathbf{y} \right)} \right)d}}\mathbf{x}d\mathbf{y}<br>$$</p>
+<p>$$<br>&#x3D; H\left\lbrack \mathbf{x} \right\rbrack - H\left\lbrack \mathbf{x}\mid\mathbf{y} \right\rbrack &#x3D; H\left\lbrack \mathbf{y} \right\rbrack - H\left\lbrack \mathbf{y}\mid\mathbf{x} \right\rbrack<br>$$</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/12/28/%E6%89%8B%E5%86%99CNN/" rel="prev" title="Numpy实现卷积和最大池化">
+      <i class="fa fa-chevron-left"></i> Numpy实现卷积和最大池化
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/12/29/Self-attention/" rel="next" title="Self-Attention">
+      Self-Attention <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%A6%82%E7%8E%87%E8%AE%BA"><span class="nav-number">1.</span> <span class="nav-text">1 概率论</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E6%A6%82%E7%8E%87%E5%AF%86%E5%BA%A6"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 概率密度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E6%9C%9F%E6%9C%9B%E4%B8%8E%E5%8D%8F%E6%96%B9%E5%B7%AE"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 期望与协方差</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%A6%82%E7%8E%87"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 贝叶斯概率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 高斯分布</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-5-%E9%87%8D%E6%96%B0%E8%80%83%E5%AF%9F%E6%9B%B2%E7%BA%BF%E6%8B%9F%E5%90%88%E9%97%AE%E9%A2%98"><span class="nav-number">1.5.</span> <span class="nav-text">1.5 重新考察曲线拟合问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-6-%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%9B%B2%E7%BA%BF%E6%8B%9F%E5%90%88"><span class="nav-number">1.6.</span> <span class="nav-text">1.6 贝叶斯曲线拟合</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%BB%B4%E6%95%B0%E7%81%BE%E9%9A%BE"><span class="nav-number">2.</span> <span class="nav-text">2 维数灾难</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%86%B3%E7%AD%96%E8%AE%BA"><span class="nav-number">3.</span> <span class="nav-text">3 决策论</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E6%9C%80%E2%BC%A9%E5%8C%96%E9%94%99%E8%AF%AF%E5%88%86%E7%B1%BB%E7%8E%87"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 最⼩化错误分类率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E6%9C%80%E5%B0%8F%E5%8C%96%E6%9C%9F%E6%9C%9B%E6%8D%9F%E5%A4%B1"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 最小化期望损失</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-%E6%8B%92%E7%BB%9D%E9%80%89%E9%A1%B9"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 拒绝选项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-%E5%86%B3%E7%AD%96%E5%92%8C%E6%8E%A8%E6%96%AD"><span class="nav-number">3.4.</span> <span class="nav-text">3.4 决策和推断</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-%E5%9B%9E%E5%BD%92%E9%97%AE%E9%A2%98%E7%9A%84%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="nav-number">3.5.</span> <span class="nav-text">3.5 回归问题的损失函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E4%BF%A1%E6%81%AF%E8%AE%BA"><span class="nav-number">4.</span> <span class="nav-text">4 信息论</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xlQ"
+      src="/images/spicy.jpg">
+  <p class="site-author-name" itemprop="name">xlQ</p>
+  <div class="site-description" itemprop="description">AI for ai </div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlQ</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

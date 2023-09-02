@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本文介绍Self-attention的原理以及常见问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Self-Attention">
+<meta property="og:url" content="http://example.com/2021/12/29/Self-attention/index.html">
+<meta property="og:site_name" content="HelloBear">
+<meta property="og:description" content="本文介绍Self-attention的原理以及常见问题。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2021/12/29/Self-attention/4797131a4930c56efe793655ee1196c4.png">
+<meta property="og:image" content="http://example.com/2021/12/29/Self-attention/80a1b848973caba1a2abf65d365a71d8.png">
+<meta property="og:image" content="http://example.com/2021/12/29/Self-attention/9df849d7ade3306038ad87845782d27d.png">
+<meta property="og:image" content="http://example.com/2021/12/29/Self-attention/af943ad7d3ff9cedd8bfaf76e50ce798.png">
+<meta property="og:image" content="http://example.com/2021/12/29/Self-attention/matrix.png">
+<meta property="article:published_time" content="2021-12-29T14:30:02.000Z">
+<meta property="article:modified_time" content="2022-03-24T13:34:02.003Z">
+<meta property="article:author" content="xlQ">
+<meta property="article:tag" content="深度学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/12/29/Self-attention/4797131a4930c56efe793655ee1196c4.png">
+
+<link rel="canonical" href="http://example.com/2021/12/29/Self-attention/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Self-Attention | HelloBear</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">HelloBear</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Less is More</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/29/Self-attention/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/spicy.jpg">
+      <meta itemprop="name" content="xlQ">
+      <meta itemprop="description" content="AI for ai ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HelloBear">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Self-Attention
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-12-29 22:30:02" itemprop="dateCreated datePublished" datetime="2021-12-29T22:30:02+08:00">2021-12-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-03-24 21:34:02" itemprop="dateModified" datetime="2022-03-24T21:34:02+08:00">2022-03-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文介绍Self-attention的原理以及常见问题。</p>
+<span id="more"></span>
+
+<h1 id="Self-attention用于提取序列特征"><a href="#Self-attention用于提取序列特征" class="headerlink" title="Self-attention用于提取序列特征"></a>Self-attention用于提取序列特征</h1><p>Self-attention机制是一种计算单个序列各个元素之间关联性的方法，例如给定一个输入序列：”Hello，I love you！”,通过self-attention机制可以计算单词之间的关系，例如”Hello”和”I”之间的关系更为接近，与”you”则没有什么关系。最终可以得到一个这样的得分矩阵，通过这个矩阵我们可以猜测，在出现了文本预测的时候，当输入的是”Hello”的时候，后面接着的是”I”的概率最大。</p>
+<img title src="/2021/12/29/Self-attention/4797131a4930c56efe793655ee1196c4.png" alt data-align="center">
+
+<h1 id="获取attention矩阵"><a href="#获取attention矩阵" class="headerlink" title="获取attention矩阵"></a>获取attention矩阵</h1><p>如何得到这样一个矩阵呢？以及得到了这样一个矩阵之后，如何利用这个矩阵对输入数据进行进一步处理呢？我们还以上面这句话为例介绍。</p>
+<p>首先在文本处理中，第一步肯定是Embedding，也就是将文本转换为向量。转换的方法很多，包括传统的one-hot encoding，word2vec方法，到现在的BERT，GPT等。比如说我们将”Hello”转换为向量$x^1$，”I”转换为向量$x^2$，”love”转换为向量$x^3$，”you”转换为向量$x^4$。那么如何得到如图1这样的矩阵呢？</p>
+<p>这边借用一下李宏毅老师的课件分析一下。对于一排输入向量$\left\lbrack x^1,x^2,x^3,x^4 \right\rbrack$，首先对它们做一下线性变化得到向量$\left\lbrack a^1,a^2,a^3,a^4, \right\rbrack$。得到这样一排向量之后，分别对每一个向量$a^i$乘以$w^q,w^k,w^v$，得到向量$q,k,v$，即大家常说的query，key和value，具体如图2所示。至于如何理解这仨个量，直观理解参考：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/427629601/answer/1558216827"><span class="underline">如何理解Q、K、V？</span></a></p>
+<img title src="/2021/12/29/Self-attention/80a1b848973caba1a2abf65d365a71d8.png" alt data-align="center">
+
+<p>得到了每个向量对应的$q^i,k^i,v^i$后，就可以开始计算attention的数值了，这里采用的是Scaled Dot-Product的方法，具体操作如下：</p>
+<img title src="/2021/12/29/Self-attention/9df849d7ade3306038ad87845782d27d.png" alt data-align="center">
+
+<p>比如说为了计算$x^1$和其他三个向量之间的关联性，用$q^1$乘以包括$k^1$在内的所有$k^i$值，然后再除以$\sqrt{d}$，得到了四个$\alpha_{1,i}$值，这四个值做完softmax之后，就是图1中的第一列（行）的值，过程如图3所示。对所有的向量都做同样的过程，最终就可以得到图1所示的得分矩阵啦。</p>
+<p>那么我们就知道了，$q,k$是为了计算得分矩阵的，那么剩下来的$v$,是干什么的呢？其实向量$v$就是保存原始向量$x$信息的，既然有了向量之间的关联性，那么我们用这个作为权重，对向量$v$进行加权，就可以得到每个向量对应的输出啦。如图4所示，输入向量$x^1$最终得到的输出是向量$q^1$。可以想到，$q^1$是和$v^1$最像的，因为在加权平均里$v^1$的权重$\alpha$最大；但是同时，它和$v^1$不同之处在于，它融合了整个序列的其他信息，这样输出的结果表达能力更好。</p>
+<img title src="/2021/12/29/Self-attention/af943ad7d3ff9cedd8bfaf76e50ce798.png" alt data-align="center">
+
+<p>以上是个向量维度的演示，实际做的时候，我们是把向量拼成矩阵，用矩阵的乘法代替向量的乘法，$I$中为输入向量按照列拼成的输入矩阵，$Q$的是$q$按照列拼接起来的，$A$是算出的attention矩阵，$A’$是除以$\sqrt{k}$并做softmax之后的的矩阵，$O$是输出结果。</p>
+<img title src="/2021/12/29/Self-attention/matrix.png" alt data-align="center">
+
+<p>综合上面的介绍，我们总结一下计算attention的流程，分为如下三个部分：</p>
+<ul>
+<li><p>step1：计算权值系数</p>
+<ul>
+<li><p>采用不同的函数或计算方法，对query和key进行计算，求出相似度或者相关性</p>
+</li>
+<li><p>采用的计算方法有：</p>
+<ul>
+<li><p>向量点积</p>
+</li>
+<li><p>cosine相似度</p>
+</li>
+<li><p>mlp网络</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>step2：softmax归一化</p>
+<ul>
+<li><p>原因：score值的分布过于分散，将原始计算分值整理成所有的元素权重之和为1的概率分布</p>
+</li>
+<li><p>利用softmax的内在机制（结果向更大的值偏移）突出重要元素的权重</p>
+</li>
+</ul>
+</li>
+<li><p>step3：加权求和</p>
+<ul>
+<li>每一个向量的输出为所有其他所有value值的加权评价，权值为attention值。</li>
+</ul>
+</li>
+</ul>
+<h1 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h1><ul>
+<li><p>为什么用双线性点积模型（即Q，K两个向量）</p>
+<p>双线性点积模型使用Q，K两个向量，而不是只用一个Q向量，这样引入非对称性，更具健壮性（Attention对角元素值不一定是最大的，也就是说当前位置对自身的注意力得分不一定最高）</p>
+</li>
+</ul>
+<ul>
+<li><p>为什么不能$q,k,v$都等于向量$x$，而是要分别乘以不同的向量来得到这么多向量？</p>
+<p>使用不同的q，k，v可以保证在不同的空间进行投影，增强了模型的表达能力，提高了泛化性能。</p>
+</li>
+<li><p>经过self-attention得到的输出在形状上和输入相同，为什么就可以得到更好结果？</p>
+<p>输出与输入相比，更多的增加了元素之间的关联特性，这些特性在文本处理中十分有益。</p>
+</li>
+<li><p>$w_q,w_k,w_v$是如何得到的？</p>
+<p>在实际的代码过程中，这一步是通过nn.linear模块得到的，w_q,w_k,w_v则是模块的参数，随着训练的过程而学习到。</p>
+</li>
+<li><p>为何$q*k$后要除以$\sqrt{k}$，不除行不行？</p>
+<p>因为使用softmax进行分类，较大的值梯度较小，且softmax有放大作用会把大部分概率给最大的元素，其他的元素梯度消失；因为原q和k都是满足0均值，1为方差的正态分布的，但是，在向量相乘之后均值仍然为0,方差变为了k，所以除以$\sqrt{k}$。</p>
+</li>
+<li><p>self-attention如何并行化？</p>
+<p>在 self-attention 能够并行的计算句子中不同的 query，因为每个 query 之间并不存在 先后依赖关系，也使得 transformer 能够并行化；</p>
+</li>
+</ul>
+<ul>
+<li><p>Self-attention与其他模型的比较</p>
+<p>我们从三个方面衡量模型的优劣，第一是性能，指标是时间复杂度，第二是可并行性，第二是可并性行行，指标是所需要的最小顺序操作数；第三是处理长依赖的能力，指标是网络中远程依赖项之间的路径距离。</p>
+<p>先规定一下参数表示，$n$表示序列的长度，$d$表示每个词的向量维度，$k$表示卷积核的大小，$r$表示限制版自注意力中领域的大小。</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">Layer Type</th>
+<th align="center">Complexity</th>
+<th align="center">Sequential Operations</th>
+<th align="center">Max Path Length</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Self-Attention</td>
+<td align="center">$O(n^2d)$</td>
+<td align="center">$O(1)$</td>
+<td align="center">$O(1)$</td>
+</tr>
+<tr>
+<td align="center">Recurrent</td>
+<td align="center">$O(nd^2)$</td>
+<td align="center">$O(n)$</td>
+<td align="center">$O(n)$</td>
+</tr>
+<tr>
+<td align="center">Convolutional</td>
+<td align="center">$O(knd^2)$</td>
+<td align="center">$O(1)$</td>
+<td align="center">$O(log_k(n))$</td>
+</tr>
+<tr>
+<td align="center">Self-Attention (restricted)</td>
+<td align="center">$O(rnd)$</td>
+<td align="center">$O(1)$</td>
+<td align="center">$O(n&#x2F;r)$</td>
+</tr>
+</tbody></table>
+<p>自注意力包括三个步骤：相似度计算、softmax和加权求和。相似度计算的时间复杂度是$O(n^2d)$，因为可以看成(n,d)和(d,n)两个矩阵的相乘。softmax的时间复杂度是$O(n^2)$。加权求和的时间复杂度是$O(n^2d)$，同样可以看成(n,n)和(n,d)的矩阵相乘。</p>
+<p>从性能角度说，该模型在序列长度过长时表现不如RNN，不过在可并行性和处理长依赖的能力上具有绝对的优势。我们的任务，就是想办法尽可能用词向量维度来弥补长度的劣势，只要$d&lt;n$，那么模型的性能也是杠杠的。</p>
+<h1 id="多头注意力"><a href="#多头注意力" class="headerlink" title="多头注意力"></a>多头注意力</h1><p>介绍了以上的基础，下面介绍multi-head self-attention。多头注意力机制看起来只是在单头的基础上，直接把输入中的向量在embedding维度上切分为N份，计算多个N和q，k，v，最后把计算结果取一个均值得到的，这么做的好处包括：</p>
+<ul>
+<li>并行计算；</li>
+<li>把句子投影到不同的子空间中，增加模型表达能力。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag"># 深度学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" rel="prev" title="机器学习三大数学基础——概率论、决策论和信息论">
+      <i class="fa fa-chevron-left"></i> 机器学习三大数学基础——概率论、决策论和信息论
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/12/29/Transformers%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97%E4%BB%A3%E7%A0%81%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB/" rel="next" title="Transformers">
+      Transformers <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Self-attention%E7%94%A8%E4%BA%8E%E6%8F%90%E5%8F%96%E5%BA%8F%E5%88%97%E7%89%B9%E5%BE%81"><span class="nav-number">1.</span> <span class="nav-text">Self-attention用于提取序列特征</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96attention%E7%9F%A9%E9%98%B5"><span class="nav-number">2.</span> <span class="nav-text">获取attention矩阵</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">常见问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%9A%E5%A4%B4%E6%B3%A8%E6%84%8F%E5%8A%9B"><span class="nav-number">4.</span> <span class="nav-text">多头注意力</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xlQ"
+      src="/images/spicy.jpg">
+  <p class="site-author-name" itemprop="name">xlQ</p>
+  <div class="site-description" itemprop="description">AI for ai </div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlQ</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

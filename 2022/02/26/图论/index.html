@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本篇文章记录了图的基本知识，图的邻接表表示，深度优先和广度优先遍历，并查集，拓扑排序，最小生成树问题，单源最短路径问题。所有的数据结构和算法都用python语言实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="图论">
+<meta property="og:url" content="http://example.com/2022/02/26/%E5%9B%BE%E8%AE%BA/index.html">
+<meta property="og:site_name" content="HelloBear">
+<meta property="og:description" content="本篇文章记录了图的基本知识，图的邻接表表示，深度优先和广度优先遍历，并查集，拓扑排序，最小生成树问题，单源最短路径问题。所有的数据结构和算法都用python语言实现。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/02/26/%E5%9B%BE%E8%AE%BA/SpanningTree.png">
+<meta property="og:image" content="http://example.com/2022/02/26/%E5%9B%BE%E8%AE%BA/MinimumSpanningTree.png">
+<meta property="og:image" content="http://example.com/2022/02/26/%E5%9B%BE%E8%AE%BA/CutProperty.png">
+<meta property="article:published_time" content="2022-02-26T02:12:58.000Z">
+<meta property="article:modified_time" content="2022-04-09T13:50:49.747Z">
+<meta property="article:author" content="xlQ">
+<meta property="article:tag" content="算法基础">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/02/26/%E5%9B%BE%E8%AE%BA/SpanningTree.png">
+
+<link rel="canonical" href="http://example.com/2022/02/26/%E5%9B%BE%E8%AE%BA/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>图论 | HelloBear</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">HelloBear</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Less is More</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/02/26/%E5%9B%BE%E8%AE%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/spicy.jpg">
+      <meta itemprop="name" content="xlQ">
+      <meta itemprop="description" content="AI for ai ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HelloBear">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          图论
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-02-26 10:12:58" itemprop="dateCreated datePublished" datetime="2022-02-26T10:12:58+08:00">2022-02-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-04-09 21:50:49" itemprop="dateModified" datetime="2022-04-09T21:50:49+08:00">2022-04-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本篇文章记录了图的基本知识，图的邻接表表示，深度优先和广度优先遍历，并查集，拓扑排序，最小生成树问题，单源最短路径问题。所有的数据结构和算法都用python语言实现。</p>
+<span id="more"></span>
+
+<h1 id="图的基本知识"><a href="#图的基本知识" class="headerlink" title="图的基本知识"></a>图的基本知识</h1><p>图的基本知识见：<a target="_blank" rel="noopener" href="https://www.cxyxiaowu.com/1293.html">数据结构与算法——图论基础与图存储结构_吴师兄学算法</a></p>
+<h1 id="图的表示"><a href="#图的表示" class="headerlink" title="图的表示"></a>图的表示</h1><p>图的表示方法主要有数组表示和邻接表表示两种。</p>
+<p>数组表示即用n×n的矩阵表示图的连接关系，矩阵中[i,j]值为1表示i节点与j节点相连，为0表示不相连。</p>
+<p>邻接表表示则是对于每个节点，存储与它直接相连的节点。</p>
+<h1 id="图的遍历"><a href="#图的遍历" class="headerlink" title="图的遍历"></a>图的遍历</h1><p>为了介绍图的两种遍历方法，我们直接看这一题：</p>
+<p>[Leecode797 所有可能的路径](<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/all-paths-from-source-to-target/">797. 所有可能的路径 - 力扣（LeetCode） (leetcode-cn.com)</a>) </p>
+<p>分别用两种方法实现。</p>
+<h2 id="深度优先"><a href="#深度优先" class="headerlink" title="深度优先"></a>深度优先</h2><p>题目要求一个有向无环图的所有路径，这直接用深度优先+回溯就可以解决，可以把0号节点作为根节点，依次向下深度遍历：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">allPathsSourceTarget</span>(<span class="params">self, graph: <span class="type">List</span>[<span class="type">List</span>[<span class="built_in">int</span>]]</span>) -&gt; <span class="type">List</span>[<span class="type">List</span>[<span class="built_in">int</span>]]:</span><br><span class="line">        path = [<span class="number">0</span>]</span><br><span class="line">        ans = []</span><br><span class="line">        n = <span class="built_in">len</span>(graph)</span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">dfs</span>(<span class="params">t,graph,n</span>):</span><br><span class="line">            <span class="keyword">if</span> path[-<span class="number">1</span>] == n-<span class="number">1</span>:</span><br><span class="line">                ans.append(path[:])</span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> graph[t]:</span><br><span class="line">                path.append(i)</span><br><span class="line">                dfs(i,graph,n)</span><br><span class="line">                path.pop()</span><br><span class="line">        dfs(<span class="number">0</span>,graph,n)</span><br><span class="line">        <span class="keyword">return</span> ans</span><br></pre></td></tr></table></figure>
+
+<h2 id="广度优先"><a href="#广度优先" class="headerlink" title="广度优先"></a>广度优先</h2><p>类似的，也可以用广度优先算法实现，这里与上面不同点在于，需要记录每一个路径，因此队列里面加入的不是节点值，而是历史的路径，其他的和树里面的层序遍历一样。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">allPathsSourceTarget</span>(<span class="params">self, graph: <span class="type">List</span>[<span class="type">List</span>[<span class="built_in">int</span>]]</span>) -&gt; <span class="type">List</span>[<span class="type">List</span>[<span class="built_in">int</span>]]:</span><br><span class="line">        <span class="keyword">from</span> collections <span class="keyword">import</span> deque</span><br><span class="line">        dq = deque([[<span class="number">0</span>]])</span><br><span class="line">        ans = []</span><br><span class="line">        <span class="keyword">while</span> dq:</span><br><span class="line">            size = <span class="built_in">len</span>(dq)</span><br><span class="line">            <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(size):</span><br><span class="line">                tmp = dq.popleft()</span><br><span class="line">                <span class="keyword">if</span> tmp[-<span class="number">1</span>] == <span class="built_in">len</span>(graph)-<span class="number">1</span>:</span><br><span class="line">                    ans.append(tmp)</span><br><span class="line">                <span class="keyword">for</span> i <span class="keyword">in</span> graph[tmp[-<span class="number">1</span>]]:</span><br><span class="line">                    dq.append(tmp+[i])</span><br><span class="line">        <span class="keyword">return</span> ans</span><br></pre></td></tr></table></figure>
+
+<h1 id="并查集（Disjoint-Set）"><a href="#并查集（Disjoint-Set）" class="headerlink" title="并查集（Disjoint Set）"></a>并查集（Disjoint Set）</h1><p>并查集是用来判断一个无向图有没有环的算法。改算法包括两个部分，即findParent部分和Union部分。具体的实现见下方<code>Kruskal 算法</code>部分。</p>
+<h1 id="拓扑排序问题"><a href="#拓扑排序问题" class="headerlink" title="拓扑排序问题"></a>拓扑排序问题</h1><p>图的拓扑排序问题指的是，针对有向无环图（<strong>Directed Acyclic Graph，DAG</strong>），找出一个合理的顺序，满足节点之间的先后依赖关系。</p>
+<p>满足的性质：</p>
+<ul>
+<li><p>如果图中存在环，那么该图不存在拓扑排序</p>
+</li>
+<li><p>如果图是有向无环图，那么拓扑排序不止一种</p>
+</li>
+</ul>
+<p>看一道leecode题目：<a href="%5B%E5%8A%9B%E6%89%A3%5D(https://leetcode-cn.com/problems/course-schedule/)">207课程表</a>，判断能否有满足要求的拓扑排序，<a href="%5B%E5%8A%9B%E6%89%A3%5D(https://leetcode-cn.com/problems/course-schedule-ii/)">210.课程表II</a>，这题则要求输出一种排好的顺序。这两题可以合并为一题。</p>
+<p>深度优先搜索算法用一个栈来存储课程的选择顺序，针对节点的访问状态，设置了三种表述，分别为0（未访问），1（正在访问），2（访问过），如果在访问的过程中遇到了1，代表了有环，则退出。</p>
+<p>动画演示见leecode题解：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/course-schedule/solution/ke-cheng-biao-by-leetcode-solution/">课程表 - 课程表 - 力扣（LeetCode） (leetcode-cn.com)</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">canFinish</span>(<span class="params">self, numCourses: <span class="built_in">int</span>, prerequisites: <span class="type">List</span>[<span class="type">List</span>[<span class="built_in">int</span>]]</span>) -&gt; <span class="built_in">bool</span>:</span><br><span class="line">    edges = collections.defaultdict(<span class="built_in">list</span>)</span><br><span class="line">    visited = [<span class="number">0</span>] * numCourses</span><br><span class="line">    valid = <span class="literal">True</span></span><br><span class="line">    stack = []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> prerequisites:</span><br><span class="line">        edges[i[<span class="number">1</span>]].append(i[<span class="number">0</span>])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">dfs</span>(<span class="params">i</span>):</span><br><span class="line">        <span class="keyword">nonlocal</span> valid</span><br><span class="line">        visited[i] = <span class="number">1</span></span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> edges[i]:</span><br><span class="line">            <span class="keyword">if</span> visited[j] == <span class="number">0</span>:</span><br><span class="line">                dfs(j)</span><br><span class="line">                <span class="keyword">if</span> <span class="keyword">not</span> valid:</span><br><span class="line">                    <span class="keyword">return</span></span><br><span class="line">            <span class="keyword">elif</span> visited[j] == <span class="number">1</span>:</span><br><span class="line">                valid = <span class="literal">False</span></span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">        visited[i] = <span class="number">2</span></span><br><span class="line">        stack.append(i)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(numCourses):</span><br><span class="line">        <span class="keyword">if</span> valid <span class="keyword">and</span> visited[i] == <span class="number">0</span>:</span><br><span class="line">            dfs(i)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> valid</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="最小生成树"><a href="#最小生成树" class="headerlink" title="最小生成树"></a>最小生成树</h1><ul>
+<li><strong>生成树</strong>：无向图中，具有该图的 <mark>全部顶点</mark> 且 <mark>边数最少</mark> 的连通子图，如下图红色线组成的边，构成一个生成树。</li>
+</ul>
+<img title src="/2022/02/26/%E5%9B%BE%E8%AE%BA/SpanningTree.png" alt data-align="center">
+
+<ul>
+<li><strong>最小生成树</strong>：加权无向图中总权重最小的生成树，绿色线组成的边，构成一个最小生成树</li>
+</ul>
+<img src="/2022/02/26/%E5%9B%BE%E8%AE%BA/MinimumSpanningTree.png" title alt data-align="center">
+
+<h2 id="切分定理"><a href="#切分定理" class="headerlink" title="切分定理"></a>切分定理</h2><ul>
+<li><p><strong>切分</strong>：将图切成两个部分，称之为一个切分，其中(B, A, E)为一个部分，(C, D)为另外一个部分。</p>
+</li>
+<li><p><strong>横切边</strong>：如果一条边连接的两个顶点属于切分的两个部分，这个边称为横切边，(B, C), (A, C), (A, D), (E, D) 均为横切边。</p>
+</li>
+</ul>
+<img src="/2022/02/26/%E5%9B%BE%E8%AE%BA/CutProperty.png" title alt data-align="center">
+
+<ul>
+<li><strong>切分定理</strong>：在一幅连通加权无向图中，给定任意的切分，如果有一条横切边的权值严格小于所有其他横切边，则这条边必然属于图的最小生成树中的一条边。（证明：一条边+权值最小的边）</li>
+</ul>
+<h2 id="Kruskal-算法"><a href="#Kruskal-算法" class="headerlink" title="Kruskal 算法"></a>Kruskal 算法</h2><ul>
+<li><p>将所有边从小到大排序</p>
+</li>
+<li><p>依次加入到最小生成树中，如果有环就跳过</p>
+</li>
+<li><p>直到选择了N-1条边</p>
+</li>
+</ul>
+<p>举例：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/min-cost-to-connect-all-points/">1584. 连接所有点的最小费用 - 力扣（LeetCode） (leetcode-cn.com)</a></p>
+<p>题目要求，将所有点连接起来的最小费用，即最小生成树问题。在最小生成树中，由于需要判断是否有环，因此需要首先实现一个并查集类,这个类有两个属性，即记录parents，以及以及加入的边的个数，两个方法，即查找parent和合并。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">SetUnion</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self,n</span>):</span><br><span class="line">        self.parents = [-<span class="number">1</span>] * n</span><br><span class="line">        self.edges = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">findParent</span>(<span class="params">self,index</span>):</span><br><span class="line">        parent = index</span><br><span class="line">        <span class="keyword">while</span> self.parents[parent] != -<span class="number">1</span>:</span><br><span class="line">            parent = self.parents[parent]</span><br><span class="line">        <span class="keyword">return</span> parent</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">union</span>(<span class="params">self,index1,index2</span>):</span><br><span class="line">        parent1 = self.findParent(index1)</span><br><span class="line">        parent2 = self.findParent(index2)</span><br><span class="line">        <span class="keyword">if</span> parent1 == parent2:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.parents[parent1] = parent2</span><br><span class="line">            self.edges += <span class="number">1</span></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">False</span>  </span><br></pre></td></tr></table></figure>
+
+<p>有了这个类，就可以实现Kruskal算法了，第一步先计算节点之间的距离（权值，并排序），接着依次加入并查集就可以了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">minCostConnectPoints</span>(<span class="params">self, points: <span class="type">List</span>[<span class="type">List</span>[<span class="built_in">int</span>]]</span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">mhd</span>(<span class="params">x1,x2</span>):</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">abs</span>(x1[<span class="number">0</span>]-x2[<span class="number">0</span>]) + <span class="built_in">abs</span>(x1[<span class="number">1</span>]-x2[<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">        record = &#123;&#125;</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(points)):</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(i+<span class="number">1</span>,<span class="built_in">len</span>(points)):</span><br><span class="line">                record[(i,j)] = mhd(points[i],points[j])</span><br><span class="line"></span><br><span class="line">        sortedRecord = <span class="built_in">sorted</span>(record.items(),key = <span class="keyword">lambda</span> x: x[<span class="number">1</span>])</span><br><span class="line">        disjoinedset = SetUnion(<span class="built_in">len</span>(points))</span><br><span class="line">        ans = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> items <span class="keyword">in</span> sortedRecord:</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> disjoinedset.union(items[<span class="number">0</span>][<span class="number">0</span>],items[<span class="number">0</span>][<span class="number">1</span>]):</span><br><span class="line">                ans += items[<span class="number">1</span>]</span><br><span class="line">            <span class="keyword">if</span> disjoinedset.edges == <span class="built_in">len</span>(points)-<span class="number">1</span>:</span><br><span class="line">                <span class="keyword">return</span> ans</span><br><span class="line">        <span class="keyword">return</span> ans</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意不能用新加入的节点是否已经被包括来判断是否有环，例如(0,2),(1,3)，这时加入(0,1)，如果根据节点判断则有环，实际没有！</strong></p>
+<h2 id="Prim算法"><a href="#Prim算法" class="headerlink" title="Prim算法"></a>Prim算法</h2><ul>
+<li><p>在所有unvisited的节点列表中任意选择一个，加入visited列表</p>
+</li>
+<li><p>将所有visited列表组成的点作为一个整体，寻找与这个整体相连的边中权值最小的边，将其对应的点加入到visited中，循环</p>
+</li>
+<li><p>visited列表等于N，结束</p>
+</li>
+</ul>
+<p>举例，还是leecode1584题，这次采用Prim算法解。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> heapq <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">dist</span>(<span class="params">x, y</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">abs</span>(x[<span class="number">0</span>] - y[<span class="number">0</span>]) + <span class="built_in">abs</span>(x[<span class="number">1</span>] - y[<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">minCostConnectPoints</span>(<span class="params">self, points: <span class="type">List</span>[<span class="type">List</span>[<span class="built_in">int</span>]]</span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        V_connected = <span class="built_in">set</span>()</span><br><span class="line">        <span class="comment"># Edge candidate，最小堆</span></span><br><span class="line">        E_cand = []</span><br><span class="line">        <span class="comment"># 对新加入的节点start，把所有对外的边都加入E_candidate集合</span></span><br><span class="line">        <span class="comment"># 我们不关心边的起始位置，只要关心终结的节点就可以判断该边是不是有效的对外边。所以最小堆中存的是(cost, end节点)</span></span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">adding_edges</span>(<span class="params">start</span>):</span><br><span class="line">            <span class="keyword">for</span> end <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(points)):</span><br><span class="line">                <span class="keyword">if</span> end <span class="keyword">not</span> <span class="keyword">in</span> V_connected:</span><br><span class="line">                    heappush(E_cand, (dist(points[start], points[end]), end))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        V_connected.add(<span class="number">0</span>)</span><br><span class="line">        adding_edges(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">        min_cost = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> <span class="built_in">len</span>(V_connected) != <span class="built_in">len</span>(points):</span><br><span class="line">            cost, end = heappop(E_cand)</span><br><span class="line">            <span class="comment"># pop出来的边，如果已经失效，就继续pop</span></span><br><span class="line">            <span class="keyword">if</span> end <span class="keyword">in</span> V_connected:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">            min_cost += cost</span><br><span class="line">            V_connected.add(end)</span><br><span class="line">            adding_edges(end)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> min_cost</span><br></pre></td></tr></table></figure>
+
+<h1 id="单源最短路径"><a href="#单源最短路径" class="headerlink" title="单源最短路径"></a>单源最短路径</h1><p>找到一个图中，到其他所有节点的最短路径。</p>
+<h2 id="Dijkstra算法"><a href="#Dijkstra算法" class="headerlink" title="Dijkstra算法"></a>Dijkstra算法</h2><p>维护一个长度为节点数目的二维列表，其中每个节点对应于是否被访问、到目标节点的距离大小，从目标节点开始，依次遍历更新。学习：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1QK411V7V4/"># Dijkstra(迪杰斯特拉)算法理解</a></p>
+<p>为了实现这个算法，首先需要将连接关系转为邻接表表示。随后，遍历所有节点，找到未被访问且距离最小的点，作为此次访问的节点。对于访问的节点，我们需要依次计算当该节点在路径中时，其他所有节点到目标节点的最小距离。当遍历完所有节点后，结束。</p>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/network-delay-time/">743. 网络延迟时间</a>:</p>
+<p>要求：有 n 个网络节点，标记为 1到 n。给你一个列表 times，表示信号经过 有向 边的传递时间。 times[i] &#x3D; (ui, vi, wi)，其中 ui 是源节点，vi 是目标节点， wi 是一个信号从源节点传递到目标节点的时间。现在，从某个节点 K 发出一个信号。需要多久才能使所有节点都收到信号？如果不能使所有节点收到信号，返回 -1 。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">networkDelayTime</span>(<span class="params">self, times: <span class="type">List</span>[<span class="type">List</span>[<span class="built_in">int</span>]], n: <span class="built_in">int</span>, k: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        g = [[<span class="built_in">float</span>(<span class="string">&#x27;inf&#x27;</span>)] * n <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(n)]</span><br><span class="line">        <span class="keyword">for</span> x, y, time <span class="keyword">in</span> times:</span><br><span class="line">            g[x - <span class="number">1</span>][y - <span class="number">1</span>] = time</span><br><span class="line"></span><br><span class="line">        dist = [<span class="built_in">float</span>(<span class="string">&#x27;inf&#x27;</span>)] * n</span><br><span class="line">        dist[k - <span class="number">1</span>] = <span class="number">0</span></span><br><span class="line">        used = [<span class="literal">False</span>] * n</span><br><span class="line">        <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">            x = -<span class="number">1</span></span><br><span class="line">            <span class="keyword">for</span> y, u <span class="keyword">in</span> <span class="built_in">enumerate</span>(used):</span><br><span class="line">                <span class="keyword">if</span> <span class="keyword">not</span> u <span class="keyword">and</span> (x == -<span class="number">1</span> <span class="keyword">or</span> dist[y] &lt; dist[x]):</span><br><span class="line">                    x = y</span><br><span class="line">            used[x] = <span class="literal">True</span></span><br><span class="line">            <span class="keyword">for</span> y, time <span class="keyword">in</span> <span class="built_in">enumerate</span>(g[x]):</span><br><span class="line">                dist[y] = <span class="built_in">min</span>(dist[y], dist[x] + time)</span><br><span class="line"></span><br><span class="line">        ans = <span class="built_in">max</span>(dist)</span><br><span class="line">        <span class="keyword">return</span> ans <span class="keyword">if</span> ans &lt; <span class="built_in">float</span>(<span class="string">&#x27;inf&#x27;</span>) <span class="keyword">else</span> -<span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Bellman-Ford算法"><a href="#Bellman-Ford算法" class="headerlink" title="Bellman-Ford算法"></a>Bellman-Ford算法</h2><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文总结了图论中最为常见一些算法了，每个算法都有详细的实现过程。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80/" rel="tag"># 算法基础</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/08/xgboost%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E4%B8%8E%E8%B6%85%E5%8F%82%E6%95%B0%E4%BC%98%E5%8C%96/" rel="prev" title="XGBoost——贰">
+      <i class="fa fa-chevron-left"></i> XGBoost——贰
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/10/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="next" title="排序算法">
+      排序算法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%BE%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text">图的基本知识</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%BE%E7%9A%84%E8%A1%A8%E7%A4%BA"><span class="nav-number">2.</span> <span class="nav-text">图的表示</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%BE%E7%9A%84%E9%81%8D%E5%8E%86"><span class="nav-number">3.</span> <span class="nav-text">图的遍历</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88"><span class="nav-number">3.1.</span> <span class="nav-text">深度优先</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%BF%E5%BA%A6%E4%BC%98%E5%85%88"><span class="nav-number">3.2.</span> <span class="nav-text">广度优先</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B9%B6%E6%9F%A5%E9%9B%86%EF%BC%88Disjoint-Set%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">并查集（Disjoint Set）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F%E9%97%AE%E9%A2%98"><span class="nav-number">5.</span> <span class="nav-text">拓扑排序问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%80%E5%B0%8F%E7%94%9F%E6%88%90%E6%A0%91"><span class="nav-number">6.</span> <span class="nav-text">最小生成树</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%87%E5%88%86%E5%AE%9A%E7%90%86"><span class="nav-number">6.1.</span> <span class="nav-text">切分定理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kruskal-%E7%AE%97%E6%B3%95"><span class="nav-number">6.2.</span> <span class="nav-text">Kruskal 算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Prim%E7%AE%97%E6%B3%95"><span class="nav-number">6.3.</span> <span class="nav-text">Prim算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%95%E6%BA%90%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84"><span class="nav-number">7.</span> <span class="nav-text">单源最短路径</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Dijkstra%E7%AE%97%E6%B3%95"><span class="nav-number">7.1.</span> <span class="nav-text">Dijkstra算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bellman-Ford%E7%AE%97%E6%B3%95"><span class="nav-number">7.2.</span> <span class="nav-text">Bellman-Ford算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xlQ"
+      src="/images/spicy.jpg">
+  <p class="site-author-name" itemprop="name">xlQ</p>
+  <div class="site-description" itemprop="description">AI for ai </div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlQ</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

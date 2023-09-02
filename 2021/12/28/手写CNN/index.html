@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="算法岗位面试中，常问到手写卷积和maxpooling，本文用Numpy库分别实现这两部分功能，并且，在此基础上进行改进，实现线性的时间复杂度。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Numpy实现卷积和最大池化">
+<meta property="og:url" content="http://example.com/2021/12/28/%E6%89%8B%E5%86%99CNN/index.html">
+<meta property="og:site_name" content="HelloBear">
+<meta property="og:description" content="算法岗位面试中，常问到手写卷积和maxpooling，本文用Numpy库分别实现这两部分功能，并且，在此基础上进行改进，实现线性的时间复杂度。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-12-28T03:49:08.000Z">
+<meta property="article:modified_time" content="2022-01-28T14:17:01.620Z">
+<meta property="article:author" content="xlQ">
+<meta property="article:tag" content="深度学习">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/12/28/%E6%89%8B%E5%86%99CNN/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Numpy实现卷积和最大池化 | HelloBear</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">HelloBear</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Less is More</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/28/%E6%89%8B%E5%86%99CNN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/spicy.jpg">
+      <meta itemprop="name" content="xlQ">
+      <meta itemprop="description" content="AI for ai ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HelloBear">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Numpy实现卷积和最大池化
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-12-28 11:49:08" itemprop="dateCreated datePublished" datetime="2021-12-28T11:49:08+08:00">2021-12-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-01-28 22:17:01" itemprop="dateModified" datetime="2022-01-28T22:17:01+08:00">2022-01-28</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>算法岗位面试中，常问到手写卷积和maxpooling，本文用Numpy库分别实现这两部分功能，并且，在此基础上进行改进，实现线性的时间复杂度。</p>
+<span id="more"></span>
+
+<h2 id="1、-手写卷积"><a href="#1、-手写卷积" class="headerlink" title="1、 手写卷积"></a>1、 手写卷积</h2><p>已知输入，核，padding和stride，得到的输出大小为：</p>
+<p>$$<br>h_{out} &#x3D; \frac{h_{input} + 2 * padding - kernel}{stride} + 1<br>$$</p>
+<p>$$<br>w_{out} &#x3D; \frac{w_{input} + 2 * padding - kernel}{stride} + 1<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">conv_one</span>(<span class="params">x, ksize, padding=<span class="number">0</span>, stride=<span class="number">1</span></span>):</span><br><span class="line"></span><br><span class="line">  h,w = x.shape</span><br><span class="line"></span><br><span class="line">  kernel = np.random.random(ksize)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> padding != <span class="number">0</span>:</span><br><span class="line"></span><br><span class="line">​    pad_x = np.zeros((h+<span class="number">2</span>*padding,w+<span class="number">2</span>*padding))</span><br><span class="line"></span><br><span class="line">​    pad_x[padding:-padding,padding:-padding] = x</span><br><span class="line"></span><br><span class="line">  <span class="keyword">else</span>:</span><br><span class="line"></span><br><span class="line">​    pad_x = x</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  out_h = (h + <span class="number">2</span> * padding - ksize[<span class="number">1</span>]) // stride + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">  out_w = (w + <span class="number">2</span> * padding - ksize[<span class="number">0</span>]) // stride + <span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  out = np.zeros((out_h,out_w))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(out_h):</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(out_w):</span><br><span class="line"></span><br><span class="line">​      roi_x = pad_x[i*stride:i*stride+ksize[<span class="number">1</span>], j*stride:j*stride+ksize[<span class="number">0</span>]]</span><br><span class="line"></span><br><span class="line">​      out[i,j] = np.<span class="built_in">sum</span>(roi_x * kernel)</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> out</span><br></pre></td></tr></table></figure>
+
+<h2 id="2、手写maxpooling"><a href="#2、手写maxpooling" class="headerlink" title="2、手写maxpooling"></a>2、手写maxpooling</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">max_pooling</span>(<span class="params">x,kernel,padding=<span class="number">0</span>,stride=<span class="number">1</span></span>):</span><br><span class="line"></span><br><span class="line">  h,w = x.shape</span><br><span class="line"></span><br><span class="line">  a,b = kernel.shape</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> padding:</span><br><span class="line"></span><br><span class="line">​    padding_x = np.zeros((h+<span class="number">2</span>*padding,w+<span class="number">2</span>*padding))</span><br><span class="line"></span><br><span class="line">​    padding_x[padding:-padding,padding:-padding] = x</span><br><span class="line"></span><br><span class="line">  <span class="keyword">else</span>:</span><br><span class="line"></span><br><span class="line">​    padding_x = x</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  out_h = (h + <span class="number">2</span> * padding - a) // stride + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">  out_w = (w + <span class="number">2</span> * padding - b) // stride + <span class="number">1</span></span><br><span class="line"></span><br><span class="line">  out_x = np.zeros((out_h,out_w))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(out_h):</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(out_w):</span><br><span class="line"></span><br><span class="line">​      tmp = np.<span class="built_in">max</span>(x[i*stride:i*stride+a,j*stride:j*stride+b])</span><br><span class="line"></span><br><span class="line">​      out_x[i,j] = tmp</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> out_x</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-例子"><a href="#3-例子" class="headerlink" title="3 例子"></a>3 例子</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">img = np.arange(<span class="number">64</span>).reshape(<span class="number">8</span>,<span class="number">8</span>)</span><br><span class="line">kernel = np.random.random((<span class="number">3</span>,<span class="number">4</span>))</span><br><span class="line">out = conv_one(img,ksize=kernel_size,padding=<span class="number">1</span>,stride=<span class="number">1</span>)</span><br><span class="line">out = max_pooling(out,kernel,padding=<span class="number">1</span>,stride=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-进阶"><a href="#4-进阶" class="headerlink" title="4 进阶"></a>4 进阶</h2><p>以上，只是对我们理解的CNN卷积的简单模拟，但是如果只是做到这里，实际上在面试的时候是不够的，以上算法的复杂度是$O(m<em>n</em>kernelsize)$，即四个数的乘积。</p>
+<p>这是非常耗时的，实际上，参考<a href="%5B%E5%8A%9B%E6%89%A3%5D(https://leetcode-cn.com/problems/sliding-window-maximum/)">leecode239题（滑动窗口最大值）</a>，这题本质就是一维的maxpooling操作，如果暴力解，必然时间复杂度是$O(l*k)$，其中l是列表长度，k是滑窗大小。这题之所以被标注为困难，当然不是让你用暴力解法做出来，而是希望在线性时间复杂度内实现。</p>
+<p>改进的方法很多，有优先队列和单调队列等，本次采用单调（递减）队列实现。单调队列是在队列的基础上，自己实现的一种数据结构，作为一种数据结构，它的定义如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">DecreaseDq</span>():</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        self.dq = deque()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">pop</span>(<span class="params">self,value</span>):</span><br><span class="line">        <span class="keyword">if</span> self.dq[<span class="number">0</span>] == value:</span><br><span class="line">            <span class="keyword">return</span> self.dq.popleft()</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">push</span>(<span class="params">self,value</span>):</span><br><span class="line">        <span class="keyword">while</span> self.dq <span class="keyword">and</span> self.dq[-<span class="number">1</span>] &lt; value:</span><br><span class="line">            self.dq.pop()</span><br><span class="line">        self.dq.append(value)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">front</span>(<span class="params">self</span>):</span><br><span class="line">        tmp = self.dq.popleft()</span><br><span class="line">        self.dq.appendleft(tmp)</span><br><span class="line">        <span class="keyword">return</span> tmp</span><br></pre></td></tr></table></figure>
+
+<p>它实现了三种操作，即pop（弹出元素），push（压入元素），和查找元素最前面的值。这里的pop和push操作，和传统的弹出和压入不太一样。</p>
+<ol>
+<li>pop(value)：如果窗口移除的元素value等于单调队列的出口元素，那么队列弹出元素，否则不用任何操作</li>
+<li>push(value)：如果push的元素value大于入口元素的数值，那么就将队列入口的元素弹出，直到push元素的数值小于等于队列入口元素的数值为止</li>
+</ol>
+<p>保持这个顺序，就可以保证窗口内的数据一定是单调队列了。</p>
+<p>才用单调队列，就可以在$O(l)$的时间复杂度内ac这题了。</p>
+<p>回到二维maxpooling的情况，无非就是在两个维度上分别实现滑动窗口法而已，因此，进阶的方法时间复杂度为$O(m*n)$。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">max_pooling</span>(<span class="params">img,kernel,strid=<span class="number">1</span></span>):</span><br><span class="line">    h,w = <span class="built_in">len</span>(img),<span class="built_in">len</span>(img[<span class="number">0</span>])</span><br><span class="line">    img_ans = [[<span class="number">0</span> <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(w-<span class="number">1</span>)] <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(h)]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(h):</span><br><span class="line">        decdq = DecreaseQue()</span><br><span class="line">        <span class="keyword">for</span> m <span class="keyword">in</span> <span class="built_in">range</span>(kernel):</span><br><span class="line">            decdq.push(img[i][m])</span><br><span class="line">        img_ans[i][<span class="number">0</span>] = decdq.front()</span><br><span class="line">        <span class="keyword">for</span> m <span class="keyword">in</span> <span class="built_in">range</span>(kernel,w):</span><br><span class="line">            decdq.pop(img[i][m-<span class="number">2</span>])</span><br><span class="line">            decdq.push(img[i][m])</span><br><span class="line">            img_ans[i][m-<span class="number">1</span>] = decdq.front()</span><br><span class="line">    h,w = <span class="built_in">len</span>(img_ans),<span class="built_in">len</span>(img_ans[<span class="number">0</span>])</span><br><span class="line">    result = [[<span class="number">0</span> <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(w)] <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(h-<span class="number">1</span>)]    </span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(w):</span><br><span class="line">        decdq = DecreaseQue()</span><br><span class="line">        <span class="keyword">for</span> m <span class="keyword">in</span> <span class="built_in">range</span>(kernel):</span><br><span class="line">            decdq.push(img_ans[m][j])</span><br><span class="line">        result[<span class="number">0</span>][j] = decdq.front()</span><br><span class="line">        <span class="keyword">for</span> m <span class="keyword">in</span> <span class="built_in">range</span>(kernel,h):</span><br><span class="line">            decdq.pop(img_ans[m-<span class="number">2</span>][j])</span><br><span class="line">            decdq.push(img_ans[m][j])</span><br><span class="line">            result[m-<span class="number">1</span>][j] = decdq.front()</span><br><span class="line">    <span class="built_in">print</span>(result)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>例子如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">img = [[i*j <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>,<span class="number">5</span>)] <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">6</span>,<span class="number">1</span>,-<span class="number">1</span>)]</span><br><span class="line">max_pooling(img,kernel=<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag"># 深度学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/08/AIMP2/" rel="prev" title="《Artificial Intelligence： A modern approach》读书笔记——贰">
+      <i class="fa fa-chevron-left"></i> 《Artificial Intelligence： A modern approach》读书笔记——贰
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/12/28/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" rel="next" title="机器学习三大数学基础——概率论、决策论和信息论">
+      机器学习三大数学基础——概率论、决策论和信息论 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81-%E6%89%8B%E5%86%99%E5%8D%B7%E7%A7%AF"><span class="nav-number">1.</span> <span class="nav-text">1、 手写卷积</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81%E6%89%8B%E5%86%99maxpooling"><span class="nav-number">2.</span> <span class="nav-text">2、手写maxpooling</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E4%BE%8B%E5%AD%90"><span class="nav-number">3.</span> <span class="nav-text">3 例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E8%BF%9B%E9%98%B6"><span class="nav-number">4.</span> <span class="nav-text">4 进阶</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xlQ"
+      src="/images/spicy.jpg">
+  <p class="site-author-name" itemprop="name">xlQ</p>
+  <div class="site-description" itemprop="description">AI for ai </div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlQ</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

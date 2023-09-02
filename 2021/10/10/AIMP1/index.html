@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="《Artificial Intelligence： A modern approach》作为人工智能领域内的经典著作，被世界上众多著名高校作为人工智能的教材，内容全面系统，解释清晰易懂，国内的西瓜书作者周志华老师也在书中表示，是受到该书的引领走上了人工智能的道路的。本系列记录该书的读书笔记。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Artificial Intelligence： A modern approach》读书笔记——壹">
+<meta property="og:url" content="http://example.com/2021/10/10/AIMP1/index.html">
+<meta property="og:site_name" content="HelloBear">
+<meta property="og:description" content="《Artificial Intelligence： A modern approach》作为人工智能领域内的经典著作，被世界上众多著名高校作为人工智能的教材，内容全面系统，解释清晰易懂，国内的西瓜书作者周志华老师也在书中表示，是受到该书的引领走上了人工智能的道路的。本系列记录该书的读书笔记。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-10-10T13:02:31.000Z">
+<meta property="article:modified_time" content="2023-04-09T08:39:17.761Z">
+<meta property="article:author" content="xlQ">
+<meta property="article:tag" content="人工智能">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/10/10/AIMP1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>《Artificial Intelligence： A modern approach》读书笔记——壹 | HelloBear</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">HelloBear</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Less is More</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/10/AIMP1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/spicy.jpg">
+      <meta itemprop="name" content="xlQ">
+      <meta itemprop="description" content="AI for ai ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HelloBear">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Artificial Intelligence： A modern approach》读书笔记——壹
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-10-10 21:02:31" itemprop="dateCreated datePublished" datetime="2021-10-10T21:02:31+08:00">2021-10-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-09 16:39:17" itemprop="dateModified" datetime="2023-04-09T16:39:17+08:00">2023-04-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>《Artificial Intelligence： A modern approach》作为人工智能领域内的经典著作，被世界上众多著名高校作为人工智能的教材，内容全面系统，解释清晰易懂，国内的西瓜书作者周志华老师也在书中表示，是受到该书的引领走上了人工智能的道路的。本系列记录该书的读书笔记。</p>
+<span id="more"></span>
+
+<p>首先，在阅读一本书之前，我们先问自己一个问题，这本书介绍了什么，以及这本书的每个部分都是分别介绍了什么？</p>
+<p>这本书介绍了关于人工智能的方方面面，全书的主旨是<strong>智能Agent</strong>。本书认为，智能Agent从环境中感知信息并执行行动，其中Agent的决策可以理解为一种映射或者函数，本书将分别介绍这些函数的表达方式。在实际的使用中，结合环境进行Agent的设计是尤为重要的。</p>
+<p>全书包括七个部分，各个部分及其内容如下：</p>
+<ul>
+<li><p>第一部分 人工智能 </p>
+<ul>
+<li>这部分介绍了人工智能中的基本概念，包括人工智能学科的概述与发展历程，提出了Agent的概念并围绕此介绍了环境、性能度量、Agent的分类以及学习等名词的概念。</li>
+</ul>
+</li>
+<li><p>第二部分 问题求解 </p>
+<ul>
+<li>这部分介绍了不同的问题环境中的求解的策略，这部分所有的策略都是使用搜索的方式。分别介绍了如下四种环境下的方法。</li>
+<li>第一种是确定性、可观察、静态和完全可知的环境下，采用有启发或者无启发的搜索进行问题的求解。</li>
+<li>第二种是在不确定、不可观察以及连续的环境中，可以使用的搜索算法，针对这些问题分别介绍了相应的搜索算法。</li>
+<li>第三种和第四种都是特殊场景下的搜索问题，分别是对抗问题以及满足特定约束条件下的搜索问题。</li>
+</ul>
+</li>
+<li><p>第三部分 知识、推理与规划</p>
+<ul>
+<li>这部分包含七个章节，所使用的基本数学工具是逻辑学。基于知识的Agent由知识库和推理机制组成，围绕这两个部分，本部分介绍了命题逻辑、一阶逻辑两种逻辑系统的语言，其中命题逻辑系统中每条陈述非错即正，通过逻辑连接词进行推理；一阶逻辑系统中将命题拆分为对象和关系，具有更强的表达能力。</li>
+<li>在介绍了基于智能的Agent之后，本部分介绍了两种环境下的规划问题，第一种是确定性的、完全可观察、静态环境中的经典规划问题，第二种是真实世界中的规划问题，介绍了分层任务网络、应急规划、在线规划和多Agent规划等方法。</li>
+<li>最后，本部分介绍了知识表示的内容，说明了构造一个真实的知识库所需要遵循的要点。</li>
+</ul>
+</li>
+<li><p>第四部分 不确定知识与推理</p>
+<ul>
+<li>这部分包含五个章节，所使用的基本数学工具是概率论。概率理论是进行不确定性推理的有效基础，基于概率理论建立了一套基于概率的智能Agent，最佳行动是最大化期望效用的行为。在此系统下，介绍了不确定知识表示方法——贝叶斯网络，以及在时序果过程中的表示与推理问题。</li>
+<li>接着，本部分将效用理论与概率结合起来，介绍了决策的要点与方法。</li>
+</ul>
+</li>
+<li><p>第五部分 学习</p>
+<ul>
+<li>这部分包括四个章节，基本思想上希望Agent可以自适应的从样例中进行学习。在介绍了学习的基本概念后，本部分分别介绍了基于知识的Agent、基于概率的Agent以及强化学习中的Agent的学习方法。</li>
+</ul>
+</li>
+<li><p>第六部分 通讯、感知与行动</p>
+<ul>
+<li>这部分包括四个章节，依次介绍了自然语言处理、自然语言理解以及感知和机器人学的知识。</li>
+</ul>
+</li>
+<li><p>第七部分 结论</p>
+<ul>
+<li>这部分从哲学的角度，思考人工智能的行动、意识与道德问题，并提出了人工智能的未来发展方向。</li>
+</ul>
+</li>
+</ul>
+<h1 id="第一章-引言"><a href="#第一章-引言" class="headerlink" title="第一章 引言"></a>第一章 引言</h1><h2 id="1、什么是AI？"><a href="#1、什么是AI？" class="headerlink" title="1、什么是AI？"></a>1、什么是AI？</h2><p>AI可以从两个角度加以分析——是模仿人类还是基于逻辑推演，是只要思维层面智能，还是在行动上也要智能？基于此，AI可以分为四种不同的定义方法，如下表所示。 </p>
+<p>表格上半部分考虑的是思维层面，下半部分则着眼于行动；左半部分是让机器模仿并拥有人类的智慧，右半部分则是让机器超脱人类思维的束缚，追求绝对的最优，英语中用理性（rationality）来表示。如果一个系统在已知的信息下，能够做绝对“正确的”的事情，那么这个系统就被称为是理性的。</p>
+<table>
+<thead>
+<tr>
+<th align="center">像人类一样思考</th>
+<th align="center">理性的思考</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><strong>像人类一样行动</strong></td>
+<td align="center"><strong>理性的行动</strong></td>
+</tr>
+</tbody></table>
+<p>以人类为核心的方法（左边）通过观察和模仿人类行为获得智力，而一个理性的机器（右边）则是需要数学作为它坚固的基石。这些不同的定义，彼此排斥但又相互促进。</p>
+<p>接下来逐一揭示上面四个定义。</p>
+<h3 id="1-1-像人类一样行动：图灵测试"><a href="#1-1-像人类一样行动：图灵测试" class="headerlink" title="1.1  像人类一样行动：图灵测试"></a>1.1  像人类一样行动：图灵测试</h3><p><em>当你分辨不出对面坐着的是人还是机器的时候，图灵就该淡出人们的视线了</em></p>
+<p>1950年，图灵提出了著名的图灵测试，用来衡量机器的智能程度，这个判断的准则就是人类自己：</p>
+<p><strong>面对一个手写的问题，如果人类检测者无法分辨这个问题的答案来自机器或者是另一个人类，那么这个机器就被认为通过了图灵测试。</strong></p>
+<p>目前，制造一台这个的机器依旧任重道远。一台机器如果要达成这个目标，最少需要如下能力：</p>
+<ul>
+<li>自然语言处理（NLP）：让机器能够理解人类表述的问题；</li>
+<li>知识表示：机器能够存储和表示已有的知识和事实；</li>
+<li>自动推理：利用存储的信息进行回答问题，得到新的结论；</li>
+<li>机器学习：自动适用新的环境，且能够甄别新的模式；</li>
+</ul>
+<p>当然，图灵测试故意避开了检测者与机器的直接物理接触，因为对人类外形的模拟对于机器智能而言并不是必要的。但是，为了将机器的感知能力考虑在内，以及让测试者能够传递实物给机器，有一个称作 完全图灵测试 的标准。为了通过这个测试，计算机还需要：</p>
+<ul>
+<li>计算机视觉：感知物体；</li>
+<li>机器人学：直接操作物理世界的实体。</li>
+</ul>
+<p>可以看到，艾伦图灵在六十年前的理论，至今依旧是人工智能主要发展方向。以上六个方向，也是目前AI的主要组成部分。</p>
+<p>但是我们也应该意识到，目前的人工智能研究学者的目的，不是开发一个能够通过图灵测试的机器，而是研究人工智能的基础理论。例如，飞行器的真正起步，是在怀特兄弟停止模仿飞鸟而转去研究空气动力学的时候，飞行器的设计目的也不是让鸟类分辨不出飞行器到底是不是人造的。</p>
+<h3 id="1-2-像人类一样思考：认知科学"><a href="#1-2-像人类一样思考：认知科学" class="headerlink" title="1.2 像人类一样思考：认知科学"></a>1.2 像人类一样思考：认知科学</h3><p><em>模仿人类思考的进程，进而得到像人类一样的认知</em></p>
+<p>如果要让程序像人类一样思考，那么首要的任务就是研究人类是如何思考的，这需要深入研究人脑的工作机制。</p>
+<p>目前有三种方法：</p>
+<ul>
+<li>自我反思——尝试解读人类在思考的时候思维的进程；</li>
+<li>心理学实验——观察人类的行动；</li>
+<li>脑成像——观察人类在执行任务时候大脑生理变化。</li>
+</ul>
+<p>如果对人类的决策过程有足够的认知，那么理论上就可以通过模仿人类的感知决策过程，得到类似人类的思维。例如Newell等曾经研发的GPS（General Problems Solver）就曾经试图这样做，这个系统不仅仅希望做正确的决策，还希望做决策的过程和人类的思维模式相似。</p>
+<p><strong>认知科学</strong>就是这样一个交叉领域——希望通过综合人工智能算法与心理学实验结果，来构建关于人类思维进程的准确模式。认知科学领域，已经得到了一定的突破，但是这里就不过多介绍了。</p>
+<p>在人工智能研究的早期，人们常常认为如果一个算法在某项任务上表现很好，那么这个算法就和人类的思维更贴近。但是，现在人们已经将这二者分开，并因此获得了极大的进展。例如计算机视觉领域，就将神经生物学的发现加入到计算模型中，得到了极大的发展。</p>
+<h3 id="1-3-理性的思考：-“思考的法则”"><a href="#1-3-理性的思考：-“思考的法则”" class="headerlink" title="1.3    理性的思考： “思考的法则”"></a>1.3    理性的思考： “思考的法则”</h3><p><em>超越人类本身的，只能是数学</em></p>
+<p>古希腊哲学家亚里士多德，就曾提出过“正确思考”的准则，这一准则试图提供一种推理的模式，按照这个模式，不论你的内容是什么，总是可以从形式上得到一个正确的推理过程。亚里士多德的这套推理系统被称为三段论，现在又被称为<strong>古典逻辑</strong>。</p>
+<p>随后，在19世纪人们提出了精确表述语句和它们之间关系的符号系统，这个基于符号的准则被称作<strong>符号逻辑</strong>。1965年，计算机程序已经能够在理论上，解决所有能够用符号逻辑表述的问题。这样一个能够自己演绎推理的系统，也是建立人工智能可行的方式。</p>
+<p>阻碍这个系统发展的两个主要因素。首先是，将所有已知的信息用逻辑符号连接起来并不是一个容易的事情，特别是有些问题本身的准确性也不一定是百分百的。此外，理论上可以做到的事情实际执行起来却一定能做到——即使是小型的演绎推理系统都需要大量的计算资源才能得到结果，这也大大限制了逻辑推演的发展。</p>
+<h3 id="1-4-理性的行动：训练“聪明“的agent"><a href="#1-4-理性的行动：训练“聪明“的agent" class="headerlink" title="1.4   理性的行动：训练“聪明“的agent"></a>1.4   理性的行动：训练“聪明“的agent</h3><p><em>找到一个代理人，然后训练它</em></p>
+<p>Agent中文可以翻译为代理人，但是听起来怪怪的，不如直接不翻译。Agent指的是可以执行一些动作的物体。虽然所有的计算机程序都可以做一些动作，但是人工智能里面说的agent，需要满足更多的要求：自动操作，感知环境，长期动作，自适应，以及自己制定和追求目标。一个聪明的agent（rational agent）指在已有的条件下，agent可以自己做出动作，得到最优的结果。</p>
+<p>在用“思考的法则”指导下的AI，重点在于正确的推理。“聪明”的agent也需要有正确的推理过程来指导行为，但是，这还不够。在有些时候，没有确定正确的事情一定要做，但是又需要做些什么；或者是只是做正确的事情但是却不需要严密的论证，例如手指触摸到烫的炉子就本能的缩回。</p>
+<p>当然，所有通过图灵测试的所需要的技能，对于构建一个“聪明”的agent而言，也都是需要的。例如，知识的表示和推理让agent可以做好的决策，对于一个复杂的环境而言，生成一个综合的语句也为交流提供了便利。</p>
+<p>训练一个“聪明”的agent的方法对比其他两个方法有很明显的优点，首先这比构建思考的法则更为一般，因为一个正确的推理只是确保行为有效性的诸多方法之一，而不是全部。第二，基于科学的方法构建起来的模型，比学习人类的思考和举止来的更为可靠，背后的数学理论保证了所构建的方法的普适性和一般性。</p>
+<p>因此，本书后面的章节会重点放在构建一个“聪明“的智能体上。</p>
+<h2 id="2-人工智能的基础"><a href="#2-人工智能的基础" class="headerlink" title="2 人工智能的基础"></a>2 人工智能的基础</h2><p>本节介绍人工智能发展过程中，所依据的基本理论和方法。</p>
+<table>
+<thead>
+<tr>
+<th align="center">学科</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">哲学</td>
+<td align="center">哲学家认为，人脑本身就是以某种特定方式内在语言驱动的机器，只要找到这种内在语言，就可以让机器做出正确的决策。</td>
+</tr>
+<tr>
+<td align="center">数学</td>
+<td align="center">数学为操作语句的不确定性提供了工具，即概率称述，它也为构建计算和推理算法提供了坚实的基础。</td>
+</tr>
+<tr>
+<td align="center">经济学</td>
+<td align="center">经济学让决策这件事有了固定的流程：即最大化决策者的期望回报值。</td>
+</tr>
+<tr>
+<td align="center">神经科学</td>
+<td align="center">神经科学部分解释了人脑是如何运作的，以及它与机器之间的区别。</td>
+</tr>
+<tr>
+<td align="center">心理学</td>
+<td align="center">心理学家认为动物和人类都可以被理解为一种处理信息的机器，例如语言就是如此。</td>
+</tr>
+<tr>
+<td align="center">计算机技术</td>
+<td align="center">计算机技术的发展，为AI的引用提供了强大的运算机器。</td>
+</tr>
+<tr>
+<td align="center">控制技术和控制论</td>
+<td align="center">控制论的目的是设计一个能够接受环境反馈、执行最优行动的装置，虽然控制论目前和AI的理论在数学上有很大的不同，但是两者正在逐步靠近。</td>
+</tr>
+<tr>
+<td align="center">语言学</td>
+<td align="center">主要是自然语言处理方面的设计的内容。</td>
+</tr>
+</tbody></table>
+<p><strong>以上，就是《Artificial Intelligence： A Modern Approach》第三版第1部分，介绍了四种人工智能的定义，如果已经有人工智能基础的人，可以已经可以看到，这四个部分分别对应于现代人工智能发展的底层逻辑。即是要超越人类，还是要模仿人类；是要做出聪明的决策，还是直接参与并改造物理世界。</strong></p>
+<p><strong>从模仿人类出发，深度学习如火如荼，而强化学习训练出来的alphago，在一定意义下，已经超越了人类。虽然目前的智能大多体现在思维层面上，但是机器人学的发展一定是终极需求。</strong></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" rel="tag"># 人工智能</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/10/18/AIMP3/" rel="next" title="《Artificial Intelligence： A modern approach》读书笔记——叁">
+      《Artificial Intelligence： A modern approach》读书笔记——叁 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%AB%A0-%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">第一章 引言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AFAI%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">1、什么是AI？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E5%83%8F%E4%BA%BA%E7%B1%BB%E4%B8%80%E6%A0%B7%E8%A1%8C%E5%8A%A8%EF%BC%9A%E5%9B%BE%E7%81%B5%E6%B5%8B%E8%AF%95"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1  像人类一样行动：图灵测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E5%83%8F%E4%BA%BA%E7%B1%BB%E4%B8%80%E6%A0%B7%E6%80%9D%E8%80%83%EF%BC%9A%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2 像人类一样思考：认知科学</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-%E7%90%86%E6%80%A7%E7%9A%84%E6%80%9D%E8%80%83%EF%BC%9A-%E2%80%9C%E6%80%9D%E8%80%83%E7%9A%84%E6%B3%95%E5%88%99%E2%80%9D"><span class="nav-number">1.1.3.</span> <span class="nav-text">1.3    理性的思考： “思考的法则”</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-%E7%90%86%E6%80%A7%E7%9A%84%E8%A1%8C%E5%8A%A8%EF%BC%9A%E8%AE%AD%E7%BB%83%E2%80%9C%E8%81%AA%E6%98%8E%E2%80%9C%E7%9A%84agent"><span class="nav-number">1.1.4.</span> <span class="nav-text">1.4   理性的行动：训练“聪明“的agent</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E7%9A%84%E5%9F%BA%E7%A1%80"><span class="nav-number">1.2.</span> <span class="nav-text">2 人工智能的基础</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xlQ"
+      src="/images/spicy.jpg">
+  <p class="site-author-name" itemprop="name">xlQ</p>
+  <div class="site-description" itemprop="description">AI for ai </div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlQ</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

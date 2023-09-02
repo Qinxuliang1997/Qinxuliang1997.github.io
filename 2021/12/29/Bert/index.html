@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本文介绍Bert的基本原理和代码实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bert">
+<meta property="og:url" content="http://example.com/2021/12/29/Bert/index.html">
+<meta property="og:site_name" content="HelloBear">
+<meta property="og:description" content="本文介绍Bert的基本原理和代码实现。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://zh.d2l.ai/_images/elmo-gpt-bert.svg">
+<meta property="og:image" content="https://zh.d2l.ai/_images/bert-input.svg">
+<meta property="og:image" content="http://example.com/2021/12/29/Bert/tasks.png">
+<meta property="og:image" content="http://example.com/2021/12/29/Bert/tasks0.png">
+<meta property="article:published_time" content="2021-12-29T15:55:50.000Z">
+<meta property="article:modified_time" content="2022-04-01T05:47:32.446Z">
+<meta property="article:author" content="xlQ">
+<meta property="article:tag" content="深度学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://zh.d2l.ai/_images/elmo-gpt-bert.svg">
+
+<link rel="canonical" href="http://example.com/2021/12/29/Bert/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Bert | HelloBear</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">HelloBear</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Less is More</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/12/29/Bert/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/spicy.jpg">
+      <meta itemprop="name" content="xlQ">
+      <meta itemprop="description" content="AI for ai ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HelloBear">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Bert
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-12-29 23:55:50" itemprop="dateCreated datePublished" datetime="2021-12-29T23:55:50+08:00">2021-12-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-04-01 13:47:32" itemprop="dateModified" datetime="2022-04-01T13:47:32+08:00">2022-04-01</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文介绍Bert的基本原理和代码实现。</p>
+<span id="more"></span>
+
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Bert作为自然语言处理领域最常见的模型，受到广泛的关注。首先我们需要意识到，Bert本身是一个特征提取器，即给定一个文本提取文本串中的相互关联的信息的。这些提取出来的特征再经过简单的处理，就可以支持各种下游任务了。</p>
+<p>Bert不是横空出世的，它基于两个非常重要的模型：ELMo和GPT。</p>
+<p><img src="https://zh.d2l.ai/_images/elmo-gpt-bert.svg" alt="../_images/elmo-gpt-bert.svg"></p>
+<p>如上图所示，ELMo是一个上下文敏感的模型，但是为每个下游的任务分别设置了架构；而GPT则不使用上下文的信息，但是它是一个统一的框架，对不同的下游任务可以微调模型。Bert则是在这两个的基础上，提出了上下文敏感、支持不同下游任务的模型。</p>
+<p>接下来，从三个方面介绍Bert，分别是Bert使用的训练数据类型，Bert模型的搭建，以及训练过程。最后介绍一下Bert的下游任务。</p>
+<h1 id="模型数据"><a href="#模型数据" class="headerlink" title="模型数据"></a>模型数据</h1><h2 id="模型输入"><a href="#模型输入" class="headerlink" title="模型输入"></a>模型输入</h2><p>自然语言处理中，有一些任务是输入单个句子，判断该句子的属性，另外一些则是输入一对句子，判断句子之间的关系。Bert为了支持这两种任务，训练的时候使用一对文本进行训练，而训练完使用的时候则可以任意选择。</p>
+<p>Bert训练样本的输入如下图所示，是三个部分的加和，即词元嵌入+段嵌入+位置嵌入。次元嵌入表示的是，每一个词元经过Embedding后，它的表示，这个表示是通过学习得到的；段嵌入比较简单，前面说过Bert训练的时候包括两句话，为了表示这两句话，第一句话的段嵌入都为0，第二句话的段嵌入为1；位置嵌入则表示词元在句子中的位置，这里的位置嵌入和Transformer不一样，这里的位置嵌入是通过学习得到的。</p>
+<p><img src="https://zh.d2l.ai/_images/bert-input.svg" alt="../_images/bert-input.svg"></p>
+<p>Bert的编码器如下，其中输入tokens是一个与词表对应的句子对，</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">BERTEncoder</span>(nn.Module):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;BERT编码器&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, vocab_size, num_hiddens, norm_shape, ffn_num_input,</span></span><br><span class="line"><span class="params">                 ffn_num_hiddens, num_heads, num_layers, dropout,</span></span><br><span class="line"><span class="params">                 max_len=<span class="number">1000</span>, key_size=<span class="number">768</span>, query_size=<span class="number">768</span>, value_size=<span class="number">768</span>,</span></span><br><span class="line"><span class="params">                 **kwargs</span>):</span><br><span class="line">        <span class="built_in">super</span>(BERTEncoder, self).__init__(**kwargs)</span><br><span class="line">        self.token_embedding = nn.Embedding(vocab_size, num_hiddens)</span><br><span class="line">        self.segment_embedding = nn.Embedding(<span class="number">2</span>, num_hiddens)</span><br><span class="line">        self.blks = nn.Sequential()</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(num_layers):</span><br><span class="line">            self.blks.add_module(<span class="string">f&quot;<span class="subst">&#123;i&#125;</span>&quot;</span>, d2l.EncoderBlock(</span><br><span class="line">                key_size, query_size, value_size, num_hiddens, norm_shape,</span><br><span class="line">                ffn_num_input, ffn_num_hiddens, num_heads, dropout, <span class="literal">True</span>))</span><br><span class="line">        <span class="comment"># 在BERT中，位置嵌入是可学习的，因此我们创建一个足够长的位置嵌入参数</span></span><br><span class="line">        self.pos_embedding = nn.Parameter(torch.randn(<span class="number">1</span>, max_len,</span><br><span class="line">                                                      num_hiddens))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, tokens, segments, valid_lens</span>):</span><br><span class="line">        <span class="comment"># 在以下代码段中，X的形状保持不变：（批量大小，最大序列长度，num_hiddens）</span></span><br><span class="line">        X = self.token_embedding(tokens) + self.segment_embedding(segments)</span><br><span class="line">        X = X + self.pos_embedding.data[:, :X.shape[<span class="number">1</span>], :]</span><br><span class="line">        <span class="keyword">for</span> blk <span class="keyword">in</span> self.blks:</span><br><span class="line">            X = blk(X, valid_lens)</span><br><span class="line">        <span class="keyword">return</span> X</span><br></pre></td></tr></table></figure>
+
+<p>举例如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">vocab_size, num_hiddens, ffn_num_hiddens, num_heads = <span class="number">10000</span>, <span class="number">768</span>, <span class="number">1024</span>, <span class="number">4</span></span><br><span class="line">norm_shape, ffn_num_input, num_layers, dropout = [<span class="number">768</span>], <span class="number">768</span>, <span class="number">2</span>, <span class="number">0.2</span></span><br><span class="line">encoder = BERTEncoder(vocab_size, num_hiddens, norm_shape, ffn_num_input,</span><br><span class="line">                      ffn_num_hiddens, num_heads, num_layers, dropout)tokens = torch.randint(<span class="number">0</span>, vocab_size, (<span class="number">2</span>, <span class="number">8</span>))</span><br><span class="line"></span><br><span class="line">tokens = torch.randint(<span class="number">0</span>, vocab_size, (<span class="number">2</span>, <span class="number">8</span>))</span><br><span class="line">segments = torch.tensor([[<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]])</span><br><span class="line">encoded_X = encoder(tokens, segments, <span class="literal">None</span>)</span><br><span class="line">encoded_X.shape</span><br></pre></td></tr></table></figure>
+
+<h2 id="数据准备"><a href="#数据准备" class="headerlink" title="数据准备"></a>数据准备</h2><p>为了训练Bert，我们需要构建一个数据集合，基本的思路是实现一个DataSet类，再由这个类实现DadaLoader类，以批量的方式，产生文本对、段标识、有效长度、掩码位置、掩码标签、掩码权重、两句话是否连续标签。其中掩码权重的意思是，如果掩码位置是认为填充的数据，那么填充词元的预测将通过乘以0权重在损失中过滤掉。</p>
+<p>我们加载一个维基百科的数据集，作为训练文本。</p>
+<p>因为我们的模型有两个任务，即预测下一句话，以及预测遮蔽的位置的词元，因此我们需要分别为这两个任务准备数据：</p>
+<h2 id="生成下一句预测任务的数据"><a href="#生成下一句预测任务的数据" class="headerlink" title="生成下一句预测任务的数据"></a>生成下一句预测任务的数据</h2><p><code>_get_next_sentence</code>函数生成二分类任务的训练样本，   <code>_get_nsp_data_from_paragrap</code> 函数调用<code>_get_next_sentence</code>函数从输入<code>paragraph</code>生成用于下一句预测的训练样本。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">_get_next_sentence</span>(<span class="params">sentence, next_sentence, paragraphs</span>):</span><br><span class="line">    <span class="keyword">if</span> random.random() &lt; <span class="number">0.5</span>:</span><br><span class="line">        is_next = <span class="literal">True</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="comment"># paragraphs是三重列表的嵌套</span></span><br><span class="line">        next_sentence = random.choice(random.choice(paragraphs))</span><br><span class="line">        is_next = <span class="literal">False</span></span><br><span class="line">    <span class="keyword">return</span> sentence, next_sentence, is_next</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#@save</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_get_nsp_data_from_paragraph</span>(<span class="params">paragraph, paragraphs, vocab, max_len</span>):</span><br><span class="line">    nsp_data_from_paragraph = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(paragraph) - <span class="number">1</span>):</span><br><span class="line">        tokens_a, tokens_b, is_next = _get_next_sentence(</span><br><span class="line">            paragraph[i], paragraph[i + <span class="number">1</span>], paragraphs)</span><br><span class="line">        <span class="comment"># 考虑1个&#x27;&lt;cls&gt;&#x27;词元和2个&#x27;&lt;sep&gt;&#x27;词元</span></span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(tokens_a) + <span class="built_in">len</span>(tokens_b) + <span class="number">3</span> &gt; max_len:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        tokens, segments = d2l.get_tokens_and_segments(tokens_a, tokens_b)</span><br><span class="line">        nsp_data_from_paragraph.append((tokens, segments, is_next))</span><br><span class="line">    <span class="keyword">return</span> nsp_data_from_paragraph</span><br></pre></td></tr></table></figure>
+
+<h2 id="生成遮蔽语言模型任务的数据"><a href="#生成遮蔽语言模型任务的数据" class="headerlink" title="生成遮蔽语言模型任务的数据"></a>生成遮蔽语言模型任务的数据</h2><p><code>_replace_mlm_tokens</code>函数输入<code>tokens</code>是表示BERT输入序列的词元的列表，<code>candidate_pred_positions</code>是不包括特殊词元的BERT输入序列的词元索引的列表（特殊词元在遮蔽语言模型任务中不被预测），以及<code>num_mlm_preds</code>指示预测的数量（选择15%要预测的随机词元）；该函数返回可能替换后的输入词元、发生预测的词元索引和这些预测的标签。</p>
+<p><code>_get_mlm_data_from_token</code>函数将BERT输入序列（<code>tokens</code>）作为输入，并返回输入词元的索引、发生预测的词元索引以及这些预测的标签索引。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#@save</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_replace_mlm_tokens</span>(<span class="params">tokens, candidate_pred_positions, num_mlm_preds,</span></span><br><span class="line"><span class="params">                        vocab</span>):</span><br><span class="line">    <span class="comment"># 为遮蔽语言模型的输入创建新的词元副本，其中输入可能包含替换的“&lt;mask&gt;”或随机词元</span></span><br><span class="line">    mlm_input_tokens = [token <span class="keyword">for</span> token <span class="keyword">in</span> tokens]</span><br><span class="line">    pred_positions_and_labels = []</span><br><span class="line">    <span class="comment"># 打乱后用于在遮蔽语言模型任务中获取15%的随机词元进行预测</span></span><br><span class="line">    random.shuffle(candidate_pred_positions)</span><br><span class="line">    <span class="keyword">for</span> mlm_pred_position <span class="keyword">in</span> candidate_pred_positions:</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(pred_positions_and_labels) &gt;= num_mlm_preds:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        masked_token = <span class="literal">None</span></span><br><span class="line">        <span class="comment"># 80%的时间：将词替换为“&lt;mask&gt;”词元</span></span><br><span class="line">        <span class="keyword">if</span> random.random() &lt; <span class="number">0.8</span>:</span><br><span class="line">            masked_token = <span class="string">&#x27;&lt;mask&gt;&#x27;</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="comment"># 10%的时间：保持词不变</span></span><br><span class="line">            <span class="keyword">if</span> random.random() &lt; <span class="number">0.5</span>:</span><br><span class="line">                masked_token = tokens[mlm_pred_position]</span><br><span class="line">            <span class="comment"># 10%的时间：用随机词替换该词</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                masked_token = random.choice(vocab.idx_to_token)</span><br><span class="line">        mlm_input_tokens[mlm_pred_position] = masked_token</span><br><span class="line">        pred_positions_and_labels.append(</span><br><span class="line">            (mlm_pred_position, tokens[mlm_pred_position]))</span><br><span class="line">    <span class="keyword">return</span> mlm_input_tokens, pred_positions_and_labels</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#@save</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_get_mlm_data_from_tokens</span>(<span class="params">tokens, vocab</span>):</span><br><span class="line">    candidate_pred_positions = []</span><br><span class="line">    <span class="comment"># tokens是一个字符串列表</span></span><br><span class="line">    <span class="keyword">for</span> i, token <span class="keyword">in</span> <span class="built_in">enumerate</span>(tokens):</span><br><span class="line">        <span class="comment"># 在遮蔽语言模型任务中不会预测特殊词元</span></span><br><span class="line">        <span class="keyword">if</span> token <span class="keyword">in</span> [<span class="string">&#x27;&lt;cls&gt;&#x27;</span>, <span class="string">&#x27;&lt;sep&gt;&#x27;</span>]:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        candidate_pred_positions.append(i)</span><br><span class="line">    <span class="comment"># 遮蔽语言模型任务中预测15%的随机词元</span></span><br><span class="line">    num_mlm_preds = <span class="built_in">max</span>(<span class="number">1</span>, <span class="built_in">round</span>(<span class="built_in">len</span>(tokens) * <span class="number">0.15</span>))</span><br><span class="line">    mlm_input_tokens, pred_positions_and_labels = _replace_mlm_tokens(</span><br><span class="line">        tokens, candidate_pred_positions, num_mlm_preds, vocab)</span><br><span class="line">    pred_positions_and_labels = <span class="built_in">sorted</span>(pred_positions_and_labels,</span><br><span class="line">                                       key=<span class="keyword">lambda</span> x: x[<span class="number">0</span>])</span><br><span class="line">    pred_positions = [v[<span class="number">0</span>] <span class="keyword">for</span> v <span class="keyword">in</span> pred_positions_and_labels]</span><br><span class="line">    mlm_pred_labels = [v[<span class="number">1</span>] <span class="keyword">for</span> v <span class="keyword">in</span> pred_positions_and_labels]</span><br><span class="line">    <span class="keyword">return</span> vocab[mlm_input_tokens], pred_positions, vocab[mlm_pred_labels]</span><br></pre></td></tr></table></figure>
+
+<h2 id="将文本转换为预训练数据集"><a href="#将文本转换为预训练数据集" class="headerlink" title="将文本转换为预训练数据集"></a>将文本转换为预训练数据集</h2><p>将特殊的“<mask>”词元附加到输入。它的参数<code>examples</code>包含来自两个预训练任务的辅助函数<code>_get_nsp_data_from_paragraph</code>和<code>_get_mlm_data_from_tokens</code>的输出。</mask></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#@save</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_pad_bert_inputs</span>(<span class="params">examples, max_len, vocab</span>):</span><br><span class="line">    max_num_mlm_preds = <span class="built_in">round</span>(max_len * <span class="number">0.15</span>)</span><br><span class="line">    all_token_ids, all_segments, valid_lens,  = [], [], []</span><br><span class="line">    all_pred_positions, all_mlm_weights, all_mlm_labels = [], [], []</span><br><span class="line">    nsp_labels = []</span><br><span class="line">    <span class="keyword">for</span> (token_ids, pred_positions, mlm_pred_label_ids, segments,</span><br><span class="line">         is_next) <span class="keyword">in</span> examples:</span><br><span class="line">        all_token_ids.append(torch.tensor(token_ids + [vocab[<span class="string">&#x27;&lt;pad&gt;&#x27;</span>]] * (</span><br><span class="line">            max_len - <span class="built_in">len</span>(token_ids)), dtype=torch.long))</span><br><span class="line">        all_segments.append(torch.tensor(segments + [<span class="number">0</span>] * (</span><br><span class="line">            max_len - <span class="built_in">len</span>(segments)), dtype=torch.long))</span><br><span class="line">        <span class="comment"># valid_lens不包括&#x27;&lt;pad&gt;&#x27;的计数</span></span><br><span class="line">        valid_lens.append(torch.tensor(<span class="built_in">len</span>(token_ids), dtype=torch.float32))</span><br><span class="line">        all_pred_positions.append(torch.tensor(pred_positions + [<span class="number">0</span>] * (</span><br><span class="line">            max_num_mlm_preds - <span class="built_in">len</span>(pred_positions)), dtype=torch.long))</span><br><span class="line">        <span class="comment"># 填充词元的预测将通过乘以0权重在损失中过滤掉</span></span><br><span class="line">        all_mlm_weights.append(</span><br><span class="line">            torch.tensor([<span class="number">1.0</span>] * <span class="built_in">len</span>(mlm_pred_label_ids) + [<span class="number">0.0</span>] * (</span><br><span class="line">                max_num_mlm_preds - <span class="built_in">len</span>(pred_positions)),</span><br><span class="line">                dtype=torch.float32))</span><br><span class="line">        all_mlm_labels.append(torch.tensor(mlm_pred_label_ids + [<span class="number">0</span>] * (</span><br><span class="line">            max_num_mlm_preds - <span class="built_in">len</span>(mlm_pred_label_ids)), dtype=torch.long))</span><br><span class="line">        nsp_labels.append(torch.tensor(is_next, dtype=torch.long))</span><br><span class="line">    <span class="keyword">return</span> (all_token_ids, all_segments, valid_lens, all_pred_positions,</span><br><span class="line">            all_mlm_weights, all_mlm_labels, nsp_labels)</span><br></pre></td></tr></table></figure>
+
+<p>将用于生成两个预训练任务的训练样本的辅助函数和用于填充输入的辅助函数放在一起，我们定义以下<code>_WikiTextDataset</code>类为用于预训练BERT的WikiText-2数据集。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#@save</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">_WikiTextDataset</span>(gluon.data.Dataset):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, paragraphs, max_len</span>):</span><br><span class="line">        <span class="comment"># 输入paragraphs[i]是代表段落的句子字符串列表；</span></span><br><span class="line">        <span class="comment"># 而输出paragraphs[i]是代表段落的句子列表，其中每个句子都是词元列表</span></span><br><span class="line">        paragraphs = [d2l.tokenize(</span><br><span class="line">            paragraph, token=<span class="string">&#x27;word&#x27;</span>) <span class="keyword">for</span> paragraph <span class="keyword">in</span> paragraphs]</span><br><span class="line">        sentences = [sentence <span class="keyword">for</span> paragraph <span class="keyword">in</span> paragraphs</span><br><span class="line">                     <span class="keyword">for</span> sentence <span class="keyword">in</span> paragraph]</span><br><span class="line">        self.vocab = d2l.Vocab(sentences, min_freq=<span class="number">5</span>, reserved_tokens=[</span><br><span class="line">            <span class="string">&#x27;&lt;pad&gt;&#x27;</span>, <span class="string">&#x27;&lt;mask&gt;&#x27;</span>, <span class="string">&#x27;&lt;cls&gt;&#x27;</span>, <span class="string">&#x27;&lt;sep&gt;&#x27;</span>])</span><br><span class="line">        <span class="comment"># 获取下一句子预测任务的数据</span></span><br><span class="line">        examples = []</span><br><span class="line">        <span class="keyword">for</span> paragraph <span class="keyword">in</span> paragraphs:</span><br><span class="line">            examples.extend(_get_nsp_data_from_paragraph(</span><br><span class="line">                paragraph, paragraphs, self.vocab, max_len))</span><br><span class="line">        <span class="comment"># 获取遮蔽语言模型任务的数据</span></span><br><span class="line">        examples = [(_get_mlm_data_from_tokens(tokens, self.vocab)</span><br><span class="line">                      + (segments, is_next))</span><br><span class="line">                     <span class="keyword">for</span> tokens, segments, is_next <span class="keyword">in</span> examples]</span><br><span class="line">        <span class="comment"># 填充输入</span></span><br><span class="line">        (self.all_token_ids, self.all_segments, self.valid_lens,</span><br><span class="line">         self.all_pred_positions, self.all_mlm_weights,</span><br><span class="line">         self.all_mlm_labels, self.nsp_labels) = _pad_bert_inputs(</span><br><span class="line">            examples, max_len, self.vocab)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__getitem__</span>(<span class="params">self, idx</span>):</span><br><span class="line">        <span class="keyword">return</span> (self.all_token_ids[idx], self.all_segments[idx],</span><br><span class="line">                self.valid_lens[idx], self.all_pred_positions[idx],</span><br><span class="line">                self.all_mlm_weights[idx], self.all_mlm_labels[idx],</span><br><span class="line">                self.nsp_labels[idx])</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__len__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">len</span>(self.all_token_ids)</span><br></pre></td></tr></table></figure>
+
+<p>最终，生成dataloader类：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#@save</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">load_data_wiki</span>(<span class="params">batch_size, max_len</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;加载WikiText-2数据集&quot;&quot;&quot;</span></span><br><span class="line">    num_workers = d2l.get_dataloader_workers()</span><br><span class="line">    data_dir = d2l.download_extract(<span class="string">&#x27;wikitext-2&#x27;</span>, <span class="string">&#x27;wikitext-2&#x27;</span>)</span><br><span class="line">    paragraphs = _read_wiki(data_dir)</span><br><span class="line">    train_set = _WikiTextDataset(paragraphs, max_len)</span><br><span class="line">    train_iter = torch.utils.data.DataLoader(train_set, batch_size,</span><br><span class="line">                                        shuffle=<span class="literal">True</span>, num_workers=num_workers)</span><br><span class="line">    <span class="keyword">return</span> train_iter, train_set.vocab</span><br></pre></td></tr></table></figure>
+
+<h1 id="模型搭建"><a href="#模型搭建" class="headerlink" title="模型搭建"></a>模型搭建</h1><p>Bert的损失函数有两个来源：预测一句话中掩码的损失，预测第二句话和第一句话是否连续。</p>
+<p>因此我们的Bert模型需要首先分别实现这两个功能。</p>
+<h2 id="Masked-Language-Modeling"><a href="#Masked-Language-Modeling" class="headerlink" title="Masked Language Modeling"></a>Masked Language Modeling</h2><p>我们知道Bert随机选择一句话中15%的词元作为预测的掩蔽词源，下面这个类就是为了预测这个掩蔽位置的词元的，它需要两个输入，即BertEncoder的编码结果，和用于预测的词元位置。这是一个分类问题，它的输出是我们选择掩蔽的位置，对应的单词在此表中的位置，用ont-hot编码。如果已知了标签，就可以就是交叉熵损失函数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#@save</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MaskLM</span>(nn.Module):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;BERT的掩蔽语言模型任务&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, vocab_size, num_hiddens, num_inputs=<span class="number">768</span>, **kwargs</span>):</span><br><span class="line">        <span class="built_in">super</span>(MaskLM, self).__init__(**kwargs)</span><br><span class="line">        self.mlp = nn.Sequential(nn.Linear(num_inputs, num_hiddens),</span><br><span class="line">                                 nn.ReLU(),</span><br><span class="line">                                 nn.LayerNorm(num_hiddens),</span><br><span class="line">                                 nn.Linear(num_hiddens, vocab_size))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, X, pred_positions</span>):</span><br><span class="line">        num_pred_positions = pred_positions.shape[<span class="number">1</span>]</span><br><span class="line">        pred_positions = pred_positions.reshape(-<span class="number">1</span>)</span><br><span class="line">        batch_size = X.shape[<span class="number">0</span>]</span><br><span class="line">        batch_idx = torch.arange(<span class="number">0</span>, batch_size)</span><br><span class="line">        <span class="comment"># 假设batch_size=2，num_pred_positions=3</span></span><br><span class="line">        <span class="comment"># 那么batch_idx是np.array（[0,0,0,1,1]）</span></span><br><span class="line">        batch_idx = torch.repeat_interleave(batch_idx, num_pred_positions)</span><br><span class="line">        masked_X = X[batch_idx, pred_positions]</span><br><span class="line">        masked_X = masked_X.reshape((batch_size, num_pred_positions, -<span class="number">1</span>))</span><br><span class="line">        mlm_Y_hat = self.mlp(masked_X)</span><br><span class="line">        <span class="keyword">return</span> mlm_Y_hat</span><br></pre></td></tr></table></figure>
+
+<h2 id="Next-Sentence-Prediction"><a href="#Next-Sentence-Prediction" class="headerlink" title="Next Sentence Prediction"></a>Next Sentence Prediction</h2><p>除了提取一句话中上下文的信息，Bert还建模了文本对之间的逻辑关系。简单来说就是判断这两句话是否属于上下文，这同样是一个二分类问题。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">NextSentencePred</span>(nn.Module):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;BERT的下一句预测任务&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, num_inputs, **kwargs</span>):</span><br><span class="line">        <span class="built_in">super</span>(NextSentencePred, self).__init__(**kwargs)</span><br><span class="line">        self.output = nn.Linear(num_inputs, <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, X</span>):</span><br><span class="line">        <span class="comment"># X的形状：(batchsize,num_hiddens)</span></span><br><span class="line">        <span class="keyword">return</span> self.output(X)</span><br></pre></td></tr></table></figure>
+
+<p>假设批量大小为b，两个句子加在一起的长度是s，每个词元嵌入的维度是h，词表的大小是v</p>
+<p>对输入的一个批量的数据b×s，首先进行encoder编码（包括词嵌入，位置编码和段嵌入）得到大小为b×s×h ；每个句子中选择n个掩码位置，输出预测结果为b ×n×v；拿每个句子的cls位置出来预测两句话是否连续，输出大小为b×2。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#@save</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">BERTModel</span>(nn.Module):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;BERT模型&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, vocab_size, num_hiddens, norm_shape, ffn_num_input,</span></span><br><span class="line"><span class="params">                 ffn_num_hiddens, num_heads, num_layers, dropout,</span></span><br><span class="line"><span class="params">                 max_len=<span class="number">1000</span>, key_size=<span class="number">768</span>, query_size=<span class="number">768</span>, value_size=<span class="number">768</span>,</span></span><br><span class="line"><span class="params">                 hid_in_features=<span class="number">768</span>, mlm_in_features=<span class="number">768</span>,</span></span><br><span class="line"><span class="params">                 nsp_in_features=<span class="number">768</span></span>):</span><br><span class="line">        <span class="built_in">super</span>(BERTModel, self).__init__()</span><br><span class="line">        self.encoder = BERTEncoder(vocab_size, num_hiddens, norm_shape,</span><br><span class="line">                    ffn_num_input, ffn_num_hiddens, num_heads, num_layers,</span><br><span class="line">                    dropout, max_len=max_len, key_size=key_size,</span><br><span class="line">                    query_size=query_size, value_size=value_size)</span><br><span class="line">        self.hidden = nn.Sequential(nn.Linear(hid_in_features, num_hiddens),</span><br><span class="line">                                    nn.Tanh())</span><br><span class="line">        self.mlm = MaskLM(vocab_size, num_hiddens, mlm_in_features)</span><br><span class="line">        self.nsp = NextSentencePred(nsp_in_features)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, tokens, segments, valid_lens=<span class="literal">None</span>,</span></span><br><span class="line"><span class="params">                pred_positions=<span class="literal">None</span></span>):</span><br><span class="line">        encoded_X = self.encoder(tokens, segments, valid_lens)</span><br><span class="line">        <span class="keyword">if</span> pred_positions <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            mlm_Y_hat = self.mlm(encoded_X, pred_positions)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            mlm_Y_hat = <span class="literal">None</span></span><br><span class="line">        <span class="comment"># 用于下一句预测的多层感知机分类器的隐藏层，0是“&lt;cls&gt;”标记的索引</span></span><br><span class="line">        nsp_Y_hat = self.nsp(self.hidden(encoded_X[:, <span class="number">0</span>, :]))</span><br><span class="line">        <span class="keyword">return</span> encoded_X, mlm_Y_hat, nsp_Y_hat</span><br></pre></td></tr></table></figure>
+
+<h1 id="模型训练"><a href="#模型训练" class="headerlink" title="模型训练"></a>模型训练</h1><p>训练模型的损失函数是遮蔽语言模型的损失+下一句预测的损失。其中的d2l.Animator是一个画图的类，不影响训练过程。我们在前面构建的dataloader中批量的生成数据，每个批量的数据包括：</p>
+<p>tokens_X, segments_X, valid_lens_x, pred_positions_X,  mlm_weights_X, mlm_Y, nsp_y</p>
+<p>对应输入的词元，段辨识，有效长度，掩码的位置，掩码的权重，掩码的标签，下一句标签</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#@save</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_get_batch_loss_bert</span>(<span class="params">net, loss, vocab_size, tokens_X,</span></span><br><span class="line"><span class="params">                         segments_X, valid_lens_x,</span></span><br><span class="line"><span class="params">                         pred_positions_X, mlm_weights_X,</span></span><br><span class="line"><span class="params">                         mlm_Y, nsp_y</span>):</span><br><span class="line">    <span class="comment"># 前向传播</span></span><br><span class="line">    _, mlm_Y_hat, nsp_Y_hat = net(tokens_X, segments_X,</span><br><span class="line">                                  valid_lens_x.reshape(-<span class="number">1</span>),</span><br><span class="line">                                  pred_positions_X)</span><br><span class="line">    <span class="comment"># 计算遮蔽语言模型损失</span></span><br><span class="line">    mlm_l = loss(mlm_Y_hat.reshape(-<span class="number">1</span>, vocab_size), mlm_Y.reshape(-<span class="number">1</span>)) *\</span><br><span class="line">    mlm_weights_X.reshape(-<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line">    mlm_l = mlm_l.<span class="built_in">sum</span>() / (mlm_weights_X.<span class="built_in">sum</span>() + <span class="number">1e-8</span>)</span><br><span class="line">    <span class="comment"># 计算下一句子预测任务的损失</span></span><br><span class="line">    nsp_l = loss(nsp_Y_hat, nsp_y)</span><br><span class="line">    l = mlm_l + nsp_l</span><br><span class="line">    <span class="keyword">return</span> mlm_l, nsp_l, l</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">train_bert</span>(<span class="params">train_iter, net, loss, vocab_size, devices, num_steps</span>):</span><br><span class="line">    net = nn.DataParallel(net, device_ids=devices).to(devices[<span class="number">0</span>])</span><br><span class="line">    trainer = torch.optim.Adam(net.parameters(), lr=<span class="number">0.01</span>)</span><br><span class="line">    step, timer = <span class="number">0</span>, d2l.Timer()</span><br><span class="line">    animator = d2l.Animator(xlabel=<span class="string">&#x27;step&#x27;</span>, ylabel=<span class="string">&#x27;loss&#x27;</span>,</span><br><span class="line">                            xlim=[<span class="number">1</span>, num_steps], legend=[<span class="string">&#x27;mlm&#x27;</span>, <span class="string">&#x27;nsp&#x27;</span>])</span><br><span class="line">    <span class="comment"># 遮蔽语言模型损失的和，下一句预测任务损失的和，句子对的数量，计数</span></span><br><span class="line">    metric = d2l.Accumulator(<span class="number">4</span>)</span><br><span class="line">    num_steps_reached = <span class="literal">False</span></span><br><span class="line">    <span class="keyword">while</span> step &lt; num_steps <span class="keyword">and</span> <span class="keyword">not</span> num_steps_reached:</span><br><span class="line">        <span class="keyword">for</span> tokens_X, segments_X, valid_lens_x, pred_positions_X,\</span><br><span class="line">            mlm_weights_X, mlm_Y, nsp_y <span class="keyword">in</span> train_iter:</span><br><span class="line">            tokens_X = tokens_X.to(devices[<span class="number">0</span>])</span><br><span class="line">            segments_X = segments_X.to(devices[<span class="number">0</span>])</span><br><span class="line">            valid_lens_x = valid_lens_x.to(devices[<span class="number">0</span>])</span><br><span class="line">            pred_positions_X = pred_positions_X.to(devices[<span class="number">0</span>])</span><br><span class="line">            mlm_weights_X = mlm_weights_X.to(devices[<span class="number">0</span>])</span><br><span class="line">            mlm_Y, nsp_y = mlm_Y.to(devices[<span class="number">0</span>]), nsp_y.to(devices[<span class="number">0</span>])</span><br><span class="line">            trainer.zero_grad()</span><br><span class="line">            timer.start()</span><br><span class="line">            mlm_l, nsp_l, l = _get_batch_loss_bert(</span><br><span class="line">                net, loss, vocab_size, tokens_X, segments_X, valid_lens_x,</span><br><span class="line">                pred_positions_X, mlm_weights_X, mlm_Y, nsp_y)</span><br><span class="line">            l.backward()</span><br><span class="line">            trainer.step()</span><br><span class="line">            metric.add(mlm_l, nsp_l, tokens_X.shape[<span class="number">0</span>], <span class="number">1</span>)</span><br><span class="line">            timer.stop()</span><br><span class="line">            animator.add(step + <span class="number">1</span>,</span><br><span class="line">                         (metric[<span class="number">0</span>] / metric[<span class="number">3</span>], metric[<span class="number">1</span>] / metric[<span class="number">3</span>]))</span><br><span class="line">            step += <span class="number">1</span></span><br><span class="line">            <span class="keyword">if</span> step == num_steps:</span><br><span class="line">                num_steps_reached = <span class="literal">True</span></span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;MLM loss <span class="subst">&#123;metric[<span class="number">0</span>] / metric[<span class="number">3</span>]:<span class="number">.3</span>f&#125;</span>, &#x27;</span></span><br><span class="line">          <span class="string">f&#x27;NSP loss <span class="subst">&#123;metric[<span class="number">1</span>] / metric[<span class="number">3</span>]:<span class="number">.3</span>f&#125;</span>&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;<span class="subst">&#123;metric[<span class="number">2</span>] / timer.<span class="built_in">sum</span>():<span class="number">.1</span>f&#125;</span> sentence pairs/sec on &#x27;</span></span><br><span class="line">          <span class="string">f&#x27;<span class="subst">&#123;<span class="built_in">str</span>(devices)&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="下游任务"><a href="#下游任务" class="headerlink" title="下游任务"></a>下游任务</h1><p><img src="/2021/12/29/Bert/tasks.png"></p>
+<p>Bert的下游任务可以有两个基本的分类，即层序层面和词元层面。</p>
+<p>如下表所示，序列层面的应用又可以分为是单序列任务，例如句子的情感分析，或者是多序列任务（两句话的相似度分析）；在序列层面的任务，都是只需要用句子的第一个标志位加一个mlp网络就可以了。</p>
+<p>在词元层面，也可以分为单本文和文本对，对于单文本，例如词性分析或者翻译，对于每一个词元共享同一个全连接网络，依次输出结果；对于文本对，例如问答，我们用两个mlp网络分别预测每个词元的开始和结尾。                       </p>
+<p><img src="/2021/12/29/Bert/tasks0.png"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag"># 深度学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/12/29/Transformers%E5%90%84%E4%B8%AA%E6%A8%A1%E5%9D%97%E4%BB%A3%E7%A0%81%E8%AF%A6%E7%BB%86%E8%A7%A3%E8%AF%BB/" rel="prev" title="Transformers">
+      <i class="fa fa-chevron-left"></i> Transformers
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/12/30/%E4%BD%BF%E7%94%A8hexo%E4%B8%8Egithub%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E7%BD%91%E9%A1%B5/" rel="next" title="使用hexo与github搭建个人网页">
+      使用hexo与github搭建个人网页 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E6%95%B0%E6%8D%AE"><span class="nav-number">2.</span> <span class="nav-text">模型数据</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E8%BE%93%E5%85%A5"><span class="nav-number">2.1.</span> <span class="nav-text">模型输入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%87%86%E5%A4%87"><span class="nav-number">2.2.</span> <span class="nav-text">数据准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E4%B8%8B%E4%B8%80%E5%8F%A5%E9%A2%84%E6%B5%8B%E4%BB%BB%E5%8A%A1%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="nav-number">2.3.</span> <span class="nav-text">生成下一句预测任务的数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E9%81%AE%E8%94%BD%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E4%BB%BB%E5%8A%A1%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="nav-number">2.4.</span> <span class="nav-text">生成遮蔽语言模型任务的数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%86%E6%96%87%E6%9C%AC%E8%BD%AC%E6%8D%A2%E4%B8%BA%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">2.5.</span> <span class="nav-text">将文本转换为预训练数据集</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E6%90%AD%E5%BB%BA"><span class="nav-number">3.</span> <span class="nav-text">模型搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Masked-Language-Modeling"><span class="nav-number">3.1.</span> <span class="nav-text">Masked Language Modeling</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Next-Sentence-Prediction"><span class="nav-number">3.2.</span> <span class="nav-text">Next Sentence Prediction</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-number">4.</span> <span class="nav-text">模型训练</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%8B%E6%B8%B8%E4%BB%BB%E5%8A%A1"><span class="nav-number">5.</span> <span class="nav-text">下游任务</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xlQ"
+      src="/images/spicy.jpg">
+  <p class="site-author-name" itemprop="name">xlQ</p>
+  <div class="site-description" itemprop="description">AI for ai </div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlQ</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

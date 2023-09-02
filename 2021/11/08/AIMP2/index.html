@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本文介绍《Artificial Intelligence： A modern approach》的第二章，介绍人工智能的基本概率，包括什么是Agent，它的内部构造是什么样的，以及什么样的Agent的是“好”的，还包括对agent所处环境的介绍。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Artificial Intelligence： A modern approach》读书笔记——贰">
+<meta property="og:url" content="http://example.com/2021/11/08/AIMP2/index.html">
+<meta property="og:site_name" content="HelloBear">
+<meta property="og:description" content="本文介绍《Artificial Intelligence： A modern approach》的第二章，介绍人工智能的基本概率，包括什么是Agent，它的内部构造是什么样的，以及什么样的Agent的是“好”的，还包括对agent所处环境的介绍。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2021/11/08/AIMP2/1.jpg">
+<meta property="og:image" content="http://example.com/2021/11/08/AIMP2/2.png">
+<meta property="og:image" content="http://example.com/2021/11/08/AIMP2/3.png">
+<meta property="og:image" content="http://example.com/2021/11/08/AIMP2/4.png">
+<meta property="og:image" content="http://example.com/2021/11/08/AIMP2/5.png">
+<meta property="og:image" content="http://example.com/2021/11/08/AIMP2/6.png">
+<meta property="og:image" content="http://example.com/2021/11/08/AIMP2/7.png">
+<meta property="article:published_time" content="2021-11-08T12:13:41.000Z">
+<meta property="article:modified_time" content="2023-04-09T09:16:16.299Z">
+<meta property="article:author" content="xlQ">
+<meta property="article:tag" content="人工智能">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/11/08/AIMP2/1.jpg">
+
+<link rel="canonical" href="http://example.com/2021/11/08/AIMP2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>《Artificial Intelligence： A modern approach》读书笔记——贰 | HelloBear</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">HelloBear</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Less is More</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/11/08/AIMP2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/spicy.jpg">
+      <meta itemprop="name" content="xlQ">
+      <meta itemprop="description" content="AI for ai ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HelloBear">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Artificial Intelligence： A modern approach》读书笔记——贰
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-11-08 20:13:41" itemprop="dateCreated datePublished" datetime="2021-11-08T20:13:41+08:00">2021-11-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-09 17:16:16" itemprop="dateModified" datetime="2023-04-09T17:16:16+08:00">2023-04-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文介绍《Artificial Intelligence： A modern approach》的第二章，介绍人工智能的基本概率，包括什么是Agent，它的内部构造是什么样的，以及什么样的Agent的是“好”的，还包括对agent所处环境的介绍。</p>
+<span id="more"></span>
+
+
+
+<h1 id="第二章-智能环境"><a href="#第二章-智能环境" class="headerlink" title="第二章 智能环境"></a>第二章 智能环境</h1><h2 id="1-Agent和环境"><a href="#1-Agent和环境" class="headerlink" title="1 Agent和环境"></a>1 Agent和环境</h2><p>Agent通过传感器<strong>感知</strong>环境，通过执行器与环境<strong>交互</strong>。</p>
+<ul>
+<li><p>感知：任何时刻Agent的感知输入；感知序列：所有历史输入数据的集合。</p>
+</li>
+<li><p>Agent函数：将给定感知序列映射为行动；Agent程序：Agent函数的具体实现，是在物理系统内部运行的。</p>
+</li>
+</ul>
+<p><img src="/2021/11/08/AIMP2/1.jpg" alt="1"></p>
+<h2 id="2-什么是“好”的行为：理性的概念"><a href="#2-什么是“好”的行为：理性的概念" class="headerlink" title="2 什么是“好”的行为：理性的概念"></a>2 什么是“好”的行为：理性的概念</h2><p>性能度量：对环境状态的任何给定序列进行评估，而不是Agent的内部状态。</p>
+<p>性能度量的标准很多，最好根据实际环境中希望得到的结果来设计性能度量。</p>
+<h3 id="2-1-理性"><a href="#2-1-理性" class="headerlink" title="2.1 理性"></a>2.1 理性</h3><p>理性的判断标准：</p>
+<ul>
+<li><p>良好定义的性能度量</p>
+</li>
+<li><p>Agent对环境的先验知识</p>
+</li>
+<li><p>Agent可以完成的动作</p>
+</li>
+<li><p>Agent截至此刻的感知序列</p>
+</li>
+</ul>
+<p>理性Agent：对于每一个可能的感知序列，根据已知的感知序列提供的证据和Agent具有的先验知识，理性Agent应该选择能使其<strong>性能度量最大化</strong>的动作。</p>
+<h3 id="2-2-全知者、学习者和自主性"><a href="#2-2-全知者、学习者和自主性" class="headerlink" title="2.2 全知者、学习者和自主性"></a>2.2 全知者、学习者和自主性</h3><p>理性 不等于 全知： 理性是使期望性能最大化，而完美则是实际性能最大化。</p>
+<p>理性的Agent要求主动的收集信息，并从感知到的信息中学习。</p>
+<p>Agent最初的设定反映了对环境的先验知识，随着学习的过程，先验知识会被修改和增加。如果Agent一直依赖于先验知识，那么就缺乏了自主性。</p>
+<h2 id="3-环境的性质"><a href="#3-环境的性质" class="headerlink" title="3 环境的性质"></a>3 环境的性质</h2><p>任务环境：理性Agent要求解的基本问题。</p>
+<h3 id="3-1-任务环境的规范描述"><a href="#3-1-任务环境的规范描述" class="headerlink" title="3.1 任务环境的规范描述"></a>3.1 任务环境的规范描述</h3><p>任务环境的PEAS描述：<strong>Performance（性能），Environment（环境），Actuator（执行器），Sensors（传感器）</strong></p>
+<h3 id="3-2-任务环境的性质"><a href="#3-2-任务环境的性质" class="headerlink" title="3.2 任务环境的性质"></a>3.2 任务环境的性质</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>描述</th>
+<th>分类</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>可观察</td>
+<td>传感器是否可以在任何时刻获得环境的完整状态</td>
+<td>完全可观察&#x2F;部分可观察</td>
+</tr>
+<tr>
+<td>Agent数目</td>
+<td>A的行为是否影响到B的性能最大化</td>
+<td>单Agent&#x2F;多Agent</td>
+</tr>
+<tr>
+<td>随机性</td>
+<td>环境的下一个状态是否完全取决与当前状态和Agent执行的动作</td>
+<td>确定的&#x2F;随机的</td>
+</tr>
+<tr>
+<td>片段性</td>
+<td>下一个片段是否依赖于上一个片段采取的行动</td>
+<td>片段式&#x2F;延续式</td>
+</tr>
+<tr>
+<td>动态性</td>
+<td>环境在Agent计算时候是否会变化</td>
+<td>静态&#x2F;动态</td>
+</tr>
+<tr>
+<td>连续性</td>
+<td>状态是否连续性变化</td>
+<td>离散&#x2F;连续</td>
+</tr>
+<tr>
+<td>已知与未知  （Agent）</td>
+<td>所有行动的结果是否是给定的</td>
+<td>已知&#x2F;未知</td>
+</tr>
+</tbody></table>
+<h2 id="4-Agent的结构"><a href="#4-Agent的结构" class="headerlink" title="4 Agent的结构"></a>4 Agent的结构</h2><p>Agent程序：将感知信息映射到行动；体系结构：具备物理传感器和执行器的计算装置。</p>
+<p><strong>Agent &#x3D; 体系结构+程序</strong></p>
+<p>本书绝大部分介绍设计Agent的程序。</p>
+<h3 id="4-1-Agent的程序"><a href="#4-1-Agent的程序" class="headerlink" title="4.1 Agent的程序"></a>4.1 Agent的程序</h3><p>Agent的程序以当前感知作为输入，而Agent的函数以整合历史感知信息作为输入。如果Agent的行动依赖于整个感知序列，那么Agent必须要记住感知信息。</p>
+<table>
+<thead>
+<tr>
+<th align="center">四种基本的Agent</th>
+<th align="center">描述</th>
+<th align="center">图示</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">简单反射Agent</td>
+<td align="center">基于当前感知，不关注历史  条件-行为规则  局限：环境需要完全可观察</td>
+<td align="center"><img src="/2021/11/08/AIMP2/2.png"></td>
+</tr>
+<tr>
+<td align="center">基于模型的反射Agent</td>
+<td align="center">跟踪记录历史，维持内部状态  更新内部状态需要的两类知识：独立于Agent发展的信息、Agent的动作如何影响世界的信息</td>
+<td align="center"><img src="/2021/11/08/AIMP2/3.png"></td>
+</tr>
+<tr>
+<td align="center">基于目标的Agent</td>
+<td align="center">目标信息：描述想要到达的状态</td>
+<td align="center"><img src="/2021/11/08/AIMP2/4.png"></td>
+</tr>
+<tr>
+<td align="center">基于效用的Agent</td>
+<td align="center">效用函数：度量性能的内在化  期望效用最大化</td>
+<td align="center"><img src="/2021/11/08/AIMP2/5.png"></td>
+</tr>
+</tbody></table>
+<h3 id="4-2-学习的Agent"><a href="#4-2-学习的Agent" class="headerlink" title="4.2 学习的Agent"></a>4.2 学习的Agent</h3><p>Agent程序的形成需要大量的工作量，所以需要建造可以学习的机器。分为四个部分：</p>
+<ul>
+<li><p>学习元件（负责改进提高）；</p>
+</li>
+<li><p>性能元件（选择外部行动）；</p>
+</li>
+<li><p>评判元件（外部评价）；</p>
+</li>
+<li><p>问题产生器（建议探索性的行动）</p>
+</li>
+</ul>
+<p><img src="/2021/11/08/AIMP2/6.png"></p>
+<h3 id="4-3-Agent程序各种组件之间如何工作"><a href="#4-3-Agent程序各种组件之间如何工作" class="headerlink" title="4.3 Agent程序各种组件之间如何工作"></a>4.3 Agent程序各种组件之间如何工作</h3><p>组件以不同的方式表示环境：</p>
+<ul>
+<li><p><strong>原子</strong>表示，每个状态是不可见的，没有内部结构，算法：搜索和博弈论，隐马尔可夫模型，马尔可夫决策过程。</p>
+</li>
+<li><p><strong>要素</strong>化表示：状态表示为特征的集合，算法：约束满足算法，命题逻辑，规划，Bayesian网。</p>
+</li>
+<li><p><strong>结构化</strong>表示：考察事物之间的关联，算法：关系数据库，一阶逻辑，一阶概率模型，基于知识的学习，自然语言处理。</p>
+<p><img src="/2021/11/08/AIMP2/7.png"></p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" rel="tag"># 人工智能</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/10/18/AIMP3/" rel="prev" title="《Artificial Intelligence： A modern approach》读书笔记——叁">
+      <i class="fa fa-chevron-left"></i> 《Artificial Intelligence： A modern approach》读书笔记——叁
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/12/28/%E6%89%8B%E5%86%99CNN/" rel="next" title="Numpy实现卷积和最大池化">
+      Numpy实现卷积和最大池化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E6%99%BA%E8%83%BD%E7%8E%AF%E5%A2%83"><span class="nav-number">1.</span> <span class="nav-text">第二章 智能环境</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Agent%E5%92%8C%E7%8E%AF%E5%A2%83"><span class="nav-number">1.1.</span> <span class="nav-text">1 Agent和环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%BB%80%E4%B9%88%E6%98%AF%E2%80%9C%E5%A5%BD%E2%80%9D%E7%9A%84%E8%A1%8C%E4%B8%BA%EF%BC%9A%E7%90%86%E6%80%A7%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.2.</span> <span class="nav-text">2 什么是“好”的行为：理性的概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E7%90%86%E6%80%A7"><span class="nav-number">1.2.1.</span> <span class="nav-text">2.1 理性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%85%A8%E7%9F%A5%E8%80%85%E3%80%81%E5%AD%A6%E4%B9%A0%E8%80%85%E5%92%8C%E8%87%AA%E4%B8%BB%E6%80%A7"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.2 全知者、学习者和自主性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E7%8E%AF%E5%A2%83%E7%9A%84%E6%80%A7%E8%B4%A8"><span class="nav-number">1.3.</span> <span class="nav-text">3 环境的性质</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E4%BB%BB%E5%8A%A1%E7%8E%AF%E5%A2%83%E7%9A%84%E8%A7%84%E8%8C%83%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 任务环境的规范描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E4%BB%BB%E5%8A%A1%E7%8E%AF%E5%A2%83%E7%9A%84%E6%80%A7%E8%B4%A8"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 任务环境的性质</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Agent%E7%9A%84%E7%BB%93%E6%9E%84"><span class="nav-number">1.4.</span> <span class="nav-text">4 Agent的结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-Agent%E7%9A%84%E7%A8%8B%E5%BA%8F"><span class="nav-number">1.4.1.</span> <span class="nav-text">4.1 Agent的程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E5%AD%A6%E4%B9%A0%E7%9A%84Agent"><span class="nav-number">1.4.2.</span> <span class="nav-text">4.2 学习的Agent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-Agent%E7%A8%8B%E5%BA%8F%E5%90%84%E7%A7%8D%E7%BB%84%E4%BB%B6%E4%B9%8B%E9%97%B4%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.4.3.</span> <span class="nav-text">4.3 Agent程序各种组件之间如何工作</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xlQ"
+      src="/images/spicy.jpg">
+  <p class="site-author-name" itemprop="name">xlQ</p>
+  <div class="site-description" itemprop="description">AI for ai </div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlQ</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本文介绍利用HuggingFace预训练模型，并在下游数据集上微调，实现文本数据的情感分类任务。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HuggingFace预训练与微调">
+<meta property="og:url" content="http://example.com/2022/03/28/HuggingFace%E9%A2%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E5%BE%AE%E8%B0%83/index.html">
+<meta property="og:site_name" content="HelloBear">
+<meta property="og:description" content="本文介绍利用HuggingFace预训练模型，并在下游数据集上微调，实现文本数据的情感分类任务。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/03/28/HuggingFace%E9%A2%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E5%BE%AE%E8%B0%83/1.png">
+<meta property="og:image" content="http://example.com/2022/03/28/HuggingFace%E9%A2%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E5%BE%AE%E8%B0%83/2.png">
+<meta property="og:image" content="http://example.com/2022/03/28/HuggingFace%E9%A2%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E5%BE%AE%E8%B0%83/3.png">
+<meta property="article:published_time" content="2022-03-28T02:09:17.000Z">
+<meta property="article:modified_time" content="2022-04-07T02:01:29.036Z">
+<meta property="article:author" content="xlQ">
+<meta property="article:tag" content="深度学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/03/28/HuggingFace%E9%A2%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E5%BE%AE%E8%B0%83/1.png">
+
+<link rel="canonical" href="http://example.com/2022/03/28/HuggingFace%E9%A2%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E5%BE%AE%E8%B0%83/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>HuggingFace预训练与微调 | HelloBear</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">HelloBear</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Less is More</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/28/HuggingFace%E9%A2%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E5%BE%AE%E8%B0%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/spicy.jpg">
+      <meta itemprop="name" content="xlQ">
+      <meta itemprop="description" content="AI for ai ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HelloBear">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          HuggingFace预训练与微调
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-03-28 10:09:17" itemprop="dateCreated datePublished" datetime="2022-03-28T10:09:17+08:00">2022-03-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-04-07 10:01:29" itemprop="dateModified" datetime="2022-04-07T10:01:29+08:00">2022-04-07</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文介绍利用HuggingFace预训练模型，并在下游数据集上微调，实现文本数据的情感分类任务。</p>
+<span id="more"></span>
+
+<h1 id="Hugging-Face简介"><a href="#Hugging-Face简介" class="headerlink" title="Hugging Face简介"></a>Hugging Face简介</h1><h1 id="微调"><a href="#微调" class="headerlink" title="微调"></a>微调</h1><p>Hugging Face上针对各种不同的任务类型，提供了很多的预训练模型，这些模型一般都是在很大的数据集合上花费很多人力物力训练出来的，我们只需要下载我们需要的预训练模型，并在自己的任务上进行微调就可以了。</p>
+<p><img src="/2022/03/28/HuggingFace%E9%A2%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E5%BE%AE%E8%B0%83/1.png"></p>
+<h2 id="下载预训练模型以及分词器"><a href="#下载预训练模型以及分词器" class="headerlink" title="下载预训练模型以及分词器"></a>下载预训练模型以及分词器</h2><p>我们进入到Hugging Face的首页，选择<code>Models</code>，找到<code>bert-base-uncased</code>的Bert预训练模型，点击进入，选择<a target="_blank" rel="noopener" href="https://huggingface.co/bert-base-uncased/tree/main">Files and versions</a>，发现里面有一堆文件，我们需要的下载的文件有：config.json文件，pytorch_model.bin文件，以及vocab.txt文件。当然，如果是应用tensorflow框架，下载对应的tf版本模型就好了，下面我们的实践以pytorch为例，但是本质都是一样的。</p>
+<p>下载了以上的信息后，我们就可以加载分词器和预训练模型了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> BertTokenizer, BertConfig, BertForSequenceClassification</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1、加载分词器，其中vocab是vocab.txt文件对应的文件夹</span></span><br><span class="line">tokenizer = BertTokenizer.from_pretrained(vocab_path)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2、加载模型的配置文件，然后加载模型。</span></span><br><span class="line"><span class="comment"># 注意这里需要和下游任务相匹配，这里我们以分类任务为例子</span></span><br><span class="line">config = BertConfig.from_json_file(config_path)  <span class="comment"># 加载bert模型配置信息</span></span><br><span class="line">config.num_labels = n_class  <span class="comment"># 设置分类模型的输出个数</span></span><br><span class="line">model = BertForSequenceClassification.from_pretrained(pretrain_Model_path, config=config)  <span class="comment"># 加载bert分类模型</span></span><br></pre></td></tr></table></figure>
+
+<p>这样，我们就导入了预训练模型。</p>
+<h2 id="下载微博数据集"><a href="#下载微博数据集" class="headerlink" title="下载微博数据集"></a>下载微博数据集</h2><p>我们的下游任务是微博用户的情感分类，该数据集有36万多条数据，包含4种情感，其中喜悦约 20 万条，愤怒、厌恶、低落各约 5 万条。</p>
+<p>数据集地址为：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/SophonPlus/ChineseNlpCorpus/blob/master/datasets/simplifyweibo_4_moods/intro.ipynb">ChineseNlpCorpus&#x2F;intro.ipynb at master · SophonPlus&#x2F;ChineseNlpCorpus · GitHub</a></p>
+<p>用pandas导入数据：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">load_data</span>(<span class="params">path</span>):</span><br><span class="line">    df = pd.read_csv(path)</span><br><span class="line">    text_list = df[<span class="string">&#x27;review&#x27;</span>].to_list()</span><br><span class="line">    labels = df[<span class="string">&#x27;label&#x27;</span>].to_list()</span><br><span class="line">    <span class="keyword">return</span> text_list, labels</span><br><span class="line"></span><br><span class="line">text_list, labels = load_data(train)  <span class="comment"># 加载训练数据集</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="数据集处理"><a href="#数据集处理" class="headerlink" title="数据集处理"></a>数据集处理</h2><p>对数据集的处理包括：划分数据集，tokenize，构建Dataset</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">split_train_val</span>(<span class="params">self, data, labels</span>):</span><br><span class="line">    train_x, val_x, train_y, val_y = train_test_split(data,</span><br><span class="line">                                                      labels,</span><br><span class="line">                                                      test_size=<span class="number">0.2</span>,</span><br><span class="line">                                                      random_state=<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> train_x, val_x, train_y, val_y</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">encode_fn</span>(<span class="params">text_list</span>):</span><br><span class="line">    <span class="comment"># 将text_list embedding成bert模型可用的输入形式</span></span><br><span class="line">    <span class="comment"># text_list:[&#x27;我爱你&#x27;,&#x27;猫不是狗&#x27;]</span></span><br><span class="line">    tokenizer = tokenizer(</span><br><span class="line">        text_list,</span><br><span class="line">        padding=<span class="literal">True</span>,</span><br><span class="line">        truncation=<span class="literal">True</span>,</span><br><span class="line">        max_length=self.max_len,</span><br><span class="line">        return_tensors=<span class="string">&#x27;pt&#x27;</span>  <span class="comment"># 返回的类型为pytorch tensor</span></span><br><span class="line">    )</span><br><span class="line">    input_ids = tokenizer[<span class="string">&#x27;input_ids&#x27;</span>]</span><br><span class="line">    token_type_ids = tokenizer[<span class="string">&#x27;token_type_ids&#x27;</span>]</span><br><span class="line">    attention_mask = tokenizer[<span class="string">&#x27;attention_mask&#x27;</span>]</span><br><span class="line">    <span class="keyword">return</span> input_ids, token_type_ids, attention_mask</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">process_data</span>(<span class="params">text_list, labels</span>):</span><br><span class="line">    input_ids, token_type_ids, attention_mask = encode_fn(text_list)</span><br><span class="line">    labels = torch.tensor(labels)</span><br><span class="line">    data = TensorDataset(input_ids, token_type_ids, attention_mask, labels)</span><br><span class="line">    <span class="keyword">return</span> data</span><br><span class="line"></span><br><span class="line">train_x, val_x, train_y, val_y = split_train_val(text_list, labels)</span><br><span class="line">train = process_data(train_x, train_y)</span><br><span class="line">validation = process_data(val_x, val_y)</span><br></pre></td></tr></table></figure>
+
+<p>现在，我们已经有了预训练的模型，以及为微调准备好了数据集，后面，就可以开始训练了。</p>
+<h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><p>训练的过程，需要注意两个过程，第一是优化器，微调使用的优化器是AdamW，并且采用了warmup机制；第二是单个epoch的内的流程，这个流程和正常的深度学习流程是一样的。这里重点 介绍一下优化器部分。</p>
+<ul>
+<li><p>AdamW</p>
+<p>AdamW与Adam+L2正则化的区别用下面这张图说明，可以看到，使用Adam+L2正则化时候，我们直接将损失函数进行了改写，也就等价于将梯度改写了，这个改写的梯度会用在后续的动量法以及自适应参数中；而AdamW方法则是把L2正则化理解为权重衰减，即假设原目标函数没有变化，而是在最后一步更新的时候，先对参数做一个权值衰减，再更新。</p>
+<p><img src="/2022/03/28/HuggingFace%E9%A2%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E5%BE%AE%E8%B0%83/2.png"></p>
+</li>
+<li><p>warmup</p>
+<p>Warm up是一种学习率的设置方法，其学习率的变化如下图所示。为什么这么设置呢？</p>
+<ul>
+<li>有助于减缓模型在初始阶段对mini-batch的提前过拟合现象，保持分布的平稳</li>
+<li>有助于保持模型深层的稳定性</li>
+</ul>
+<p><img src="/2022/03/28/HuggingFace%E9%A2%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E5%BE%AE%E8%B0%83/3.png" alt="在这里插入图片描述"></p>
+</li>
+</ul>
+<p>总体代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pprint</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> BertTokenizer, BertConfig, BertForSequenceClassification, AdamW, AutoTokenizer, AutoModel</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> get_linear_schedule_with_warmup</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> accuracy_score</span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> classification_report</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> TensorDataset, DataLoader</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyBertModel</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self,</span></span><br><span class="line"><span class="params">                 train,</span></span><br><span class="line"><span class="params">                 vocab_path,</span></span><br><span class="line"><span class="params">                 config_path,</span></span><br><span class="line"><span class="params">                 pretrain_Model_path,</span></span><br><span class="line"><span class="params">                 saveModel_path,</span></span><br><span class="line"><span class="params">                 learning_rate,</span></span><br><span class="line"><span class="params">                 n_class, epochs,</span></span><br><span class="line"><span class="params">                 batch_size,</span></span><br><span class="line"><span class="params">                 val_batch_size,</span></span><br><span class="line"><span class="params">                 max_len,</span></span><br><span class="line"><span class="params">                 gpu=<span class="literal">True</span></span>):</span><br><span class="line">        self.n_class = n_class  <span class="comment"># 类别数</span></span><br><span class="line">        self.max_len = max_len  <span class="comment"># 句子最大长度</span></span><br><span class="line">        self.lr = learning_rate  <span class="comment"># 学习率</span></span><br><span class="line">        self.epochs = epochs</span><br><span class="line"></span><br><span class="line">        self.tokenizer = BertTokenizer.from_pretrained(vocab_path)  <span class="comment"># 加载分词模型</span></span><br><span class="line">        text_list, labels = self.load_data(train)  <span class="comment"># 加载训练数据集</span></span><br><span class="line">        train_x, val_x, train_y, val_y = self.split_train_val(text_list, labels)</span><br><span class="line">        self.train = self.process_data(train_x, train_y)</span><br><span class="line">        self.validation = self.process_data(val_x, val_y)</span><br><span class="line">        self.batch_size = batch_size  <span class="comment"># 训练集的batch_size</span></span><br><span class="line">        self.val_batch_size = val_batch_size</span><br><span class="line"></span><br><span class="line">        self.saveModel_path = saveModel_path  <span class="comment"># 模型存储位置</span></span><br><span class="line">        self.gpu = gpu  <span class="comment"># 是否使用gpu</span></span><br><span class="line"></span><br><span class="line">        config = BertConfig.from_json_file(config_path)  <span class="comment"># 加载bert模型配置信息</span></span><br><span class="line">        config.num_labels = n_class  <span class="comment"># 设置分类模型的输出个数</span></span><br><span class="line">        self.model = BertForSequenceClassification.from_pretrained(pretrain_Model_path, config=config)  <span class="comment"># 加载bert分类模型</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Ready!&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span> self.gpu:</span><br><span class="line">            seed = <span class="number">42</span></span><br><span class="line">            random.seed(seed)</span><br><span class="line">            np.random.seed(seed)</span><br><span class="line">            torch.manual_seed(seed)</span><br><span class="line">            torch.cuda.manual_seed_all(seed)</span><br><span class="line">            torch.backends.cudnn.deterministic = <span class="literal">True</span></span><br><span class="line">            self.device = torch.device(<span class="string">&#x27;cuda&#x27;</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.device = <span class="string">&#x27;cpu&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">encode_fn</span>(<span class="params">self, text_list</span>):</span><br><span class="line">        <span class="comment"># 将text_list embedding成bert模型可用的输入形式</span></span><br><span class="line">        <span class="comment"># text_list:[&#x27;我爱你&#x27;,&#x27;猫不是狗&#x27;]</span></span><br><span class="line">        tokenizer = self.tokenizer(</span><br><span class="line">            text_list,</span><br><span class="line">            padding=<span class="literal">True</span>,</span><br><span class="line">            truncation=<span class="literal">True</span>,</span><br><span class="line">            max_length=self.max_len,</span><br><span class="line">            return_tensors=<span class="string">&#x27;pt&#x27;</span>  <span class="comment"># 返回的类型为pytorch tensor</span></span><br><span class="line">        )</span><br><span class="line">        input_ids = tokenizer[<span class="string">&#x27;input_ids&#x27;</span>]</span><br><span class="line">        token_type_ids = tokenizer[<span class="string">&#x27;token_type_ids&#x27;</span>]</span><br><span class="line">        attention_mask = tokenizer[<span class="string">&#x27;attention_mask&#x27;</span>]</span><br><span class="line">        <span class="keyword">return</span> input_ids, token_type_ids, attention_mask</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">load_data</span>(<span class="params">self, path</span>):</span><br><span class="line">        df = pd.read_csv(path)</span><br><span class="line">        text_list = df[<span class="string">&#x27;review&#x27;</span>].to_list()</span><br><span class="line">        labels = df[<span class="string">&#x27;label&#x27;</span>].to_list()</span><br><span class="line">        <span class="keyword">return</span> text_list, labels</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">process_data</span>(<span class="params">self, text_list, labels</span>):</span><br><span class="line">        input_ids, token_type_ids, attention_mask = self.encode_fn(text_list)</span><br><span class="line">        labels = torch.tensor(labels)</span><br><span class="line">        data = TensorDataset(input_ids, token_type_ids, attention_mask, labels)</span><br><span class="line">        <span class="keyword">return</span> data</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">split_train_val</span>(<span class="params">self, data, labels</span>):</span><br><span class="line">        train_x, val_x, train_y, val_y = train_test_split(data,</span><br><span class="line">                                                          labels,</span><br><span class="line">                                                          test_size=<span class="number">0.2</span>,</span><br><span class="line">                                                          random_state=<span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> train_x, val_x, train_y, val_y</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">flat_accuracy</span>(<span class="params">self, preds, labels</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;A function for calculating accuracy scores&quot;&quot;&quot;</span></span><br><span class="line">        pred_flat = np.argmax(preds, axis=<span class="number">1</span>).flatten()</span><br><span class="line">        labels_flat = labels.flatten()</span><br><span class="line">        <span class="keyword">return</span> accuracy_score(labels_flat, pred_flat)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">train_model</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="comment"># 训练模型</span></span><br><span class="line">        <span class="keyword">if</span> self.gpu:</span><br><span class="line">            self.model.cuda()</span><br><span class="line">        optimizer = torch.optim.AdamW(self.model.parameters(), lr=self.lr)</span><br><span class="line">        trainData = DataLoader(self.train, batch_size=self.batch_size, shuffle=<span class="literal">True</span>)  <span class="comment"># 处理成多个batch的形式</span></span><br><span class="line">        valData = DataLoader(self.validation, batch_size=self.val_batch_size, shuffle=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">        total_steps = <span class="built_in">len</span>(trainData) * self.epochs</span><br><span class="line">        scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=<span class="number">0</span>, num_training_steps=total_steps)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span>(self.epochs):</span><br><span class="line">            self.model.train()</span><br><span class="line">            total_loss, total_val_loss = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">            total_eval_accuracy = <span class="number">0</span></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;epoch:&#x27;</span>, epoch, <span class="string">&#x27;, step_number:&#x27;</span>, <span class="built_in">len</span>(trainData))</span><br><span class="line">            <span class="comment"># 训练</span></span><br><span class="line">            <span class="keyword">for</span> step, batch <span class="keyword">in</span> <span class="built_in">enumerate</span>(trainData):</span><br><span class="line">                outputs = self.model(input_ids=batch[<span class="number">0</span>].to(self.device),</span><br><span class="line">                                     token_type_ids=batch[<span class="number">1</span>].to(self.device),</span><br><span class="line">                                     attention_mask=batch[<span class="number">2</span>].to(self.device),</span><br><span class="line">                                     labels=batch[<span class="number">3</span>].to(self.device)</span><br><span class="line">                                     )  <span class="comment"># 输出loss 和 每个分类对应的输出，softmax后才是预测是对应分类的概率</span></span><br><span class="line">                loss, logits = outputs.loss, outputs.logits</span><br><span class="line">                total_loss += loss.item()</span><br><span class="line">                loss.backward()</span><br><span class="line">                torch.nn.utils.clip_grad_norm_(self.model.parameters(), <span class="number">1.0</span>)</span><br><span class="line">                optimizer.step()</span><br><span class="line">                scheduler.step()</span><br><span class="line">                <span class="keyword">if</span> step % <span class="number">10</span> == <span class="number">0</span> <span class="keyword">and</span> step &gt; <span class="number">0</span>:  <span class="comment"># 每10步输出一下训练的结果，flat_accuracy()会对logits进行softmax</span></span><br><span class="line">                    self.model.<span class="built_in">eval</span>()</span><br><span class="line">                    logits = logits.detach().cpu().numpy()</span><br><span class="line">                    label_ids = batch[<span class="number">3</span>].cuda().data.cpu().numpy()</span><br><span class="line">                    avg_val_accuracy = self.flat_accuracy(logits, label_ids)</span><br><span class="line">                    <span class="built_in">print</span>(<span class="string">&#x27;step:&#x27;</span>, step)</span><br><span class="line">                    <span class="built_in">print</span>(<span class="string">f&#x27;Accuracy: <span class="subst">&#123;avg_val_accuracy:<span class="number">.4</span>f&#125;</span>&#x27;</span>)</span><br><span class="line">                    <span class="built_in">print</span>(<span class="string">&#x27;\n&#x27;</span>)</span><br><span class="line">            <span class="comment"># 每个epoch结束，就使用validation数据集评估一次模型</span></span><br><span class="line">            self.model.<span class="built_in">eval</span>()</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;testing ....&#x27;</span>)</span><br><span class="line">            <span class="keyword">for</span> i, batch <span class="keyword">in</span> <span class="built_in">enumerate</span>(valData):</span><br><span class="line">                <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">                    loss, logits = self.model(input_ids=batch[<span class="number">0</span>].to(self.device),</span><br><span class="line">                                              token_type_ids=batch[<span class="number">1</span>].to(self.device),</span><br><span class="line">                                              attention_mask=batch[<span class="number">2</span>].to(self.device),</span><br><span class="line">                                              labels=batch[<span class="number">3</span>].to(self.device)</span><br><span class="line">                                              )</span><br><span class="line">                    total_val_loss += loss.item()</span><br><span class="line"></span><br><span class="line">                    logits = logits.detach().cpu().numpy()</span><br><span class="line">                    label_ids = batch[<span class="number">3</span>].cuda().data.cpu().numpy()</span><br><span class="line">                    total_eval_accuracy += self.flat_accuracy(logits, label_ids)</span><br><span class="line"></span><br><span class="line">            avg_train_loss = total_loss / <span class="built_in">len</span>(trainData)</span><br><span class="line">            avg_val_loss = total_val_loss / <span class="built_in">len</span>(valData)</span><br><span class="line">            avg_val_accuracy = total_eval_accuracy / <span class="built_in">len</span>(valData)</span><br><span class="line"></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&#x27;Train loss     : <span class="subst">&#123;avg_train_loss&#125;</span>&#x27;</span>)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&#x27;Validation loss: <span class="subst">&#123;avg_val_loss&#125;</span>&#x27;</span>)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&#x27;Accuracy: <span class="subst">&#123;avg_val_accuracy:<span class="number">.4</span>f&#125;</span>&#x27;</span>)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;\n&#x27;</span>)</span><br><span class="line">            self.save_model(self.saveModel_path + <span class="string">&#x27;-&#x27;</span> + <span class="built_in">str</span>(epoch))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">save_model</span>(<span class="params">self, path</span>):</span><br><span class="line">        <span class="comment"># 保存分词模型和分类模型</span></span><br><span class="line">        self.model.save_pretrained(path)</span><br><span class="line">        self.tokenizer.save_pretrained(path)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">load_model</span>(<span class="params">self, path</span>):</span><br><span class="line">        <span class="comment"># 加载分词模型和分类模型</span></span><br><span class="line">        tokenizer = AutoTokenizer.from_pretrained(path)</span><br><span class="line">        model = BertForSequenceClassification.from_pretrained(path)</span><br><span class="line">        <span class="keyword">return</span> tokenizer, model</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">eval_model</span>(<span class="params">self, Tokenizer, model, text_list, y_true</span>):</span><br><span class="line">        <span class="comment"># 输出模型的召回率、准确率、f1-score</span></span><br><span class="line">        preds = self.predict_batch(Tokenizer, model, text_list)</span><br><span class="line">        <span class="built_in">print</span>(classification_report(y_true, preds))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">predict_batch</span>(<span class="params">self, Tokenizer, model, text_list</span>):</span><br><span class="line">        tokenizer = Tokenizer(</span><br><span class="line">            text_list,</span><br><span class="line">            padding=<span class="literal">True</span>,</span><br><span class="line">            truncation=<span class="literal">True</span>,</span><br><span class="line">            max_length=self.max_len,</span><br><span class="line">            return_tensors=<span class="string">&#x27;pt&#x27;</span>  <span class="comment"># 返回的类型为pytorch tensor</span></span><br><span class="line">        )</span><br><span class="line">        input_ids = tokenizer[<span class="string">&#x27;input_ids&#x27;</span>]</span><br><span class="line">        token_type_ids = tokenizer[<span class="string">&#x27;token_type_ids&#x27;</span>]</span><br><span class="line">        attention_mask = tokenizer[<span class="string">&#x27;attention_mask&#x27;</span>]</span><br><span class="line">        pred_data = TensorDataset(input_ids, token_type_ids, attention_mask)</span><br><span class="line">        pred_dataloader = DataLoader(pred_data, batch_size=self.batch_size, shuffle=<span class="literal">False</span>)</span><br><span class="line">        model = model.to(self.device)</span><br><span class="line">        model.<span class="built_in">eval</span>()</span><br><span class="line">        preds = []</span><br><span class="line">        <span class="keyword">for</span> i, batch <span class="keyword">in</span> <span class="built_in">enumerate</span>(pred_dataloader):</span><br><span class="line">            <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">                outputs = model(input_ids=batch[<span class="number">0</span>].to(self.device),</span><br><span class="line">                                token_type_ids=batch[<span class="number">1</span>].to(self.device),</span><br><span class="line">                                attention_mask=batch[<span class="number">2</span>].to(self.device)</span><br><span class="line">                                )</span><br><span class="line">                logits = outputs[<span class="number">0</span>]</span><br><span class="line">                logits = logits.detach().cpu().numpy()</span><br><span class="line">                preds += <span class="built_in">list</span>(np.argmax(logits, axis=<span class="number">1</span>))</span><br><span class="line">        <span class="keyword">return</span> preds</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    epoch = <span class="number">3</span></span><br><span class="line">    pretrained_path = <span class="string">&quot;./pretrained/bert-base-uncased&quot;</span></span><br><span class="line">    dataset_path = <span class="string">&quot;./datasets&quot;</span></span><br><span class="line">    save_path = <span class="string">&quot;./results&quot;</span></span><br><span class="line">    train_path = os.path.join(dataset_path, <span class="string">&quot;simplifyweibo_4_moods/simplifyweibo_4_moods.csv&quot;</span>)</span><br><span class="line">    save_model_path = os.path.join(save_path)</span><br><span class="line">    bert_tokenizer_path = pretrained_path</span><br><span class="line">    bert_config_path = os.path.join(pretrained_path, <span class="string">&quot;config.json&quot;</span>)</span><br><span class="line">    bert_model_path = os.path.join(pretrained_path, <span class="string">&quot;model&quot;</span>)</span><br><span class="line">    model_name = <span class="string">&quot;bert_weibo&quot;</span></span><br><span class="line">    myBertModel = MyBertModel(</span><br><span class="line">        train=train_path,</span><br><span class="line">        vocab_path=bert_tokenizer_path,</span><br><span class="line">        config_path=bert_config_path,</span><br><span class="line">        pretrain_Model_path=bert_model_path,</span><br><span class="line">        saveModel_path=os.path.join(save_model_path, model_name),</span><br><span class="line">        learning_rate=<span class="number">2e-5</span>,</span><br><span class="line">        n_class=<span class="number">4</span>,</span><br><span class="line">        epochs=epoch,</span><br><span class="line">        batch_size=<span class="number">4</span>,</span><br><span class="line">        val_batch_size=<span class="number">4</span>,</span><br><span class="line">        max_len=<span class="number">100</span>,</span><br><span class="line">        gpu=<span class="literal">True</span></span><br><span class="line">    )</span><br><span class="line">    myBertModel.train_model()</span><br><span class="line">    Tokenizer, model = myBertModel.load_model(myBertModel.saveModel_path + <span class="string">&#x27;-&#x27;</span> + <span class="built_in">str</span>(epoch - <span class="number">1</span>))</span><br><span class="line">    <span class="comment"># text_list, y_true = myBertModel.load_data_predict(&#x27;xxx.csv&#x27;)</span></span><br><span class="line">    <span class="comment"># myBertModel.eval_model(Tokenizer, model,text_list,y_true)</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="预训练"><a href="#预训练" class="headerlink" title="预训练"></a>预训练</h1><p>虽然Hugging Face的本意是实现实现预训练模型的共享，以减少模型的训练时间以及能源消耗，但是有时候有时候为了更好的契合我们的下游任务，我们可能需要自己预训练模型。</p>
+<p>训练自己的bert模型，需要准备三样东西，分别是 语料(数据)，分词器（tokenizer）和模型。</p>
+<h2 id="数据集准备"><a href="#数据集准备" class="headerlink" title="数据集准备"></a>数据集准备</h2><p>用于训练bert模型的语料数据，常见的大规模数据在datasets里面都可以直接下载并加载，如果要使用自己的数据集合，一般是每行为一个样本，样本中间有分隔符。</p>
+<h2 id="构建自己的分词器"><a href="#构建自己的分词器" class="headerlink" title="构建自己的分词器"></a>构建自己的分词器</h2><p>除了对文本进行分词外，还将每个词与相应的input_id对应，同时添加句子分隔符、mask掩码等。一般我们在加载模型的时候，可以选择加载对应的分词器：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tokenizer = AutoTokenizer.from_pretrained(<span class="string">&#x27;roberta-base&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>但是，有的时候我们想自己构建一个分词器，这也非常简单，只需要输入预料文件，输出是一个词表。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tokenizers</span><br><span class="line"><span class="comment"># 创建分词器</span></span><br><span class="line">bwpt = tokenizers.BertWordPieceTokenizer()</span><br><span class="line">filepath = <span class="string">&quot;../excel2txt.txt&quot;</span> <span class="comment"># 语料文件</span></span><br><span class="line"><span class="comment">#训练分词器</span></span><br><span class="line">bwpt.train(</span><br><span class="line">    files=[filepath],</span><br><span class="line">    vocab_size=<span class="number">50000</span>, <span class="comment"># 这里预设定的词语大小不是很重要</span></span><br><span class="line">    min_frequency=<span class="number">1</span>,</span><br><span class="line">    limit_alphabet=<span class="number">1000</span></span><br><span class="line">)</span><br><span class="line"><span class="comment"># 保存训练后的模型词表</span></span><br><span class="line">bwpt.save_model(<span class="string">&#x27;./pretrained_models/&#x27;</span>)</span><br><span class="line"><span class="comment">#output： [&#x27;./pretrained_models/vocab.txt&#x27;]</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载刚刚训练的tokenizer</span></span><br><span class="line">tokenizer=BertTokenizer(vocab_file=<span class="string">&#x27;./pretrained_models/vocab.txt&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="加载模型"><a href="#加载模型" class="headerlink" title="加载模型"></a>加载模型</h2><p>这里加载模式的过程和预训练时一致，也是需要下载对应的模型配置和权重文件。这里，如果我们使用自己设置的分词器，那么需要更改model的embedding矩阵。做法如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> (</span><br><span class="line">    CONFIG_MAPPING,MODEL_FOR_MASKED_LM_MAPPING, AutoConfig,</span><br><span class="line">    AutoModelForMaskedLM,</span><br><span class="line">    AutoTokenizer,DataCollatorForLanguageModeling,HfArgumentParser,Trainer,TrainingArguments,set_seed,</span><br><span class="line">)</span><br><span class="line"><span class="comment"># 自己修改部分配置参数</span></span><br><span class="line">config_kwargs = &#123;</span><br><span class="line">    <span class="string">&quot;cache_dir&quot;</span>: <span class="literal">None</span>,</span><br><span class="line">    <span class="string">&quot;revision&quot;</span>: <span class="string">&#x27;main&#x27;</span>,</span><br><span class="line">    <span class="string">&quot;use_auth_token&quot;</span>: <span class="literal">None</span>,</span><br><span class="line"><span class="comment">#      &quot;hidden_size&quot;: 512,</span></span><br><span class="line"><span class="comment">#     &quot;num_attention_heads&quot;: 4,</span></span><br><span class="line">    <span class="string">&quot;hidden_dropout_prob&quot;</span>: <span class="number">0.2</span>,</span><br><span class="line"><span class="comment">#     &quot;vocab_size&quot;: 863 # 自己设置词汇大小</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># 将模型的配置参数载入</span></span><br><span class="line">config = AutoConfig.from_pretrained(<span class="string">&#x27;./tmp/bert-base-case/&#x27;</span>, **config_kwargs)</span><br><span class="line"><span class="comment"># 载入预训练模型</span></span><br><span class="line">model = AutoModelForMaskedLM.from_pretrained(</span><br><span class="line">            <span class="string">&#x27;../tmp/bert-base-case/&#x27;</span>,</span><br><span class="line">            from_tf=<span class="built_in">bool</span>(<span class="string">&quot;.ckpt&quot;</span> <span class="keyword">in</span> <span class="string">&#x27;roberta-base&#x27;</span>), <span class="comment"># 支持tf的权重</span></span><br><span class="line">            config=config,</span><br><span class="line">            cache_dir=<span class="literal">None</span>, </span><br><span class="line">            revision=<span class="string">&#x27;main&#x27;</span>,</span><br><span class="line">            use_auth_token=<span class="literal">None</span>,</span><br><span class="line">        )</span><br><span class="line">model.resize_token_embeddings(<span class="built_in">len</span>(tokenizer))</span><br><span class="line"><span class="comment">#output:Embedding(863, 768, padding_idx=1)</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="训练-1"><a href="#训练-1" class="headerlink" title="训练"></a>训练</h2><p>经过前面的准备，我们终于可以预训练了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> csv</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span>  BertTokenizer, WEIGHTS_NAME,TrainingArguments</span><br><span class="line"><span class="keyword">from</span> model.modeling_nezha <span class="keyword">import</span> NeZhaForSequenceClassification,NeZhaForMaskedLM</span><br><span class="line"><span class="keyword">from</span> model.configuration_nezha <span class="keyword">import</span> NeZhaConfig</span><br><span class="line"><span class="keyword">import</span> tokenizers</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> datasets <span class="keyword">import</span> load_dataset,Dataset </span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> (</span><br><span class="line">    CONFIG_MAPPING,</span><br><span class="line">    MODEL_FOR_MASKED_LM_MAPPING,</span><br><span class="line">    AutoConfig,</span><br><span class="line">    AutoModelForMaskedLM,</span><br><span class="line">    AutoTokenizer,</span><br><span class="line">    DataCollatorForLanguageModeling,</span><br><span class="line">    HfArgumentParser,</span><br><span class="line">    Trainer,</span><br><span class="line">    TrainingArguments,</span><br><span class="line">    set_seed,</span><br><span class="line">    LineByLineTextDataset</span><br><span class="line">)</span><br><span class="line"><span class="comment">## 制作自己的tokenizer</span></span><br><span class="line">bwpt = tokenizers.BertWordPieceTokenizer()</span><br><span class="line">filepath = <span class="string">&quot;../excel2txt.txt&quot;</span> <span class="comment"># 和本文第一部分的语料格式一致</span></span><br><span class="line">bwpt.train(</span><br><span class="line">    files=[filepath],</span><br><span class="line">    vocab_size=<span class="number">50000</span>,</span><br><span class="line">    min_frequency=<span class="number">1</span>,</span><br><span class="line">    limit_alphabet=<span class="number">1000</span></span><br><span class="line">)</span><br><span class="line">bwpt.save_model(<span class="string">&#x27;./pretrained_models/&#x27;</span>) <span class="comment"># 得到vocab.txt</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## 加载tokenizer和模型</span></span><br><span class="line">model_path=<span class="string">&#x27;../tmp/nezha/&#x27;</span></span><br><span class="line">token_path=<span class="string">&#x27;./pretrained_models/vocab.txt&#x27;</span></span><br><span class="line">tokenizer =  BertTokenizer.from_pretrained(token_path, do_lower_case=<span class="literal">True</span>)</span><br><span class="line">config=NeZhaConfig.from_pretrained(model_path)</span><br><span class="line">model=NeZhaForMaskedLM.from_pretrained(model_path, config=config)</span><br><span class="line">model.resize_token_embeddings(<span class="built_in">len</span>(tokenizer))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 通过LineByLineTextDataset接口 加载数据 #长度设置为128, # 这里file_path于本文第一部分的语料格式一致</span></span><br><span class="line">train_dataset=LineByLineTextDataset(tokenizer=tokenizer,file_path=<span class="string">&#x27;../tmp/all_data_txt.txt&#x27;</span>,block_size=<span class="number">128</span>) </span><br><span class="line"><span class="comment"># MLM模型的数据DataCollator</span></span><br><span class="line">data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=<span class="literal">True</span>, mlm_probability=<span class="number">0.15</span>)</span><br><span class="line"><span class="comment"># 训练参数</span></span><br><span class="line">pretrain_batch_size=<span class="number">64</span></span><br><span class="line">num_train_epochs=<span class="number">300</span></span><br><span class="line">training_args = TrainingArguments(</span><br><span class="line">    output_dir=<span class="string">&#x27;./outputs/&#x27;</span>, overwrite_output_dir=<span class="literal">True</span>, num_train_epochs=num_train_epochs, learning_rate=<span class="number">6e-5</span>,</span><br><span class="line">    per_device_train_batch_size=pretrain_batch_size,, save_total_limit=<span class="number">10</span>)<span class="comment"># save_steps=10000</span></span><br><span class="line"><span class="comment"># 通过Trainer接口训练模型</span></span><br><span class="line">trainer = Trainer(</span><br><span class="line">    model=model, args=training_args, data_collator=data_collator, train_dataset=train_dataset)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开始训练</span></span><br><span class="line">trainer.train(<span class="literal">True</span>)</span><br><span class="line">trainer.save_model(<span class="string">&#x27;./outputs/&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文分为两个部分，第一部分介绍如何利用Hugging Face中提供的预训练模型，做一些微调以实现我们的下游任务；第二部分则是介绍如何自己训练一个预训练模型。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p>1、<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1764072">hugging face-基于pytorch-bert的中文文本分类 - 云+社区 - 腾讯云</a></p>
+<p>2、<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_26593695/article/details/115338593">使用huggingface的Transformers预训练自己的bert模型+FineTuning_Wisley.Wang的博客-CSDN博客_huggingface重新训练bert</a></p>
+<p>3、<a target="_blank" rel="noopener" href="https://www.fast.ai/2018/07/02/adam-weight-decay/">AdamW</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag"># 深度学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/24/python%E7%9A%84%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/" rel="prev" title="python的进程与线程">
+      <i class="fa fa-chevron-left"></i> python的进程与线程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/30/%E4%BD%8D%E8%BF%90%E7%AE%97/" rel="next" title="位运算">
+      位运算 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Hugging-Face%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">Hugging Face简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BE%AE%E8%B0%83"><span class="nav-number">2.</span> <span class="nav-text">微调</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E4%BB%A5%E5%8F%8A%E5%88%86%E8%AF%8D%E5%99%A8"><span class="nav-number">2.1.</span> <span class="nav-text">下载预训练模型以及分词器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E5%BE%AE%E5%8D%9A%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">2.2.</span> <span class="nav-text">下载微博数据集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E5%A4%84%E7%90%86"><span class="nav-number">2.3.</span> <span class="nav-text">数据集处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83"><span class="nav-number">2.4.</span> <span class="nav-text">训练</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A2%84%E8%AE%AD%E7%BB%83"><span class="nav-number">3.</span> <span class="nav-text">预训练</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E5%87%86%E5%A4%87"><span class="nav-number">3.1.</span> <span class="nav-text">数据集准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E5%88%86%E8%AF%8D%E5%99%A8"><span class="nav-number">3.2.</span> <span class="nav-text">构建自己的分词器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A0%E8%BD%BD%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.3.</span> <span class="nav-text">加载模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83-1"><span class="nav-number">3.4.</span> <span class="nav-text">训练</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xlQ"
+      src="/images/spicy.jpg">
+  <p class="site-author-name" itemprop="name">xlQ</p>
+  <div class="site-description" itemprop="description">AI for ai </div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlQ</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

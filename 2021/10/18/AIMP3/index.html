@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本部分介绍《Artificial Intelligence： A modern approach》的第三部分，通过搜索进行问题求解，包括非启发式搜索和启发式搜索。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Artificial Intelligence： A modern approach》读书笔记——叁">
+<meta property="og:url" content="http://example.com/2021/10/18/AIMP3/index.html">
+<meta property="og:site_name" content="HelloBear">
+<meta property="og:description" content="本部分介绍《Artificial Intelligence： A modern approach》的第三部分，通过搜索进行问题求解，包括非启发式搜索和启发式搜索。">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-10-18T02:39:46.000Z">
+<meta property="article:modified_time" content="2023-04-09T09:17:44.986Z">
+<meta property="article:author" content="xlQ">
+<meta property="article:tag" content="人工智能">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/10/18/AIMP3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>《Artificial Intelligence： A modern approach》读书笔记——叁 | HelloBear</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">HelloBear</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Less is More</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/18/AIMP3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/spicy.jpg">
+      <meta itemprop="name" content="xlQ">
+      <meta itemprop="description" content="AI for ai ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HelloBear">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Artificial Intelligence： A modern approach》读书笔记——叁
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-10-18 10:39:46" itemprop="dateCreated datePublished" datetime="2021-10-18T10:39:46+08:00">2021-10-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-09 17:17:44" itemprop="dateModified" datetime="2023-04-09T17:17:44+08:00">2023-04-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本部分介绍《Artificial Intelligence： A modern approach》的第三部分，通过搜索进行问题求解，包括非启发式搜索和启发式搜索。</p>
+<span id="more"></span>
+
+<h1 id="第三章-通过搜索进行问题求解"><a href="#第三章-通过搜索进行问题求解" class="headerlink" title="第三章 通过搜索进行问题求解"></a>第三章 通过搜索进行问题求解</h1><p>基于目标的agent：问题求解Agent和规划Agent，本部分介绍问题求解Agent。</p>
+<p>包括：问题和解的描述；通用的搜索算法（无信息的（uninformed）和有信息的（informed）），本章假设问题的解是有固定的顺序的行动。</p>
+<h2 id="1-问题求解agent"><a href="#1-问题求解agent" class="headerlink" title="1 问题求解agent"></a>1 问题求解agent</h2><p>假设一个agent要最大化一个性能度量——目标形式化；给目标定下需要考虑哪些行动和状态——问题形式化。暂时考虑环境是确定的和可以观察的，任务环境是离散的。</p>
+<p>基于这些假设，问题的解总是一个行动的固定序列。为了求解这个序列，就需要过程搜索算法。</p>
+<h3 id="1-1-定义问题和解"><a href="#1-1-定义问题和解" class="headerlink" title="1.1 定义问题和解"></a>1.1 定义问题和解</h3><p>一个问题包括如下5个部分：</p>
+<ul>
+<li><p>Agent的初始状态</p>
+</li>
+<li><p>表述Agent可能的行动</p>
+</li>
+<li><p>转移模型：已知现在状态和动作，得到后继状态</p>
+</li>
+<li><p>目标测试：确定给定的状态是不是目标状态</p>
+</li>
+<li><p>路径耗散：为每条路径赋一个耗散值（代价），是单步耗散的总和</p>
+</li>
+</ul>
+<p>上述五个部分组成一个数据结构，作为问题求解算法的一个输入，问题的解就是从初始状态到目标状态的一组行动序列，解的质量由路径耗散函数度量，所有解中路径耗散最小的解即为最优解。</p>
+<h3 id="1-2-问题的形式化"><a href="#1-2-问题的形式化" class="headerlink" title="1.2 问题的形式化"></a>1.2 问题的形式化</h3><p>对现实问题进行合理的抽象化，既不能太具体，导致问题过于复杂；又不能太抽象，不具备现实参考价值</p>
+<h2 id="2-问题实例"><a href="#2-问题实例" class="headerlink" title="2 问题实例"></a>2 问题实例</h2><p> 书中给了几个案例，本笔记没有给出。</p>
+<h2 id="3-通过搜索求解"><a href="#3-通过搜索求解" class="headerlink" title="3 通过搜索求解"></a>3 通过搜索求解</h2><p>解是一个行动序列，可能的行动序列是搜索树中根节点的初始状态出发，连线表示动作，节点表示问题状态空间中的状态。父节点出发可以得到子节点，叶节点是所有待扩展的节点。数搜索是无限的，因为包括环路，所以添加一个探索集，用于标注已经探索过的节点集合——图搜索。</p>
+<h3 id="3-1-搜索算法基础"><a href="#3-1-搜索算法基础" class="headerlink" title="3.1 搜索算法基础"></a>3.1 搜索算法基础</h3><p>需要一个数据结构用于记录搜索树的构造过程，对于每个节点，定义的数据结构包括：</p>
+<ul>
+<li><p>n.STATE：对应搜索空间中的状态</p>
+</li>
+<li><p>n.PARENT：产生该节点的父节点</p>
+</li>
+<li><p>n.ACTION：父节点生成该节点时的动作</p>
+</li>
+<li><p>n.PATH-COST：从初始状态到达该节点的路径消耗。</p>
+</li>
+</ul>
+<p>节点VS状态：节点时用来表示搜索数的数据结构，状态对应于现实世界中的一个匹配。如果同一个状态可以通过两种不同的路径生成，则两个不同的节点包含同样的世界状态。</p>
+<h3 id="3-2-问题求解算法的性能"><a href="#3-2-问题求解算法的性能" class="headerlink" title="3.2 问题求解算法的性能"></a>3.2 问题求解算法的性能</h3><ul>
+<li><p><strong>完备性</strong>：问题有解时，能否保证找到解</p>
+</li>
+<li><p><strong>最优性</strong>：搜索策略能否找到最优解</p>
+</li>
+<li><p><strong>时间复杂度</strong>：找到解需要花费多长时间</p>
+</li>
+<li><p><strong>空间复杂度</strong>：在执行过程中需要多少内存。</p>
+</li>
+</ul>
+<p>度量标准：d，分支因子，任何节点的最多后继数；d，目标节点所在的最浅深度；m，状态空间中任何路径的最大长度。$C^\star$代表最优解的代价，假设每个行动的代价至少为$\epsilon$</p>
+<h2 id="4-无信息的搜索策略"><a href="#4-无信息的搜索策略" class="headerlink" title="4 无信息的搜索策略"></a>4 无信息的搜索策略</h2><p>有信息（启发式）：知道一个非目标状态是否比其他状态 “更有希望”接近目标。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th align="center">宽度优先</th>
+<th align="center">代价一致</th>
+<th align="center">深度优先</th>
+<th align="center">深度受限</th>
+<th align="center">迭代加深</th>
+<th align="center">双向搜索</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>完备性</td>
+<td align="center">是</td>
+<td align="center">是</td>
+<td align="center">是</td>
+<td align="center">否</td>
+<td align="center">是</td>
+<td align="center">否</td>
+</tr>
+<tr>
+<td>最优性</td>
+<td align="center">是</td>
+<td align="center">是</td>
+<td align="center">否</td>
+<td align="center">否</td>
+<td align="center">是</td>
+<td align="center">否</td>
+</tr>
+<tr>
+<td>时间复杂度</td>
+<td align="center">$O(b^d)$</td>
+<td align="center">$O(b^{1+[C^\star&#x2F;\epsilon]})$</td>
+<td align="center">$O(b^m)$</td>
+<td align="center">$O(b^l)$</td>
+<td align="center">$O(b^d)$</td>
+<td align="center">$O(b^{d&#x2F;2})$</td>
+</tr>
+<tr>
+<td>空间复杂度</td>
+<td align="center">$O(b^d)$</td>
+<td align="center">$O(b^{1+[C^\star&#x2F;\epsilon]})$</td>
+<td align="center">$O(bm)$</td>
+<td align="center">$O(bl)$</td>
+<td align="center">$O(bd)$</td>
+<td align="center">$O(b^{d&#x2F;2})$</td>
+</tr>
+<tr>
+<td>算法描述</td>
+<td align="center">先扩展根节点，然后扩展他们的后继，下一层的任何节点扩展之前，本层深度的节点都已经扩展完。</td>
+<td align="center">不在扩展深度最浅的节点，而是扩展路径消耗最小的节点。</td>
+<td align="center">扩展数的当前边缘节点集中最深的节点</td>
+<td align="center">对深度优先算法设置界限l</td>
+<td align="center">不断增大深度限制，直到找到目标</td>
+<td align="center">从初始状态和目标开始双向搜索，希望在中点相遇</td>
+</tr>
+<tr>
+<td>其他</td>
+<td align="center">FIFO  目标测试在节点被生成时  空间消耗巨大</td>
+<td align="center">目标测试在节点被选择扩展时  在单步耗散相同时，$O(b^{d+1})$</td>
+<td align="center">LIFO  回溯算法：只产生一个后继，内存!$O(m)$</td>
+<td align="center">根据先验知识，选择一个状态空间的直径  两种失败方式：无解，在深度界限内无解</td>
+<td align="center">首选算法  深度每增加一次，之前前几层算的状态就被重复（影响不大）</td>
+<td align="center">两个小圆的面积比一个大圆（半径之和）要大  从目标开始搜不易实现；  没有明确的目标</td>
+</tr>
+</tbody></table>
+<h2 id="5-有信息（启发式）的搜索策略"><a href="#5-有信息（启发式）的搜索策略" class="headerlink" title="5 有信息（启发式）的搜索策略"></a>5 有信息（启发式）的搜索策略</h2><p>即使用问题本身之外的特定知识辅助搜索。</p>
+<p>考虑最佳优先搜索策略，节点是基于评价函数值被选择扩展的，评价函数$f(n)$是一种代价估计。最佳优先策略和一致代价搜索类似，不过根据f值而不是g值对优先级进行排队。一般最优优先搜索算法的f由启发函数构成，启发函数是在搜索算法中利用问题额外信息的常见形式。</p>
+<p>$h(n)$可采纳：$f(n)$不会高估到达目标的代价，即$f(n)$永远不会超过经过节点n的解的实际代价；</p>
+<p>$h(n)$一致：$h(n)&lt;&#x3D; c(n,a,n’)+h(n’)$,即$h(n)$单调增加</p>
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="center">贪婪最佳优先</th>
+<th align="center">$A^*$搜索</th>
+<th align="center">存储受限</th>
+<th align="left">学习促进搜索</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">完备性</td>
+<td align="center">否</td>
+<td align="center">是（h(n)一致）</td>
+<td align="center"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">最优性</td>
+<td align="center">否</td>
+<td align="center">是（h(n)可采纳）</td>
+<td align="center"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">时间复杂度</td>
+<td align="center">$O(b^m)$</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">空间复杂度</td>
+<td align="center">$O(b^m)$</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">算法描述</td>
+<td align="center">$f(n) &#x3D; h(n) $  只扩展离目标最近的点</td>
+<td align="center">缩小总评估代价  $f(n)&#x3D;g(n)+h(n)$  评价函数是经过节点n的最小代价解的估计代价，扩展评价函数最小的节点</td>
+<td align="center">迭代加升+ $A^*$</td>
+<td align="left">元状态空间</td>
+</tr>
+<tr>
+<td align="left">其他</td>
+<td align="center">可能导致死循环，下降的幅度取决于特定的问题和启发式函数的质量</td>
+<td align="center">从起始点发散，以f值增长的同心带状的方式添加节点</td>
+<td align="center"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<h2 id="6-启发式函数"><a href="#6-启发式函数" class="headerlink" title="6 启发式函数"></a>6 启发式函数</h2><h3 id="6-1-启发式函数的精确度对性能的影响"><a href="#6-1-启发式函数的精确度对性能的影响" class="headerlink" title="6.1 启发式函数的精确度对性能的影响"></a>6.1 启发式函数的精确度对性能的影响</h3><p>有效分支因子：总结点数为N，解的深度为d，那么$b^{*}$是深度为d的标准搜索树为了能够包括N+1个节点所必须的分支因子，即：</p>
+<p>$N+1 &#x3D; 1 + b^*+ （b^<em>）^2+ （b^</em>）^3+ （b^<em>）^4+……（b^</em>）^d$</p>
+<h3 id="6-2-从松弛问题的角度出发设计可采纳的启发式"><a href="#6-2-从松弛问题的角度出发设计可采纳的启发式" class="headerlink" title="6.2 从松弛问题的角度出发设计可采纳的启发式"></a>6.2 从松弛问题的角度出发设计可采纳的启发式</h3><p>减少了行动限制的问题称为松弛问题，松弛问题的状态空间图是原有状态空间图的超图。松弛问题增加了状态空间的边，原有问题中的任一最优解同样是松弛问题的最优解，但是松弛问题可能纯在更好的解，因为增加的边可能导致捷径。因此，松弛问题的最优解代价是原问题的可采纳的启发式。</p>
+<p>对不同的启发式集合，通过选取其中的最大值，构成新的启发式比所以的成员都更有优势。</p>
+<h3 id="6-3-从子问题出发设计可采纳的启发式：模式数据库"><a href="#6-3-从子问题出发设计可采纳的启发式：模式数据库" class="headerlink" title="6.3 从子问题出发设计可采纳的启发式：模式数据库"></a>6.3 从子问题出发设计可采纳的启发式：模式数据库</h3><p>模式数据库就是对每个可能的子问题实例存储解代价，对搜索中遇到的每个完备状态计算其可采纳的启发式。</p>
+<h3 id="6-4-从经验中学习启发式"><a href="#6-4-从经验中学习启发式" class="headerlink" title="6.4 从经验中学习启发式"></a>6.4 从经验中学习启发式</h3><p>直接构造函数用于估计$h(n)$。这个函数在不断的求解问题过程中学习，最终实现预测探索过程中所出现的其他状态的解代价。可以使用神经网络和决策树等技术实现。</p>
+<p>如果在状态描述外还能刻画给定状态的特征，则可以采用归纳学习的方法，通过回归等方法计算启发式。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" rel="tag"># 人工智能</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/10/10/AIMP1/" rel="prev" title="《Artificial Intelligence： A modern approach》读书笔记——壹">
+      <i class="fa fa-chevron-left"></i> 《Artificial Intelligence： A modern approach》读书笔记——壹
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/08/AIMP2/" rel="next" title="《Artificial Intelligence： A modern approach》读书笔记——贰">
+      《Artificial Intelligence： A modern approach》读书笔记——贰 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%AB%A0-%E9%80%9A%E8%BF%87%E6%90%9C%E7%B4%A2%E8%BF%9B%E8%A1%8C%E9%97%AE%E9%A2%98%E6%B1%82%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">第三章 通过搜索进行问题求解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E9%97%AE%E9%A2%98%E6%B1%82%E8%A7%A3agent"><span class="nav-number">1.1.</span> <span class="nav-text">1 问题求解agent</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E5%AE%9A%E4%B9%89%E9%97%AE%E9%A2%98%E5%92%8C%E8%A7%A3"><span class="nav-number">1.1.1.</span> <span class="nav-text">1.1 定义问题和解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E9%97%AE%E9%A2%98%E7%9A%84%E5%BD%A2%E5%BC%8F%E5%8C%96"><span class="nav-number">1.1.2.</span> <span class="nav-text">1.2 问题的形式化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%97%AE%E9%A2%98%E5%AE%9E%E4%BE%8B"><span class="nav-number">1.2.</span> <span class="nav-text">2 问题实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E9%80%9A%E8%BF%87%E6%90%9C%E7%B4%A2%E6%B1%82%E8%A7%A3"><span class="nav-number">1.3.</span> <span class="nav-text">3 通过搜索求解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-%E6%90%9C%E7%B4%A2%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80"><span class="nav-number">1.3.1.</span> <span class="nav-text">3.1 搜索算法基础</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-%E9%97%AE%E9%A2%98%E6%B1%82%E8%A7%A3%E7%AE%97%E6%B3%95%E7%9A%84%E6%80%A7%E8%83%BD"><span class="nav-number">1.3.2.</span> <span class="nav-text">3.2 问题求解算法的性能</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E6%97%A0%E4%BF%A1%E6%81%AF%E7%9A%84%E6%90%9C%E7%B4%A2%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.</span> <span class="nav-text">4 无信息的搜索策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E6%9C%89%E4%BF%A1%E6%81%AF%EF%BC%88%E5%90%AF%E5%8F%91%E5%BC%8F%EF%BC%89%E7%9A%84%E6%90%9C%E7%B4%A2%E7%AD%96%E7%95%A5"><span class="nav-number">1.5.</span> <span class="nav-text">5 有信息（启发式）的搜索策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E5%90%AF%E5%8F%91%E5%BC%8F%E5%87%BD%E6%95%B0"><span class="nav-number">1.6.</span> <span class="nav-text">6 启发式函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-%E5%90%AF%E5%8F%91%E5%BC%8F%E5%87%BD%E6%95%B0%E7%9A%84%E7%B2%BE%E7%A1%AE%E5%BA%A6%E5%AF%B9%E6%80%A7%E8%83%BD%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-number">1.6.1.</span> <span class="nav-text">6.1 启发式函数的精确度对性能的影响</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-%E4%BB%8E%E6%9D%BE%E5%BC%9B%E9%97%AE%E9%A2%98%E7%9A%84%E8%A7%92%E5%BA%A6%E5%87%BA%E5%8F%91%E8%AE%BE%E8%AE%A1%E5%8F%AF%E9%87%87%E7%BA%B3%E7%9A%84%E5%90%AF%E5%8F%91%E5%BC%8F"><span class="nav-number">1.6.2.</span> <span class="nav-text">6.2 从松弛问题的角度出发设计可采纳的启发式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-%E4%BB%8E%E5%AD%90%E9%97%AE%E9%A2%98%E5%87%BA%E5%8F%91%E8%AE%BE%E8%AE%A1%E5%8F%AF%E9%87%87%E7%BA%B3%E7%9A%84%E5%90%AF%E5%8F%91%E5%BC%8F%EF%BC%9A%E6%A8%A1%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">1.6.3.</span> <span class="nav-text">6.3 从子问题出发设计可采纳的启发式：模式数据库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4-%E4%BB%8E%E7%BB%8F%E9%AA%8C%E4%B8%AD%E5%AD%A6%E4%B9%A0%E5%90%AF%E5%8F%91%E5%BC%8F"><span class="nav-number">1.6.4.</span> <span class="nav-text">6.4 从经验中学习启发式</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xlQ"
+      src="/images/spicy.jpg">
+  <p class="site-author-name" itemprop="name">xlQ</p>
+  <div class="site-description" itemprop="description">AI for ai </div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlQ</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

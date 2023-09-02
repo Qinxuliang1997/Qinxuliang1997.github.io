@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="K-means是常见的无监督聚类算法，其中k是用户指定的要创建簇的数目。该方法k个随机的质心开始，算法会计算每个点到质心的距离，每个点会被分配到距其最近的簇质心，然后接着基于新分配到的点更新簇质心。 本文介绍该算法的原理以及代码实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="K-means">
+<meta property="og:url" content="http://example.com/2022/03/20/K-means/index.html">
+<meta property="og:site_name" content="HelloBear">
+<meta property="og:description" content="K-means是常见的无监督聚类算法，其中k是用户指定的要创建簇的数目。该方法k个随机的质心开始，算法会计算每个点到质心的距离，每个点会被分配到距其最近的簇质心，然后接着基于新分配到的点更新簇质心。 本文介绍该算法的原理以及代码实现。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/03/20/K-means/1.png">
+<meta property="og:image" content="http://example.com/2022/03/20/K-means/2.png">
+<meta property="article:published_time" content="2022-03-20T03:11:48.000Z">
+<meta property="article:modified_time" content="2022-11-08T04:20:39.369Z">
+<meta property="article:author" content="xlQ">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/03/20/K-means/1.png">
+
+<link rel="canonical" href="http://example.com/2022/03/20/K-means/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>K-means | HelloBear</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">HelloBear</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Less is More</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/20/K-means/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/spicy.jpg">
+      <meta itemprop="name" content="xlQ">
+      <meta itemprop="description" content="AI for ai ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HelloBear">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          K-means
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-03-20 11:11:48" itemprop="dateCreated datePublished" datetime="2022-03-20T11:11:48+08:00">2022-03-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-11-08 12:20:39" itemprop="dateModified" datetime="2022-11-08T12:20:39+08:00">2022-11-08</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>K-means是常见的无监督聚类算法，其中k是用户指定的要创建簇的数目。该方法k个随机的质心开始，算法会计算每个点到质心的距离，每个点会被分配到距其最近的簇质心，然后接着基于新分配到的点更新簇质心。</p>
+<p>本文介绍该算法的原理以及代码实现。</p>
+<span id="more"></span>
+
+<h1 id="K-means算法简介"><a href="#K-means算法简介" class="headerlink" title="K-means算法简介"></a>K-means算法简介</h1><h2 id="算法原理"><a href="#算法原理" class="headerlink" title="算法原理"></a>算法原理</h2><p>对于一组没有标签的数据$x_1$，，，$x_n$，目标是将其划分为K个类别。</p>
+<p>每个类别的中心是$\mu_k$，对于每个数据点$x_n$。</p>
+<p>引入二值指示变量$r_{nk}&#x3D;0,1$，其中k的取值为1到n，表示数据点属于K个聚类中的哪一个。</p>
+<p>从而如果数据点$x_n$被分配到类别$k$，那么</p>
+<p>$$<br>r_{nk}&#x3D;1<br>$$</p>
+<p>若$j\ne k$，则</p>
+<p>$$<br>r_{nj}&#x3D;0<br>$$</p>
+<p>目标函数为失真度量：</p>
+<p>$$<br>J &#x3D; \sum_{n &#x3D; 1}^N{\sum_{k &#x3D; 1}^{K}{r_{nk} |\mathbf{x}_n - \mathbf{\mu}_k |^{2}}}<br>$$</p>
+<p>表示的是每个数据点到与它被分配的向量$\mu_k$之间的距离平方和。为了使得$J$最小化，分两步：</p>
+<ul>
+<li><p><strong>E</strong>步骤：保持类别中心不变，关于$r_{nk}$最小化目标函数（计算KN次，每次将样本分配给距离最近的中心）</p>
+</li>
+<li><p><strong>M</strong>步骤：保持划分结果不变，关于$\mu_{k}$最小化J，即求导数，得到：</p>
+<p>$$<br>\mu_{k} &#x3D; \frac{\sum_{n}{r_{nk}\mathbf{x}_n} }{\sum_n r_nk}<br>$$</p>
+<p>即对每个类别内的样本取平均。</p>
+</li>
+</ul>
+<p>一个二维数据k&#x3D;2的实际例子如下：</p>
+<p><img src="/2022/03/20/K-means/1.png"></p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">distEclud</span>(<span class="params">x1,x2</span>):</span><br><span class="line">    <span class="keyword">return</span> np.sqrt(np.<span class="built_in">sum</span>(np.power(x1-x2,<span class="number">2</span>)))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">randCent</span>(<span class="params">dataSet,k</span>):</span><br><span class="line">    n = np.shape(dataSet)[<span class="number">1</span>]</span><br><span class="line">    centroids = np.mat(np.zeros(k,n))</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">        minJ = <span class="built_in">min</span>(dataSet[:,j])</span><br><span class="line">        rangeJ = <span class="built_in">float</span>(<span class="built_in">max</span>(dataSet[:,j])-minJ)</span><br><span class="line">        centroids[:,j] = minJ + rangeJ * random.rand(k,<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> centroids</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">kmeans</span>(<span class="params">dataSet,k,distMeas=distEclud, createCent=randCent</span>):</span><br><span class="line">    m = shape(dataSet)[<span class="number">0</span>]</span><br><span class="line">    clusterAssment = np.mat(zeros((m,<span class="number">2</span>)))</span><br><span class="line">    centroids = createCent(dataSet,k)</span><br><span class="line">    clusterChanged = <span class="literal">True</span></span><br><span class="line">    <span class="keyword">while</span> clusterChanged: </span><br><span class="line">        clusterChanged = <span class="literal">False</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(m):</span><br><span class="line">            minDist = inf</span><br><span class="line">            minIndex = -<span class="number">1</span></span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(k):</span><br><span class="line">                distJI = distMeas(centroids[j,:],dataSet[i,:])</span><br><span class="line">                <span class="keyword">if</span> distJI &lt; minDist:</span><br><span class="line">                    minDist = distJI</span><br><span class="line">                    minIndex = j</span><br><span class="line">            <span class="keyword">if</span> clusterAssment[i,<span class="number">0</span>] != minIndex:</span><br><span class="line">                clusterChanged = <span class="literal">True</span></span><br><span class="line">            clusterAssment[i,:] = minIndex,minDist**<span class="number">2</span></span><br><span class="line">        <span class="built_in">print</span>(centroids)</span><br><span class="line">        <span class="keyword">for</span> cent <span class="keyword">in</span> <span class="built_in">range</span>(k):</span><br><span class="line">            ptsInClust = dataSet[nonzero(clusterAssment[:,<span class="number">0</span>].A==cent)[<span class="number">0</span>]]</span><br><span class="line">            centroids[cent,:] = mean(ptsInClust,axis=<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> centroids,clusterAssment</span><br></pre></td></tr></table></figure>
+
+<h1 id="改进K-means"><a href="#改进K-means" class="headerlink" title="改进K-means"></a>改进K-means</h1><ul>
+<li><p>利用<strong>后处理</strong>来提高聚类性能：用SSE（Sum of Squared Error，误差平方和）来度量聚类的效果，后处理的方法有，将具有最大SSE值的簇划分为两个簇，也可以将两个簇合并为一个簇（合并最近的质心or合并两个使SSE增幅最小的质心）</p>
+</li>
+<li><p><strong>二分K-means</strong>：为了克服K-means算法收敛到局部极小值的问题，有人提出了二分K-means的方法。该算法首先将所有的点作为一个簇，然后将该簇一分为2，之后选择其中的一个簇继续划分。选择待划分的簇的方法有两种，第一是选择那些对其进行划分完可以最大程度减少SSE的簇，第二是选择目前具有最大SSE的簇。</p>
+</li>
+<li><p><strong>加速K-means</strong>：对数据结构的预先计算法使⽤距离的三⾓不等式避免了不必要的距离计算</p>
+</li>
+<li><p><strong>聚类中心</strong>初始化选择：⼀个更好的初始化步骤是将聚类中⼼选择为由K个随机数据点组成的⼦集</p>
+</li>
+<li><p>在线随机算法：</p>
+<p>$$<br>\mu_{k}^新 &#x3D; \mu_k^旧 + \eta_n(x_n - \mu_k^旧)<br>$$</p>
+</li>
+<li><p>K中⼼点算法：</p>
+<p>$$<br>\overline{J} &#x3D; \sum_{n &#x3D; 1}^N{\sum_{k &#x3D; 1}^K{r_{nk}\mathcal{V}( x_n,\mathbf{\mu}_k)} }<br>$$</p>
+<p>引用<strong>新的不相似度度量</strong>，E步骤相同，M步骤更复杂</p>
+</li>
+<li><p>位于两个聚类中⼼的⼤概<strong>中间的位置的数据点</strong>：使⽤概率的⽅法，我们得到了对数据点聚类的”软”分配</p>
+</li>
+</ul>
+<h1 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h1><ul>
+<li><p>图像分割：不考虑像素的空间上的近似性，下图给出了运⾏K均值算法直⾄收敛的结果。对于任意特定的K值，我们将每个像素的{R,G,B}亮度三元组⽤聚类中心$\mu_{k}$的亮度值替代。</p>
+</li>
+<li><p>图像压缩：保存每个像素点对应的聚类中心，以及聚类中心即可。</p>
+</li>
+</ul>
+<p><img src="/2022/03/20/K-means/2.png"></p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p>1、《模式识别与机器学习》</p>
+<p>2、《学习机器实战》学习第10章</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/10/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" rel="prev" title="排序算法">
+      <i class="fa fa-chevron-left"></i> 排序算法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/20/python%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B/" rel="next" title="python协程、asyncio、异步编程">
+      python协程、asyncio、异步编程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#K-means%E7%AE%97%E6%B3%95%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">K-means算法简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86"><span class="nav-number">1.1.</span> <span class="nav-text">算法原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.2.</span> <span class="nav-text">代码实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%94%B9%E8%BF%9BK-means"><span class="nav-number">2.</span> <span class="nav-text">改进K-means</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%94%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">应用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xlQ"
+      src="/images/spicy.jpg">
+  <p class="site-author-name" itemprop="name">xlQ</p>
+  <div class="site-description" itemprop="description">AI for ai </div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlQ</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

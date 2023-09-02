@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本篇文章记录了NLP中分词的常见方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分词">
+<meta property="og:url" content="http://example.com/2022/04/09/%E5%88%86%E8%AF%8D/index.html">
+<meta property="og:site_name" content="HelloBear">
+<meta property="og:description" content="本篇文章记录了NLP中分词的常见方法。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200425223550793.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIyNzk1MjIz,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200425223818697.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIyNzk1MjIz,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="http://example.com/2022/04/09/%E5%88%86%E8%AF%8D/1.png">
+<meta property="og:image" content="http://example.com/2022/04/09/%E5%88%86%E8%AF%8D/2.png">
+<meta property="og:image" content="http://example.com/2022/04/09/%E5%88%86%E8%AF%8D/3.png">
+<meta property="og:image" content="http://example.com/2022/04/09/%E5%88%86%E8%AF%8D/4.png">
+<meta property="article:published_time" content="2022-04-09T02:12:58.000Z">
+<meta property="article:modified_time" content="2022-04-09T08:59:36.151Z">
+<meta property="article:author" content="xlQ">
+<meta property="article:tag" content="NLP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200425223550793.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIyNzk1MjIz,size_16,color_FFFFFF,t_70">
+
+<link rel="canonical" href="http://example.com/2022/04/09/%E5%88%86%E8%AF%8D/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>分词 | HelloBear</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">HelloBear</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Less is More</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/09/%E5%88%86%E8%AF%8D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/spicy.jpg">
+      <meta itemprop="name" content="xlQ">
+      <meta itemprop="description" content="AI for ai ">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HelloBear">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          分词
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-04-09 10:12:58 / Modified: 16:59:36" itemprop="dateCreated datePublished" datetime="2022-04-09T10:12:58+08:00">2022-04-09</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本篇文章记录了NLP中分词的常见方法。</p>
+<span id="more"></span>
+
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><h2 id="什么是分词"><a href="#什么是分词" class="headerlink" title="什么是分词"></a>什么是分词</h2><p>分词就是将句子、段落、文章这种长文本，分解为以字词为单位的数据结构，方便后续的处理分析工作。</p>
+<h2 id="为什么要分词"><a href="#为什么要分词" class="headerlink" title="为什么要分词"></a>为什么要分词</h2><p><strong>1.将复杂问题转化为数学问题</strong></p>
+<p>而 NLP 也是相同的思路，文本都是一些「非结构化数据」，我们需要先将这些数据转化为「结构化数据」，结构化数据就可以转化为数学问题了，而分词就是转化的第一步。</p>
+<p><strong>2.词是一个比较合适的粒度</strong></p>
+<p>词是表达完整含义的最小单位。</p>
+<p>字的粒度太小，无法表达完整含义，比如”鼠“可以是”老鼠“，也可以是”鼠标“。</p>
+<p>而句子的粒度太大，承载的信息量多，很难复用。比如”传统方法要分词，一个重要原因是传统方法对远距离依赖的建模能力较弱。”</p>
+<p><strong>3. 深度学习时代，部分任务中也可以「分字」</strong></p>
+<h2 id="中英文分词的区别"><a href="#中英文分词的区别" class="headerlink" title="中英文分词的区别"></a>中英文分词的区别</h2><p><strong>区别1：分词方式不同，中文更难</strong></p>
+<p>英文有天然的空格作为分隔符，但是中文没有。所以如何切分是一个难点，再加上中文里一词多意的情况非常多，导致很容易出现歧义。下文中难点部分会详细说明。</p>
+<p><strong>区别2：英文单词有多种形态</strong></p>
+<p>英文单词存在丰富的变形变换。为了应对这些复杂的变换，英文NLP相比中文存在一些独特的处理步骤，我们称为词形还原（Lemmatization）和词干提取（<a target="_blank" rel="noopener" href="https://easyai.tech/ai-definition/stemming-lemmatisation/">Stemming</a>）。中文则不需要</p>
+<p>词性还原：does，done，doing，did 需要通过词性还原恢复成 do。</p>
+<p>词干提取：cities，children，teeth 这些词，需要转换为 city，child，tooth”这些基本形态</p>
+<p><strong>区别3：中文分词需要考虑粒度问题</strong></p>
+<p>例如「中国科学技术大学」就有很多种分法：</p>
+<ul>
+<li>中国科学技术大学</li>
+<li>中国 \ 科学技术 \ 大学</li>
+<li>中国 \ 科学 \ 技术 \ 大学</li>
+</ul>
+<p>粒度越大，表达的意思就越准确，但是也会导致召回比较少。所以中文需要不同的场景和要求选择不同的粒度。这个在英文中是没有的。</p>
+<h2 id="中文分词的难点"><a href="#中文分词的难点" class="headerlink" title="中文分词的难点"></a>中文分词的难点</h2><p><strong>难点 1：没有统一的标准</strong></p>
+<p>目前中文分词没有统一的标准，也没有公认的规范。不同的公司和组织各有各的方法和规则。</p>
+<p><strong>难点 2：歧义词如何切分</strong></p>
+<p>例如「兵乓球拍卖完了」就有2种分词方式表达了2种不同的含义：</p>
+<ul>
+<li>乒乓球 \ 拍卖 \ 完了</li>
+<li>乒乓 \ 球拍 \ 卖 \ 完了</li>
+</ul>
+<p><strong>难点 3：新词的识别</strong></p>
+<p>信息爆炸的时代，三天两头就会冒出来一堆新词，如何快速的识别出这些新词是一大难点。比如当年「蓝瘦香菇」大火，就需要快速识别。</p>
+<h2 id="如何分词"><a href="#如何分词" class="headerlink" title="如何分词"></a>如何分词</h2><ol>
+<li>基于词典匹配</li>
+<li>基于统计</li>
+<li>基于深度学习</li>
+</ol>
+<h1 id="基于词典匹配"><a href="#基于词典匹配" class="headerlink" title="基于词典匹配"></a>基于词典匹配</h1><p>优点：速度快、成本低</p>
+<p>缺点：适应性不强，不同领域效果差异大</p>
+<h2 id="前向最大匹配"><a href="#前向最大匹配" class="headerlink" title="前向最大匹配"></a>前向最大匹配</h2><p>先设定一个阈值max_len&#x3D;5，则每次取5个，然后看5个里面与词典是否有匹配。<br>假设5个直接匹配到了，那么就直接分出来，如果都没匹配的，那么max_len依次递减，以此类推分出第一个词；分第二个词的时候max_len又从5开始分，同之前的步骤，以此类推实现分词结果。见图中具体过程即可：（注意1、2、3、4步骤顺序）</p>
+<p><img src="https://img-blog.csdnimg.cn/20200425223550793.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIyNzk1MjIz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h2 id="后向最大匹配"><a href="#后向最大匹配" class="headerlink" title="后向最大匹配"></a>后向最大匹配</h2><p><img src="https://img-blog.csdnimg.cn/20200425223818697.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIyNzk1MjIz,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h1 id="基于统计"><a href="#基于统计" class="headerlink" title="基于统计"></a>基于统计</h1><p>优点：适应性较强</p>
+<p>缺点：成本较高，速度较慢</p>
+<p>这类目前常用的是算法是HMM、CRF、<a target="_blank" rel="noopener" href="https://easyai.tech/ai-definition/svm/">SVM</a>、深度学习等算法，比如stanford、Hanlp分词工具是基于CRF算法。以CRF为例，基本思路是对汉字进行标注训练，不仅考虑了词语出现的频率，还考虑上下文，具备较好的学习能力，因此其对歧义词和未登录词的识别都具有良好的效果。</p>
+<h2 id="CRT"><a href="#CRT" class="headerlink" title="CRT"></a>CRT</h2><h2 id="CRF"><a href="#CRF" class="headerlink" title="CRF"></a>CRF</h2><h2 id="HMM"><a href="#HMM" class="headerlink" title="HMM"></a>HMM</h2><p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1ik4y167kr?spm_id_from=333.337.search-card.all.click">https://www.bilibili.com/video/BV1ik4y167kr?spm_id_from=333.337.search-card.all.click</a></p>
+<p>HMM模型的基本假设:</p>
+<ul>
+<li><p><strong>马尔科夫假设</strong>。第t 个隐状态(实体标签)只跟前一时刻的t − 1隐状态(实体标签)有关, 与除此之外的其他隐状态无关.</p>
+</li>
+<li><p><strong>观测独立性假设</strong>。我们上面说过, HMM模型中观察状态只由由隐状态序列(实体标记)生成</p>
+</li>
+</ul>
+<p>HMM的三个变量：$\theta&#x3D;A,B,\pi$</p>
+<ul>
+<li><p><strong>HMM的转移概率(transition probabilities):</strong> 隐状态i从t − 1时刻转向t时刻的概率</p>
+</li>
+<li><p><strong>HMM的发射概率(emission probabilities):</strong> 隐状态生成观测结果的概率</p>
+</li>
+<li><p><strong>HMM的初始隐状态概率:</strong>  初始时刻各种隐状态的概率</p>
+</li>
+</ul>
+<p>HMM的两类任务：</p>
+<ul>
+<li><p>已知模型参数，预测z。</p>
+</li>
+<li><p>估计模型参数</p>
+</li>
+</ul>
+<p>下面介绍这两类任务的实现方法。</p>
+<h3 id="Inference问题"><a href="#Inference问题" class="headerlink" title="Inference问题"></a>Inference问题</h3><p>给定了参数和观察值，如何反推隐变量？</p>
+<p>首先给出了一个最原始的想法，即罗列法:</p>
+<p><img src="/2022/04/09/%E5%88%86%E8%AF%8D/1.png"></p>
+<p><strong>维特比算法(Viterbi Algorithm)</strong></p>
+<p>在每一时刻, 计算当前时刻落在每种隐状态的最大概率, 并记录这个最大概率是从前一时刻哪一个隐状态转移过来的, 最后再从结尾回溯最大概率, 也就是最有可能的最优路径.</p>
+<p><img src="/2022/04/09/%E5%88%86%E8%AF%8D/2.png"></p>
+<h3 id="参数估计问题"><a href="#参数估计问题" class="headerlink" title="参数估计问题"></a>参数估计问题</h3><p>知道观察变量和隐变量：complete case</p>
+<p>只知道观察变量：incomplete case</p>
+<h4 id="Complete-case"><a href="#Complete-case" class="headerlink" title="Complete case"></a>Complete case</h4><p>只需要统计即可：</p>
+<p><img src="/2022/04/09/%E5%88%86%E8%AF%8D/3.png"></p>
+<h4 id="Incomplete-case-（EM-algorithm）"><a href="#Incomplete-case-（EM-algorithm）" class="headerlink" title="Incomplete case  （EM algorithm）"></a>Incomplete case  （EM algorithm）</h4><p><img src="/2022/04/09/%E5%88%86%E8%AF%8D/4.png"></p>
+<p>HMM模型和CRF模型的比较：</p>
+<p>同：</p>
+<ul>
+<li><p>都是概率图模型</p>
+</li>
+<li><p>均可序列标注</p>
+</li>
+</ul>
+<p>异：</p>
+<ul>
+<li><p>首先，CRF是判别模型，假设x为数据点, y 为数据标记, 比如说逻辑回归属于典型的判别模型, 我们要计算P(y|x)并形成一条分类边界；而在HMM这种生成模型中, 我们计算的是P(x|y)), 而且要计算出所有y可取的类型, 并比较一下所有P(x|y&#x3D;y_{i})的结果, 并取可以使P(x|y)最大的那个, 而得到预测结果.</p>
+</li>
+<li><p>HMM是概率有向图，CRF是概率无向图。</p>
+</li>
+<li><p>CRF比HMM更强大, 更广泛：HMM受限于相邻位置的2-gram状态转移和发射概率；而CRF的特征函数则更加灵活，其权重值可以为任何数，而HMM的概率值会被限制在0~1，并且有些概率和限定为1。</p>
+</li>
+</ul>
+<h1 id="基于深度学习"><a href="#基于深度学习" class="headerlink" title="基于深度学习"></a>基于深度学习</h1><p>优点：准确率高、适应性强</p>
+<p>缺点：成本高，速度慢</p>
+<p>例如有人员尝试使用双向<a target="_blank" rel="noopener" href="https://easyai.tech/ai-definition/lstm/">LSTM</a>+CRF实现分词器，其本质上是序列标注，所以有通用性，命名实体识别等都可以使用该模型，据报道其分词器字符准确率可高达97.5%。</p>
+<p><strong>常见的分词器都是使用机器学习算法和词典相结合，一方面能够提高分词准确率，另一方面能够改善领域适应性。</strong></p>
+<h1 id="分词工具"><a href="#分词工具" class="headerlink" title="分词工具"></a>分词工具</h1><p><strong>中文分词工具：</strong></p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://github.com/hankcs/HanLP">Hanlp</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/stanfordnlp/CoreNLP">Stanford 分词</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/NLPchina/ansj_seg">ansj 分词器</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/HIT-SCIR/ltp">哈工大 LTP</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/koth/kcws">KCWS分词器</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/yanyiwu/cppjieba">jieba</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/wks/ik-analyzer">IK</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/thunlp/THULAC">清华大学THULAC</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/thunlp/THULAC">ICTCLAS</a></li>
+</ol>
+<p><strong>英文分词工具：</strong></p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://github.com/keras-team/keras">Keras</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/explosion/spaCy">Spacy</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/RaRe-Technologies/gensim">Gensim</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/nltk/nltk">NLTK</a></li>
+</ol>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a target="_blank" rel="noopener" href="https://easyai.tech/ai-definition/tokenization/">一文看懂NLP里的分词-Tokenization（中英文区别+3大难点+3种典型方法）</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NLP/" rel="tag"># NLP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/06/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/" rel="prev" title="分布式训练">
+      <i class="fa fa-chevron-left"></i> 分布式训练
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/09/word2vec%E5%92%8CFastText/" rel="next" title="文本表示">
+      文本表示 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%88%86%E8%AF%8D"><span class="nav-number">1.1.</span> <span class="nav-text">什么是分词</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%88%86%E8%AF%8D"><span class="nav-number">1.2.</span> <span class="nav-text">为什么要分词</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AD%E8%8B%B1%E6%96%87%E5%88%86%E8%AF%8D%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.3.</span> <span class="nav-text">中英文分词的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AD%E6%96%87%E5%88%86%E8%AF%8D%E7%9A%84%E9%9A%BE%E7%82%B9"><span class="nav-number">1.4.</span> <span class="nav-text">中文分词的难点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%88%86%E8%AF%8D"><span class="nav-number">1.5.</span> <span class="nav-text">如何分词</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E8%AF%8D%E5%85%B8%E5%8C%B9%E9%85%8D"><span class="nav-number">2.</span> <span class="nav-text">基于词典匹配</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E5%90%91%E6%9C%80%E5%A4%A7%E5%8C%B9%E9%85%8D"><span class="nav-number">2.1.</span> <span class="nav-text">前向最大匹配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E5%90%91%E6%9C%80%E5%A4%A7%E5%8C%B9%E9%85%8D"><span class="nav-number">2.2.</span> <span class="nav-text">后向最大匹配</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E7%BB%9F%E8%AE%A1"><span class="nav-number">3.</span> <span class="nav-text">基于统计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CRT"><span class="nav-number">3.1.</span> <span class="nav-text">CRT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CRF"><span class="nav-number">3.2.</span> <span class="nav-text">CRF</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HMM"><span class="nav-number">3.3.</span> <span class="nav-text">HMM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Inference%E9%97%AE%E9%A2%98"><span class="nav-number">3.3.1.</span> <span class="nav-text">Inference问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1%E9%97%AE%E9%A2%98"><span class="nav-number">3.3.2.</span> <span class="nav-text">参数估计问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Complete-case"><span class="nav-number">3.3.2.1.</span> <span class="nav-text">Complete case</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Incomplete-case-%EF%BC%88EM-algorithm%EF%BC%89"><span class="nav-number">3.3.2.2.</span> <span class="nav-text">Incomplete case  （EM algorithm）</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0"><span class="nav-number">4.</span> <span class="nav-text">基于深度学习</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E8%AF%8D%E5%B7%A5%E5%85%B7"><span class="nav-number">5.</span> <span class="nav-text">分词工具</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">6.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="xlQ"
+      src="/images/spicy.jpg">
+  <p class="site-author-name" itemprop="name">xlQ</p>
+  <div class="site-description" itemprop="description">AI for ai </div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">xlQ</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
